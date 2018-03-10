@@ -1,0 +1,7 @@
+#Internal package file, do not edit.
+#Wed Mar 07 00:34:39 CST 2018
+0.baseType=DIRECTORY
+0.base=G\:\\sh2_androidStudio\\Fantasy\\app\\build\\intermediates\\assets\\debug
+0.path=materialdesignicons-webfont.ttf
+0.set=ASSET
+count=1

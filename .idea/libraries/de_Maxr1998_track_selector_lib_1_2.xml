@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="de.Maxr1998:track-selector-lib-1.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/track-selector-lib-1.2.aar/b71c0f6379c9897a3766ccbf6ac23170/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/track-selector-lib-1.2.aar/b71c0f6379c9897a3766ccbf6ac23170/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.Maxr1998/track-selector-lib/1.2/a90bff775fd403523e2b89501f98c73ed1bf6bb9/track-selector-lib-1.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

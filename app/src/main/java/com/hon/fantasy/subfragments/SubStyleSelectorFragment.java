@@ -1,7 +1,6 @@
 package com.hon.fantasy.subfragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,11 +12,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.hon.fantasy.R;
-import com.hon.fantasy.activities.DonateActivity;
 import com.hon.fantasy.utils.Constants;
 import com.hon.fantasy.utils.NavigationUtils;
 import com.hon.fantasy.utils.PreferencesUtility;
@@ -122,7 +121,7 @@ public class SubStyleSelectorFragment extends Fragment {
         }
     }
     private void showPurchaseDialog() {
-        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+        new MaterialDialog.Builder(getActivity())
                 .title("Purchase")
                 .content("This now playing style is available after a one time purchase of any amount. Support development and unlock this style?")
                 .positiveText("Support development")
@@ -130,16 +129,13 @@ public class SubStyleSelectorFragment extends Fragment {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        startActivity(new Intent(getActivity(), DonateActivity.class));
+                        Toast.makeText(getActivity(), "thx :)", Toast.LENGTH_LONG).show();
                         dialog.dismiss();
                     }
                 }).onNeutral(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Intent intent = new Intent(getActivity(), DonateActivity.class);
-                        intent.putExtra("title", "Restoring purchases..");
-                        intent.setAction("restore");
-                        startActivity(intent);
+                        Toast.makeText(getActivity(), "restore :)", Toast.LENGTH_LONG).show();
                         dialog.dismiss();
                     }
                 })

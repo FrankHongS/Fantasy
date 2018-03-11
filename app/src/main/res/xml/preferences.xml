@@ -130,19 +130,4 @@
 
     </com.hon.fantasy.widget.ThemedPreferenceCategory>
 
-    <com.hon.fantasy.widget.ThemedPreferenceCategory android:title="Support">
-
-        <Preference
-            android:key="support_development"
-            android:summary="Support the development of Timber and unlock all now playing styles"
-            android:title="Support development" />
-
-        <Preference
-            android:key="restore_purchases"
-            android:summary="Restore previous purchases"
-            android:title="Restore purchases" />
-
-    </com.hon.fantasy.widget.ThemedPreferenceCategory>
-
-
 </PreferenceScreen>

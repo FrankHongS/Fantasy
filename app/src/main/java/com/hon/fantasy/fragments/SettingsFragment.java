@@ -1,6 +1,5 @@
 package com.hon.fantasy.fragments;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,9 +9,6 @@ import android.preference.Preference;
 
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
-import android.support.v7.preference.ListPreferenceDialogFragmentCompat;
-import android.support.v7.preference.PreferenceFragmentCompat;
-import android.support.v7.preference.SwitchPreferenceCompat;
 import android.view.View;
 
 import com.afollestad.appthemeengine.ATE;
@@ -21,7 +17,6 @@ import com.afollestad.appthemeengine.prefs.ATECheckBoxPreference;
 import com.afollestad.appthemeengine.prefs.ATEColorPreference;
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.hon.fantasy.R;
-import com.hon.fantasy.activities.DonateActivity;
 import com.hon.fantasy.activities.SettingsActivity;
 import com.hon.fantasy.api.LastFmClient;
 import com.hon.fantasy.dialogs.LastFmLoginDialog;
@@ -122,13 +117,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                 return true;
             }
         });
-
-        Intent restoreIntent = new Intent(getActivity(), DonateActivity.class);
-        restoreIntent.putExtra("title", "Restoring purchases..");
-        restoreIntent.setAction("restore");
-
-        findPreference("support_development").setIntent(new Intent(getActivity(), DonateActivity.class));
-        findPreference("restore_purchases").setIntent(restoreIntent);
 
         lockscreen.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override

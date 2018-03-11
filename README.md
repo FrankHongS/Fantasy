@@ -17,7 +17,7 @@
 * 拖拽调整播放顺序
 
 ## Library
-* **Retrofit** for network
-* **Glide** for image loading
-* **RxJava** for event and logic
-* **Room** for persistent data
+* **Retrofit for network**
+* **Glide for image loading**
+* **RxJava for event and logic**
+* **Room for persistent data**

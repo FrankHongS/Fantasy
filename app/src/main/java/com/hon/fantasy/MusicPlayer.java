@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.BaseColumns;
@@ -48,7 +49,11 @@ public class MusicPlayer {
             realActivity = (Activity) context;
         }
         final ContextWrapper contextWrapper = new ContextWrapper(realActivity);
-        contextWrapper.startService(new Intent(contextWrapper, MusicService.class));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            contextWrapper.startForegroundService(new Intent(contextWrapper, MusicService.class));
+        }else {
+            contextWrapper.startService(new Intent(contextWrapper, MusicService.class));
+        }
         final ServiceBinder binder = new ServiceBinder(callback,
                 contextWrapper.getApplicationContext());
         if (contextWrapper.bindService(

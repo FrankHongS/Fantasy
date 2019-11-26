@@ -30,7 +30,7 @@
     <string name="sort_order_entry_number_of_albums">专辑数</string>
     <string name="sort_order_entry_filename">文件名</string>
 
-    <string name="error_playing_track">曲目播放错误</string>
+    <string name="error_playing_track">曲目播放错误%s</string>
 
     <string name="playlist_last_added">最新添加</string>
     <string name="playlist_recently_played">最近播放</string>

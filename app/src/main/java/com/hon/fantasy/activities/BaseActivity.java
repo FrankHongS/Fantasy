@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,7 +53,7 @@ import static com.hon.fantasy.MusicPlayer.mService;
  * E-mail:frank_hon@foxmail.com
  */
 
-public class BaseActivity extends ATEActivity implements ServiceConnection, MusicStateListener {
+public class BaseActivity extends AppCompatActivity implements ServiceConnection, MusicStateListener {
 
     private final ArrayList<MusicStateListener> mMusicStateListener = new ArrayList<>();
     private MusicPlayer.ServiceToken mToken;
@@ -114,15 +115,15 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
         //make volume keys change multimedia volume even if music is not playing now
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        try {
-            playServicesAvailable = GoogleApiAvailability
-                    .getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS;
-        } catch (Exception ignored) {
+//        try {
+//            playServicesAvailable = GoogleApiAvailability
+//                    .getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS;
+//        } catch (Exception ignored) {
+//
+//        }
 
-        }
-
-        if (playServicesAvailable)
-            initCast();
+//        if (playServicesAvailable)
+//            initCast();
     }
 
     @Override
@@ -267,7 +268,7 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
         if (!FantasyUtils.hasEffectsPanel(BaseActivity.this)) {
             menu.removeItem(R.id.action_equalizer);
         }
-        ATE.applyMenu(this, getATEKey(), menu);
+//        ATE.applyMenu(this, getATEKey(), menu);
         return true;
     }
 
@@ -301,11 +302,11 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
         return super.onOptionsItemSelected(item);
     }
 
-    @Nullable
-    @Override
-    public String getATEKey() {
-        return Helpers.getATEKey(this);
-    }
+//    @Nullable
+//    @Override
+//    public String getATEKey() {
+//        return Helpers.getATEKey(this);
+//    }
 
     public void setPanelSlideListeners(SlidingUpPanelLayout panelLayout) {
         panelLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {

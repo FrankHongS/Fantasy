@@ -106,7 +106,7 @@ public class ImageUtils {
 
                             @Override
                             public void albumInfoFailed() {
-                                Toast.makeText(Fantasy.getInstance(), "albumInfoFailed :)", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Fantasy.sContext, "albumInfoFailed :)", Toast.LENGTH_SHORT).show();
                             }
                         });
     }

@@ -1,6 +1,6 @@
 package com.hon.fantasy;
 
-import android.app.Application;
+import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 
 import com.afollestad.appthemeengine.ATE;
@@ -20,14 +20,13 @@ import java.io.InputStream;
  */
 
 public class Fantasy extends MultiDexApplication {//TODO
-    private static Fantasy sInstance;
 
-    public static synchronized Fantasy getInstance(){return sInstance;}
+    public static Context sContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        sInstance=this;
+        sContext = getApplicationContext();
 
         ImageLoaderConfiguration localImageLoaderConfiguration = new ImageLoaderConfiguration.Builder(this).imageDownloader(new BaseImageDownloader(this) {
             PreferencesUtility prefs = PreferencesUtility.getInstance(Fantasy.this);

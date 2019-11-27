@@ -54,7 +54,7 @@ public class LastFmLoginDialog extends DialogFragment {
                             @Override
                             public void userInfoFailed() {
                                 progressDialog.dismiss();
-                                Toast.makeText(Fantasy.getInstance(), Fantasy.getInstance().getString(R.string.lastfm_login_failture), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Fantasy.sContext, getString(R.string.lastfm_login_failture), Toast.LENGTH_SHORT).show();
                             }
                         });
                     }

@@ -1,5 +1,6 @@
 package com.hon.fantasy.activities;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -19,16 +19,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.afollestad.appthemeengine.ATE;
-import com.afollestad.appthemeengine.ATEActivity;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.Session;
 import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.SessionManagerListener;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.hon.fantasy.IFantasyService;
 import com.hon.fantasy.MusicPlayer;
 import com.hon.fantasy.MusicService;
@@ -39,24 +35,22 @@ import com.hon.fantasy.listeners.MusicStateListener;
 import com.hon.fantasy.slidinguppanel.SlidingUpPanelLayout;
 import com.hon.fantasy.subfragments.QuickControlsFragment;
 import com.hon.fantasy.utils.FantasyUtils;
-import com.hon.fantasy.utils.Helpers;
 import com.hon.fantasy.utils.NavigationUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-import static com.hon.fantasy.MusicPlayer.mService;
 
 /**
  * Created by Frank on 2018/3/4.
  * E-mail:frank_hon@foxmail.com
  */
 
+@SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity implements ServiceConnection, MusicStateListener {
 
     private final ArrayList<MusicStateListener> mMusicStateListener = new ArrayList<>();
-    private MusicPlayer.ServiceToken mToken;
     private PlaybackStatus mPlaybackStatus;
 
     private CastSession mCastSession;
@@ -109,7 +103,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mToken = MusicPlayer.bindToService(this, this);
+        MusicPlayer.getInstance().bindToService(this, this);
 
         mPlaybackStatus = new PlaybackStatus(this);
         //make volume keys change multimedia volume even if music is not playing now
@@ -158,9 +152,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
             mSessionManager.addSessionManagerListener(mSessionManagerListener);
         }
         //For Android 8.0+: service may get destroyed if in background too long
-        if(mService == null){
-            mToken = MusicPlayer.bindToService(this, this);
-        }
+
         onMetaChanged();
         super.onResume();
     }
@@ -176,7 +168,6 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
 
     @Override
     public void onServiceConnected(final ComponentName name, final IBinder service) {
-        mService = IFantasyService.Stub.asInterface(service);
         onMetaChanged();
     }
 
@@ -188,22 +179,16 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
 
     @Override
     public void onServiceDisconnected(final ComponentName name) {
-        mService = null;
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         // Unbind from the service
-        if (mToken != null) {
-            MusicPlayer.unbindFromService(mToken);
-            mToken = null;
-        }
+        MusicPlayer.getInstance().unbindFromService(this);
 
-        try {
-            unregisterReceiver(mPlaybackStatus);
-        } catch (final Throwable e) {
-        }
+        unregisterReceiver(mPlaybackStatus);
         mMusicStateListener.clear();
     }
 
@@ -286,7 +271,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        MusicPlayer.shuffleAll(BaseActivity.this);
+                        MusicPlayer.getInstance().shuffleAll(BaseActivity.this);
                     }
                 }, 80);
 

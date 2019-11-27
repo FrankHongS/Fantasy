@@ -93,7 +93,7 @@
         <service
             android:name=".MusicService"
             android:label="@string/app_name"
-            android:process=":main" />
+            android:process=":player" />
 
         <meta-data
             android:name=

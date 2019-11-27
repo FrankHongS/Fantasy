@@ -125,7 +125,7 @@ public class MusicService extends Service{
     public static final int REPEAT_ALL = 2;
     public static final int MAX_HISTORY_SIZE = 1000;
     private static final String TAG = "MusicPlaybackService";
-    private static final boolean D = false;
+    private static final boolean D = true;
     private static final String SHUTDOWN = "com.naman14.timber.shutdown";
     private static final int IDCOLIDX = 0;
     private static final int TRACK_ENDED = 1;
@@ -237,39 +237,6 @@ public class MusicService extends Service{
     private ContentObserver mMediaStoreObserver;
 
     @Override
-    public IBinder onBind(final Intent intent) {
-        if (D) Log.d(TAG, "Service bound, intent = " + intent);
-        cancelShutdown();
-        mServiceInUse = true;
-        return mBinder;
-    }
-
-    @Override
-    public boolean onUnbind(final Intent intent) {
-        if (D) Log.d(TAG, "Service unbound");
-        mServiceInUse = false;
-        saveQueue(true);
-
-        if (mIsSupposedToBePlaying || mPausedByTransientLossOfFocus) {
-
-            return true;
-
-        } else if (mPlaylist.size() > 0 || mPlayerHandler.hasMessages(TRACK_ENDED)) {
-            scheduleDelayedShutdown();
-            return true;
-        }
-        stopSelf(mServiceStartId);
-
-        return true;
-    }
-
-    @Override
-    public void onRebind(final Intent intent) {
-        cancelShutdown();
-        mServiceInUse = true;
-    }
-
-    @Override
     public void onCreate() {
         if (D) Log.d(TAG, "Creating service");
         super.onCreate();
@@ -355,6 +322,39 @@ public class MusicService extends Service{
         PreferencesUtility pref = PreferencesUtility.getInstance(this);
         mShowAlbumArtOnLockscreen = pref.getSetAlbumartLockscreen();
         mActivateXTrackSelector = pref.getXPosedTrackselectorEnabled();
+    }
+
+    @Override
+    public IBinder onBind(final Intent intent) {
+        if (D) Log.d(TAG, "Service bound, intent = " + intent);
+        cancelShutdown();
+        mServiceInUse = true;
+        return mBinder;
+    }
+
+    @Override
+    public boolean onUnbind(final Intent intent) {
+        if (D) Log.d(TAG, "Service unbound");
+        mServiceInUse = false;
+        saveQueue(true);
+
+        if (mIsSupposedToBePlaying || mPausedByTransientLossOfFocus) {
+
+            return true;
+
+        } else if (mPlaylist.size() > 0 || mPlayerHandler.hasMessages(TRACK_ENDED)) {
+            scheduleDelayedShutdown();
+            return true;
+        }
+        stopSelf(mServiceStartId);
+
+        return true;
+    }
+
+    @Override
+    public void onRebind(final Intent intent) {
+        cancelShutdown();
+        mServiceInUse = true;
     }
 
     @SuppressWarnings("deprecation")
@@ -586,7 +586,7 @@ public class MusicService extends Service{
         } else if (recentlyPlayed()) {
             newNotifyMode = NOTIFY_MODE_BACKGROUND;
         } else {
-            newNotifyMode = NOTIFY_MODE_NONE;
+            newNotifyMode = NOTIFY_MODE_FOREGROUND;
         }
 
         int notificationId = hashCode();
@@ -1135,9 +1135,9 @@ public class MusicService extends Service{
             saveQueue(false);
         }
 
-        if (what.equals(PLAYSTATE_CHANGED)) {
+//        if (what.equals(PLAYSTATE_CHANGED)) {
             updateNotification();
-        }
+//        }
 
     }
 

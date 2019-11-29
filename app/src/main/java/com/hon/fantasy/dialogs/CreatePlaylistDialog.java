@@ -49,11 +49,11 @@ public class CreatePlaylistDialog extends DialogFragment {
             public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
 
                 long[] songs = getArguments().getLongArray("songs");
-                long playistId = MusicPlayer.createPlaylist(getActivity(), input.toString());
+                long playistId = MusicPlayer.getInstance().createPlaylist(getActivity(), input.toString());
 
                 if (playistId != -1) {
                     if (songs != null && songs.length != 0)
-                        MusicPlayer.addToPlaylist(getActivity(), songs, playistId);
+                        MusicPlayer.getInstance().addToPlaylist(getActivity(), songs, playistId);
                     else
                         Toast.makeText(getActivity(), "Created playlist", Toast.LENGTH_SHORT).show();
                     if (getParentFragment() instanceof PlaylistFragment) {

@@ -157,10 +157,10 @@ public class SearchAdapter extends BaseSongAdapter<SearchAdapter.ItemHolder> {
                         song[0] = ((Song) searchResults.get(position)).id;
                         switch (item.getItemId()) {
                             case R.id.popup_song_play:
-                                MusicPlayer.playAll(mContext, song, 0, -1, FantasyUtils.IdType.NA, false);
+                                MusicPlayer.getInstance().playAll(mContext, song, 0, -1, FantasyUtils.IdType.NA, false);
                                 break;
                             case R.id.popup_song_play_next:
-                                MusicPlayer.playNext(mContext, song, -1, FantasyUtils.IdType.NA);
+                                MusicPlayer.getInstance().playNext(mContext, song, -1, FantasyUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_goto_album:
                                 NavigationUtils.navigateToAlbum(mContext, ((Song) searchResults.get(position)).albumId, null);
@@ -169,7 +169,7 @@ public class SearchAdapter extends BaseSongAdapter<SearchAdapter.ItemHolder> {
                                 NavigationUtils.navigateToArtist(mContext, ((Song) searchResults.get(position)).artistId, null);
                                 break;
                             case R.id.popup_song_addto_queue:
-                                MusicPlayer.addToQueue(mContext, song, -1, FantasyUtils.IdType.NA);
+                                MusicPlayer.getInstance().addToQueue(mContext, song, -1, FantasyUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_addto_playlist:
                                 AddPlaylistDialog.newInstance(((Song) searchResults.get(position))).show(((AppCompatActivity) mContext).getSupportFragmentManager(), "ADD_PLAYLIST");

@@ -80,9 +80,9 @@ public class SongsListAdapter extends BaseSongAdapter<SongsListAdapter.ItemHolde
                         .showImageOnLoading(R.drawable.ic_empty_music2)
                         .resetViewBeforeLoading(true).build());
 
-        if (MusicPlayer.getCurrentAudioId() == localItem.id) {
+        if (MusicPlayer.getInstance().getCurrentAudioId() == localItem.id) {
             itemHolder.title.setTextColor(Config.accentColor(mContext, ateKey));
-            if (MusicPlayer.isPlaying()) {
+            if (MusicPlayer.getInstance().isPlaying()) {
                 itemHolder.visualizer.setColor(Config.accentColor(mContext, ateKey));
                 itemHolder.visualizer.setVisibility(View.VISIBLE);
             } else {
@@ -139,12 +139,12 @@ public class SongsListAdapter extends BaseSongAdapter<SongsListAdapter.ItemHolde
                                 notifyItemRemoved(position);
                                 break;
                             case R.id.popup_song_play:
-                                MusicPlayer.playAll(mContext, songIDs, position, -1, FantasyUtils.IdType.NA, false);
+                                MusicPlayer.getInstance().playAll(mContext, songIDs, position, -1, FantasyUtils.IdType.NA, false);
                                 break;
                             case R.id.popup_song_play_next:
                                 long[] ids = new long[1];
                                 ids[0] = arraylist.get(position).id;
-                                MusicPlayer.playNext(mContext, ids, -1, FantasyUtils.IdType.NA);
+                                MusicPlayer.getInstance().playNext(mContext, ids, -1, FantasyUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_goto_album:
                                 NavigationUtils.goToAlbum(mContext, arraylist.get(position).albumId);
@@ -155,7 +155,7 @@ public class SongsListAdapter extends BaseSongAdapter<SongsListAdapter.ItemHolde
                             case R.id.popup_song_addto_queue:
                                 long[] id = new long[1];
                                 id[0] = arraylist.get(position).id;
-                                MusicPlayer.addToQueue(mContext, id, -1, FantasyUtils.IdType.NA);
+                                MusicPlayer.getInstance().addToQueue(mContext, id, -1, FantasyUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_addto_playlist:
                                 AddPlaylistDialog.newInstance(arraylist.get(position)).show(mContext.getSupportFragmentManager(), "ADD_PLAYLIST");

@@ -55,7 +55,7 @@ public class AddPlaylistDialog extends DialogFragment {
                     return;
                 }
 
-                MusicPlayer.addToPlaylist(getActivity(), songs, playlists.get(which - 1).id);
+                MusicPlayer.getInstance().addToPlaylist(getActivity(), songs, playlists.get(which - 1).id);
                 dialog.dismiss();
 
             }

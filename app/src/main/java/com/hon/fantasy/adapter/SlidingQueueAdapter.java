@@ -34,7 +34,7 @@ public class SlidingQueueAdapter extends RecyclerView.Adapter<SlidingQueueAdapte
     public SlidingQueueAdapter(Activity context, List<Song> arraylist) {
         this.arraylist = arraylist;
         this.mContext = context;
-        currentlyPlayingPosition = MusicPlayer.getQueuePosition();
+        currentlyPlayingPosition = MusicPlayer.getInstance().getQueuePosition();
     }
 
     @Override
@@ -94,7 +94,7 @@ public class SlidingQueueAdapter extends RecyclerView.Adapter<SlidingQueueAdapte
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    MusicPlayer.setQueuePosition(getAdapterPosition());
+                    MusicPlayer.getInstance().setQueuePosition(getAdapterPosition());
                     Handler handler1 = new Handler();
                     handler1.postDelayed(new Runnable() {
                         @Override

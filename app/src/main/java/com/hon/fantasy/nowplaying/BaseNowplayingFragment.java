@@ -95,7 +95,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         @Override
         public void run() {
 
-            long position = MusicPlayer.position();
+            long position = MusicPlayer.getInstance().position();
             if (mProgress != null) {
                 mProgress.setProgress((int) position);
                 if (elapsedtime != null && getActivity() != null)
@@ -115,7 +115,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
         @Override
         public void run() {
-            long position = MusicPlayer.position();
+            long position = MusicPlayer.getInstance().position();
             if (mCircularProgress != null) {
                 mCircularProgress.setProgress((int) position);
                 if (elapsedtime != null && getActivity() != null)
@@ -123,7 +123,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
             }
             overflowcounter--;
-            if (MusicPlayer.isPlaying()) {
+            if (MusicPlayer.getInstance().isPlaying()) {
                 int delay = (int) (1500 - (position % 1000));
                 if (overflowcounter < 0 && !fragmentPaused) {
                     overflowcounter++;
@@ -138,7 +138,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         @Override
         public void run() {
             if (getActivity() != null) {
-                String time = FantasyUtils.makeShortTimeString(getActivity(), MusicPlayer.position() / 1000);
+                String time = FantasyUtils.makeShortTimeString(getActivity(), MusicPlayer.getInstance().position() / 1000);
                 if (time.length() < 5) {
                     timelyView11.setVisibility(View.GONE);
                     timelyView12.setVisibility(View.GONE);
@@ -182,7 +182,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    MusicPlayer.playOrPause();
+                    MusicPlayer.getInstance().playOrPause();
                     if (recyclerView != null && recyclerView.getAdapter() != null)
                         recyclerView.getAdapter().notifyDataSetChanged();
                 }
@@ -196,7 +196,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         @Override
         public void onClick(View v) {
             duetoplaypause = true;
-            if(MusicPlayer.getCurrentTrack() == null) {
+            if(MusicPlayer.getInstance().getCurrentTrack() == null) {
                 Toast.makeText(getContext(), getString(R.string.now_playing_no_track_selected), Toast.LENGTH_SHORT).show();
             } else {
                 playPauseDrawable.transformToPlay(true);
@@ -205,7 +205,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        MusicPlayer.playOrPause();
+                        MusicPlayer.getInstance().playOrPause();
                         if (recyclerView != null && recyclerView.getAdapter() != null)
                             recyclerView.getAdapter().notifyDataSetChanged();
                     }
@@ -240,10 +240,10 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_go_to_album:
-                NavigationUtils.goToAlbum(getContext(), MusicPlayer.getCurrentAlbumId());
+                NavigationUtils.goToAlbum(getContext(), MusicPlayer.getInstance().getCurrentAlbumId());
                 break;
             case R.id.menu_go_to_artist:
-                NavigationUtils.goToArtist(getContext(), MusicPlayer.getCurrentArtistId());
+                NavigationUtils.goToArtist(getContext(), MusicPlayer.getInstance().getCurrentArtistId());
                 break;
             case R.id.action_lyrics:
                 NavigationUtils.goToLyrics(getContext());
@@ -316,7 +316,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         if (playPauseFloating != null) {
             playPauseDrawable.setColorFilter(FantasyUtils.getBlackWhiteColor(accentColor), PorterDuff.Mode.MULTIPLY);
             playPauseFloating.setImageDrawable(playPauseDrawable);
-            if (MusicPlayer.isPlaying())
+            if (MusicPlayer.getInstance().isPlaying())
                 playPauseDrawable.transformToPause(false);
             else playPauseDrawable.transformToPlay(false);
         }
@@ -328,7 +328,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         }
 
         if (timelyView11 != null) {
-            String time = FantasyUtils.makeShortTimeString(getActivity(), MusicPlayer.position() / 1000);
+            String time = FantasyUtils.makeShortTimeString(getActivity(), MusicPlayer.getInstance().position() / 1000);
             if (time.length() < 5) {
                 timelyView11.setVisibility(View.GONE);
                 timelyView12.setVisibility(View.GONE);
@@ -385,7 +385,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            MusicPlayer.next();
+                            MusicPlayer.getInstance().next();
                             notifyPlayingDrawableChange();
                         }
                     }, 200);
@@ -401,7 +401,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            MusicPlayer.previous(getActivity(), false);
+                            MusicPlayer.getInstance().previous(getActivity(), false);
                             notifyPlayingDrawableChange();
                         }
                     }, 200);
@@ -428,7 +428,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     .setSizeDp(30);
 
             if (getActivity() != null) {
-                if (MusicPlayer.getShuffleMode() == 0) {
+                if (MusicPlayer.getInstance().getShuffleMode() == 0) {
                     builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
                 } else builder.setColor(Config.accentColor(getActivity(), ateKey));
             }
@@ -437,7 +437,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             shuffle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    MusicPlayer.cycleShuffle();
+                    MusicPlayer.getInstance().cycleShuffle();
                     updateShuffleState();
                     updateRepeatState();
                 }
@@ -450,13 +450,13 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             MaterialDrawableBuilder builder = MaterialDrawableBuilder.with(getActivity())
                     .setSizeDp(30);
 
-            if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_NONE) {
+            if (MusicPlayer.getInstance().getRepeatMode() == MusicService.REPEAT_NONE) {
                 builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
                 builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
-            } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_CURRENT) {
+            } else if (MusicPlayer.getInstance().getRepeatMode() == MusicService.REPEAT_CURRENT) {
                 builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT_ONCE);
                 builder.setColor(Config.accentColor(getActivity(), ateKey));
-            } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_ALL) {
+            } else if (MusicPlayer.getInstance().getRepeatMode() == MusicService.REPEAT_ALL) {
                 builder.setColor(Config.accentColor(getActivity(), ateKey));
                 builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
             }
@@ -466,7 +466,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             repeat.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    MusicPlayer.cycleRepeat();
+                    MusicPlayer.getInstance().cycleRepeat();
                     updateRepeatState();
                     updateShuffleState();
                 }
@@ -480,7 +480,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     if (b) {
-                        MusicPlayer.seek((long) i);
+                        MusicPlayer.getInstance().seek((long) i);
                     }
                 }
 
@@ -497,7 +497,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 @Override
                 public void onProgressChanged(CircularSeekBar circularSeekBar, int progress, boolean fromUser) {
                     if (fromUser) {
-                        MusicPlayer.seek((long) progress);
+                        MusicPlayer.getInstance().seek((long) progress);
                     }
                 }
 
@@ -518,7 +518,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         //do not reload image if it was a play/pause change
         if (!duetoplaypause) {
             if (albumart != null) {
-                ImageLoader.getInstance().displayImage(FantasyUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
+                ImageLoader.getInstance().displayImage(FantasyUtils.getAlbumArtUri(MusicPlayer.getInstance().getCurrentAlbumId()).toString(), albumart,
                         new DisplayImageOptions.Builder().cacheInMemory(true)
                                 .showImageOnFail(R.drawable.ic_empty_music2)
                                 .build(), new SimpleImageLoadingListener() {
@@ -536,30 +536,30 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
                         });
             }
-            if (songtitle != null && MusicPlayer.getTrackName() != null) {
-                songtitle.setText(MusicPlayer.getTrackName());
-                if(MusicPlayer.getTrackName().length() <= 23){
+            if (songtitle != null && MusicPlayer.getInstance().getTrackName() != null) {
+                songtitle.setText(MusicPlayer.getInstance().getTrackName());
+                if(MusicPlayer.getInstance().getTrackName().length() <= 23){
                     songtitle.setTextSize(25);
                 }
-                else if(MusicPlayer.getTrackName().length() >= 30){
+                else if(MusicPlayer.getInstance().getTrackName().length() >= 30){
                     songtitle.setTextSize(18);
                 }
                 else{
-                    songtitle.setTextSize(18 + (MusicPlayer.getTrackName().length() - 24));
+                    songtitle.setTextSize(18 + (MusicPlayer.getInstance().getTrackName().length() - 24));
                 }
                 Log.v("BaseNowPlayingFrag", "Title Text Size: " + songtitle.getTextSize());
             }
             if (songartist != null) {
-                songartist.setText(MusicPlayer.getArtistName());
+                songartist.setText(MusicPlayer.getInstance().getArtistName());
                 songartist.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        NavigationUtils.goToArtist(getContext(), MusicPlayer.getCurrentArtistId());
+                        NavigationUtils.goToArtist(getContext(), MusicPlayer.getInstance().getCurrentArtistId());
                     }
                 });
             }
             if (songalbum != null)
-                songalbum.setText(MusicPlayer.getAlbumName());
+                songalbum.setText(MusicPlayer.getInstance().getAlbumName());
 
         }
         duetoplaypause = false;
@@ -571,17 +571,17 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             updatePlayPauseFloatingButton();
 
         if (songduration != null && getActivity() != null)
-            songduration.setText(FantasyUtils.makeShortTimeString(getActivity(), MusicPlayer.duration() / 1000));
+            songduration.setText(FantasyUtils.makeShortTimeString(getActivity(), MusicPlayer.getInstance().duration() / 1000));
 
         if (mProgress != null) {
-            mProgress.setMax((int) MusicPlayer.duration());
+            mProgress.setMax((int) MusicPlayer.getInstance().duration());
             if (mUpdateProgress != null) {
                 mProgress.removeCallbacks(mUpdateProgress);
             }
             mProgress.postDelayed(mUpdateProgress, 10);
         }
         if (mCircularProgress != null) {
-            mCircularProgress.setMax((int) MusicPlayer.duration());
+            mCircularProgress.setMax((int) MusicPlayer.getInstance().duration());
             if (mUpdateCircularProgress != null) {
                 mCircularProgress.removeCallbacks(mUpdateCircularProgress);
             }
@@ -603,7 +603,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     }
 
     public void updatePlayPauseButton() {
-        if (MusicPlayer.isPlaying()) {
+        if (MusicPlayer.getInstance().isPlaying()) {
             if (!mPlayPause.isPlayed()) {
                 mPlayPause.setPlayed(true);
                 mPlayPause.startAnimation();
@@ -617,7 +617,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     }
 
     public void updatePlayPauseFloatingButton() {
-        if (MusicPlayer.isPlaying()) {
+        if (MusicPlayer.getInstance().isPlaying()) {
             playPauseDrawable.transformToPause(false);
         } else {
             playPauseDrawable.transformToPlay(false);
@@ -625,7 +625,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     }
 
     public void notifyPlayingDrawableChange() {
-        int position = MusicPlayer.getQueuePosition();
+        int position = MusicPlayer.getInstance().getQueuePosition();
         BaseQueueAdapter.currentlyPlayingPosition = position;
     }
 
@@ -730,7 +730,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 recyclerView.setAdapter(mAdapter);
                 if (getActivity() != null)
                     recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
-                recyclerView.scrollToPosition(MusicPlayer.getQueuePosition() - 1);
+                recyclerView.scrollToPosition(MusicPlayer.getInstance().getQueuePosition() - 1);
             }
 
         }

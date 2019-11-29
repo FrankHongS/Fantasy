@@ -139,7 +139,7 @@ public class FantasyUtils {
 
     public static Intent createEffectsIntent() {
         final Intent effects = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
-        effects.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, MusicPlayer.getAudioSessionId());
+        effects.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, MusicPlayer.getInstance().getAudioSessionId());
         return effects;
     }
 
@@ -293,7 +293,7 @@ public class FantasyUtils {
             while (!c.isAfterLast()) {
                 // Remove from current playlist
                 final long id = c.getLong(0);
-                MusicPlayer.removeTrack(id);
+                MusicPlayer.getInstance().removeTrack(id);
                 // Remove the track from the play count
                 SongPlayCount.getInstance(context).removeItem(id);
                 // Remove any items in the recents database
@@ -328,7 +328,7 @@ public class FantasyUtils {
 
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         context.getContentResolver().notifyChange(Uri.parse("content://media"), null);
-        MusicPlayer.refresh();
+        MusicPlayer.getInstance().refresh();
     }
 
     public static void shareTrack(final Context context, long id) {

@@ -75,7 +75,7 @@ public class SlideTrackSwitcher implements View.OnTouchListener {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            MusicPlayer.playOrPause();
+            MusicPlayer.getInstance().playOrPause();
             return true;
         }
 
@@ -87,11 +87,11 @@ public class SlideTrackSwitcher implements View.OnTouchListener {
     }
 
     public void onSwipeRight() {
-        MusicPlayer.previous(mView.getContext(), true);
+        MusicPlayer.getInstance().previous(mView.getContext(), true);
     }
 
     public void onSwipeLeft() {
-        MusicPlayer.next();
+        MusicPlayer.getInstance().next();
     }
 
     public void onSwipeTop() {

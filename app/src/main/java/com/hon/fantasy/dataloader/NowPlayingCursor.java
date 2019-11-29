@@ -13,8 +13,6 @@ import com.hon.fantasy.MusicPlayer;
 
 import java.util.Arrays;
 
-import static com.hon.fantasy.MusicPlayer.mService;
-
 /**
  * Created by Frank on 2018/3/4.
  * E-mail:frank_hon@foxmail.com
@@ -183,7 +181,7 @@ public class NowPlayingCursor extends AbstractCursor {
 
     private void makeNowPlayingCursor() {
         mQueueCursor = null;
-        mNowPlaying = MusicPlayer.getQueue();
+        mNowPlaying = MusicPlayer.getInstance().getQueue();
         Log.d("lol1", mNowPlaying.toString() + "   " + mNowPlaying.length);
         mSize = mNowPlaying.length;
         if (mSize == 0) {
@@ -225,11 +223,11 @@ public class NowPlayingCursor extends AbstractCursor {
             final long trackId = mNowPlaying[i];
             final int cursorIndex = Arrays.binarySearch(mCursorIndexes, trackId);
             if (cursorIndex < 0) {
-                removed += MusicPlayer.removeTrack(trackId);
+                removed += MusicPlayer.getInstance().removeTrack(trackId);
             }
         }
         if (removed > 0) {
-            mNowPlaying = MusicPlayer.getQueue();
+            mNowPlaying = MusicPlayer.getInstance().getQueue();
             mSize = mNowPlaying.length;
             if (mSize == 0) {
                 mCursorIndexes = null;
@@ -241,7 +239,7 @@ public class NowPlayingCursor extends AbstractCursor {
 
     public boolean removeItem(final int which) {
         try {
-            if (mService.removeTracks(which, which) == 0) {
+            if (MusicPlayer.getInstance().removeTracks(which, which) == 0) {
                 return false;
             }
             int i = which;

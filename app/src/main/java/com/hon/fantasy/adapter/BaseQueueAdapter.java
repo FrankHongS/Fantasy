@@ -36,7 +36,7 @@ public class BaseQueueAdapter extends RecyclerView.Adapter<BaseQueueAdapter.Item
     public BaseQueueAdapter(AppCompatActivity context, List<Song> arraylist) {
         this.arraylist = arraylist;
         this.mContext = context;
-        currentlyPlayingPosition = MusicPlayer.getQueuePosition();
+        currentlyPlayingPosition = MusicPlayer.getInstance().getQueuePosition();
         this.ateKey = Helpers.getATEKey(context);
     }
 
@@ -54,9 +54,9 @@ public class BaseQueueAdapter extends RecyclerView.Adapter<BaseQueueAdapter.Item
         itemHolder.title.setText(localItem.title);
         itemHolder.artist.setText(localItem.artistName);
 
-        if (MusicPlayer.getCurrentAudioId() == localItem.id) {
+        if (MusicPlayer.getInstance().getCurrentAudioId() == localItem.id) {
             itemHolder.title.setTextColor(Config.accentColor(mContext, ateKey));
-            if (MusicPlayer.isPlaying()) {
+            if (MusicPlayer.getInstance().isPlaying()) {
                 itemHolder.visualizer.setColor(Config.accentColor(mContext, ateKey));
                 itemHolder.visualizer.setVisibility(View.VISIBLE);
             } else {
@@ -161,7 +161,7 @@ public class BaseQueueAdapter extends RecyclerView.Adapter<BaseQueueAdapter.Item
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    MusicPlayer.setQueuePosition(getAdapterPosition());
+                    MusicPlayer.getInstance().setQueuePosition(getAdapterPosition());
                     Handler handler1 = new Handler();
                     handler1.postDelayed(new Runnable() {
                         @Override

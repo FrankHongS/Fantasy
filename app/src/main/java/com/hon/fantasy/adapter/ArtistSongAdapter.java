@@ -103,12 +103,12 @@ public class ArtistSongAdapter extends BaseSongAdapter<ArtistSongAdapter.ItemHol
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.popup_song_play:
-                                MusicPlayer.playAll(mContext, songIDs, position + 1, -1, FantasyUtils.IdType.NA, false);
+                                MusicPlayer.getInstance().playAll(mContext, songIDs, position + 1, -1, FantasyUtils.IdType.NA, false);
                                 break;
                             case R.id.popup_song_play_next:
                                 long[] ids = new long[1];
                                 ids[0] = arraylist.get(position + 1).id;
-                                MusicPlayer.playNext(mContext, ids, -1, FantasyUtils.IdType.NA);
+                                MusicPlayer.getInstance().playNext(mContext, ids, -1, FantasyUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_goto_album:
                                 NavigationUtils.goToAlbum(mContext, arraylist.get(position + 1).albumId);
@@ -119,7 +119,7 @@ public class ArtistSongAdapter extends BaseSongAdapter<ArtistSongAdapter.ItemHol
                             case R.id.popup_song_addto_queue:
                                 long[] id = new long[1];
                                 id[0] = arraylist.get(position + 1).id;
-                                MusicPlayer.addToQueue(mContext, id, -1, FantasyUtils.IdType.NA);
+                                MusicPlayer.getInstance().addToQueue(mContext, id, -1, FantasyUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_addto_playlist:
                                 AddPlaylistDialog.newInstance(arraylist.get(position + 1)).show(((AppCompatActivity) mContext).getSupportFragmentManager(), "ADD_PLAYLIST");

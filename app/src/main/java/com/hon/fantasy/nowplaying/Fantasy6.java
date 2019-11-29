@@ -48,7 +48,7 @@ public class Fantasy6 extends BaseNowplayingFragment{
         rootView.findViewById(R.id.nextView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MusicPlayer.next();
+                MusicPlayer.getInstance().next();
             }
         });
 
@@ -62,7 +62,7 @@ public class Fantasy6 extends BaseNowplayingFragment{
                     .setIcon(MaterialDrawableBuilder.IconValue.SHUFFLE)
                     .setSizeDp(30);
 
-            if (MusicPlayer.getShuffleMode() == 0) {
+            if (MusicPlayer.getInstance().getShuffleMode() == 0) {
                 builder.setColor(Color.WHITE);
             } else builder.setColor(accentColor);
 
@@ -70,7 +70,7 @@ public class Fantasy6 extends BaseNowplayingFragment{
             shuffle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    MusicPlayer.cycleShuffle();
+                    MusicPlayer.getInstance().cycleShuffle();
                     updateShuffleState();
                     updateRepeatState();
                 }
@@ -84,17 +84,17 @@ public class Fantasy6 extends BaseNowplayingFragment{
             MaterialDrawableBuilder builder = MaterialDrawableBuilder.with(getActivity())
                     .setSizeDp(30);
 
-            if (MusicPlayer.getRepeatMode() == 0) {
+            if (MusicPlayer.getInstance().getRepeatMode() == 0) {
                 builder.setColor(Color.WHITE);
             } else builder.setColor(accentColor);
 
-            if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_NONE) {
+            if (MusicPlayer.getInstance().getRepeatMode() == MusicService.REPEAT_NONE) {
                 builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
                 builder.setColor(Color.WHITE);
-            } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_CURRENT) {
+            } else if (MusicPlayer.getInstance().getRepeatMode() == MusicService.REPEAT_CURRENT) {
                 builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT_ONCE);
                 builder.setColor(accentColor);
-            } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_ALL) {
+            } else if (MusicPlayer.getInstance().getRepeatMode() == MusicService.REPEAT_ALL) {
                 builder.setColor(accentColor);
                 builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
             }
@@ -103,7 +103,7 @@ public class Fantasy6 extends BaseNowplayingFragment{
             repeat.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    MusicPlayer.cycleRepeat();
+                    MusicPlayer.getInstance().cycleRepeat();
                     updateRepeatState();
                     updateShuffleState();
                 }
@@ -115,7 +115,7 @@ public class Fantasy6 extends BaseNowplayingFragment{
     public void onMetaChanged() {
         super.onMetaChanged();
         if (getActivity() != null) {
-            long nextId = MusicPlayer.getNextAudioId();
+            long nextId = MusicPlayer.getInstance().getNextAudioId();
             Song next = SongLoader.getSongForID(getActivity(), nextId);
             nextSong.setText(next.title);
             nextArt.setImageURI(FantasyUtils.getAlbumArtUri(next.albumId));

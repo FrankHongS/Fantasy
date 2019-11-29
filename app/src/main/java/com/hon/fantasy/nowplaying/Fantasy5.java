@@ -56,7 +56,7 @@ public class Fantasy5 extends BaseNowplayingFragment{
                     .setIcon(MaterialDrawableBuilder.IconValue.SHUFFLE)
                     .setSizeDp(30);
 
-            if (MusicPlayer.getShuffleMode() == 0) {
+            if (MusicPlayer.getInstance().getShuffleMode() == 0) {
                 builder.setColor(Color.WHITE);
             } else builder.setColor(accentColor);
 
@@ -64,7 +64,7 @@ public class Fantasy5 extends BaseNowplayingFragment{
             shuffle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    MusicPlayer.cycleShuffle();
+                    MusicPlayer.getInstance().cycleShuffle();
                     updateShuffleState();
                     updateRepeatState();
                 }
@@ -78,17 +78,17 @@ public class Fantasy5 extends BaseNowplayingFragment{
             MaterialDrawableBuilder builder = MaterialDrawableBuilder.with(getActivity())
                     .setSizeDp(30);
 
-            if (MusicPlayer.getRepeatMode() == 0) {
+            if (MusicPlayer.getInstance().getRepeatMode() == 0) {
                 builder.setColor(Color.WHITE);
             } else builder.setColor(accentColor);
 
-            if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_NONE) {
+            if (MusicPlayer.getInstance().getRepeatMode() == MusicService.REPEAT_NONE) {
                 builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
                 builder.setColor(Color.WHITE);
-            } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_CURRENT) {
+            } else if (MusicPlayer.getInstance().getRepeatMode() == MusicService.REPEAT_CURRENT) {
                 builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT_ONCE);
                 builder.setColor(accentColor);
-            } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_ALL) {
+            } else if (MusicPlayer.getInstance().getRepeatMode() == MusicService.REPEAT_ALL) {
                 builder.setColor(accentColor);
                 builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
             }
@@ -97,7 +97,7 @@ public class Fantasy5 extends BaseNowplayingFragment{
             repeat.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    MusicPlayer.cycleRepeat();
+                    MusicPlayer.getInstance().cycleRepeat();
                     updateRepeatState();
                     updateShuffleState();
                 }
@@ -115,7 +115,7 @@ public class Fantasy5 extends BaseNowplayingFragment{
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         adapter = new SlidingQueueAdapter((AppCompatActivity) getActivity(), QueueLoader.getQueueSongs(getActivity()));
         recyclerView.setAdapter(adapter);
-        recyclerView.scrollToPosition(MusicPlayer.getQueuePosition() - 3);
+        recyclerView.scrollToPosition(MusicPlayer.getInstance().getQueuePosition() - 3);
     }
 
 

@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.hon.fantasy.Fantasy;
 import com.hon.fantasy.activities.MainActivity;
 import com.hon.fantasy.R;
 import com.hon.fantasy.activities.NowPlayingActivity;
@@ -95,9 +96,9 @@ public class NavigationUtils {
         context.startActivity(intent);
     }
 
-    public static Intent getNowPlayingIntent(Context context) {
+    public static Intent getNowPlayingIntent() {
 
-        final Intent intent = new Intent(context, MainActivity.class);
+        final Intent intent = new Intent(Fantasy.sContext, MainActivity.class);
         intent.setAction(Constants.NAVIGATE_NOWPLAYING);
         return intent;
     }

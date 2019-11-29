@@ -48,9 +48,9 @@ public class Fantasy1 extends BaseNowplayingFragment{
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            MusicPlayer.setShuffleMode(MusicService.SHUFFLE_NORMAL);
-                            MusicPlayer.next();
-                            recyclerView.scrollToPosition(MusicPlayer.getQueuePosition());
+                            MusicPlayer.getInstance().setShuffleMode(MusicService.SHUFFLE_NORMAL);
+                            MusicPlayer.getInstance().next();
+                            recyclerView.scrollToPosition(MusicPlayer.getInstance().getQueuePosition());
                         }
                     }, 150);
 

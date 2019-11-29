@@ -60,10 +60,10 @@ public class BaseSongAdapter<V extends RecyclerView.ViewHolder> extends Recycler
                 navigateNowPlaying = false;
                 FantasyCastHelper.startCasting(castSession, currentSong);
             } else {
-                MusicPlayer.playAll(context, list, position, -1, FantasyUtils.IdType.NA, false);
+                MusicPlayer.getInstance().playAll(context, list, position, -1, FantasyUtils.IdType.NA, false);
             }
         } else {
-            MusicPlayer.playAll(context, list, position, -1, FantasyUtils.IdType.NA, false);
+            MusicPlayer.getInstance().playAll(context, list, position, -1, FantasyUtils.IdType.NA, false);
         }
 
         if (navigateNowPlaying) {

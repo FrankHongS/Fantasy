@@ -146,7 +146,7 @@ public class AlbumDetailFragment extends Fragment {
                     @Override
                     public void run() {
                         AlbumSongsAdapter adapter = (AlbumSongsAdapter) recyclerView.getAdapter();
-                        MusicPlayer.playAll(getActivity(), adapter.getSongIds(), 0, albumID, FantasyUtils.IdType.Album, true);
+                        MusicPlayer.getInstance().playAll(getActivity(), adapter.getSongIds(), 0, albumID, FantasyUtils.IdType.Album, true);
                         NavigationUtils.navigateToNowplaying(getActivity(), false);
                     }
                 }, 150);
@@ -306,7 +306,7 @@ public class AlbumDetailFragment extends Fragment {
                 NavigationUtils.goToArtist(getContext(), album.artistId);
                 break;
             case R.id.popup_song_addto_queue:
-                MusicPlayer.addToQueue(context, mAdapter.getSongIds(), -1, FantasyUtils.IdType.NA);
+                MusicPlayer.getInstance().addToQueue(context, mAdapter.getSongIds(), -1, FantasyUtils.IdType.NA);
                 break;
             case R.id.popup_song_addto_playlist:
                 AddPlaylistDialog.newInstance(mAdapter.getSongIds()).show(mContext.getSupportFragmentManager(), "ADD_PLAYLIST");

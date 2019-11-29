@@ -29,19 +29,16 @@ import static android.content.Context.BIND_AUTO_CREATE;
  */
 
 public class MusicPlayer {
-    private static long[] sEmptyList;
-    private static ContentValues[] mContentValuesCache = null;
-
     private static volatile MusicPlayer INSTANCE;
+
+    private long[] sEmptyList;
+    private ContentValues[] mContentValuesCache = null;
 
     private IFantasyService mService;
     private ServiceBinder mBinder;
 
-    static {
-        sEmptyList = new long[0];
-    }
-
     private MusicPlayer() {
+        sEmptyList = new long[0];
     }
 
     public static MusicPlayer getInstance() {
@@ -57,11 +54,8 @@ public class MusicPlayer {
     }
 
     public void bindToService(Context context, ServiceConnection callback) {
-
-        mBinder = new ServiceBinder(callback,
-                context.getApplicationContext());
-        context.bindService(
-                new Intent().setClass(context, MusicService.class), mBinder, BIND_AUTO_CREATE);
+        mBinder = new ServiceBinder(callback, context);
+        context.bindService(new Intent(context, MusicService.class), mBinder, BIND_AUTO_CREATE);
     }
 
     public void unbindFromService(Context context) {
@@ -81,6 +75,7 @@ public class MusicPlayer {
                 mService.next();
             }
         } catch (RemoteException ignored) {
+
         }
     }
 
@@ -110,6 +105,7 @@ public class MusicPlayer {
                 }
             }
         } catch (Exception ignored) {
+
         }
     }
 
@@ -132,6 +128,7 @@ public class MusicPlayer {
                 }
             }
         } catch (RemoteException ignored) {
+
         }
     }
 
@@ -156,25 +153,28 @@ public class MusicPlayer {
                 }
             }
         } catch (RemoteException ignored) {
+
         }
     }
 
     public boolean isPlaying() {
-        if (mService != null) {
-            try {
+        try {
+            if (mService != null) {
                 return mService.isPlaying();
-            } catch (RemoteException ignored) {
             }
+        } catch (RemoteException ignored) {
+
         }
         return false;
     }
 
     public int getShuffleMode() {
-        if (mService != null) {
-            try {
+        try {
+            if (mService != null) {
                 return mService.getShuffleMode();
-            } catch (RemoteException ignored) {
             }
+        } catch (RemoteException ignored) {
+
         }
         return 0;
     }
@@ -190,11 +190,12 @@ public class MusicPlayer {
     }
 
     public int getRepeatMode() {
-        if (mService != null) {
-            try {
+        try {
+            if (mService != null) {
                 return mService.getRepeatMode();
-            } catch (RemoteException ignored) {
             }
+        } catch (RemoteException ignored) {
+
         }
         return 0;
     }
@@ -269,6 +270,10 @@ public class MusicPlayer {
         return null;
     }
 
+    public int removeTracks(int first, int last) throws RemoteException {
+        return mService.removeTracks(first, last);
+    }
+
     public long getNextAudioId() {
         if (mService != null) {
             try {
@@ -311,10 +316,8 @@ public class MusicPlayer {
 
     public long[] getQueue() {
         try {
-            if (mService != null) {
+            if (mService != null)
                 return mService.getQueue();
-            } else {
-            }
         } catch (RemoteException ignored) {
         }
         return sEmptyList;

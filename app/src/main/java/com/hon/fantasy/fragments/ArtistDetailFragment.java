@@ -209,7 +209,7 @@ public class ArtistDetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.popup_song_addto_queue:
-                MusicPlayer.addToQueue(getContext(), mAdapter.getSongIds(), -1, FantasyUtils.IdType.NA);
+                MusicPlayer.getInstance().addToQueue(getContext(), mAdapter.getSongIds(), -1, FantasyUtils.IdType.NA);
                 break;
             case R.id.popup_song_addto_playlist:
                 AddPlaylistDialog.newInstance(mAdapter.getSongIds()).show(getActivity().getSupportFragmentManager(), "ADD_PLAYLIST");

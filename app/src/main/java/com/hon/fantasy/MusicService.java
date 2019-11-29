@@ -1,7 +1,6 @@
 package com.hon.fantasy;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -20,7 +19,6 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaMetadataEditor;
@@ -47,7 +45,6 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -60,8 +57,9 @@ import com.hon.fantasy.permissions.Nammu;
 import com.hon.fantasy.provider.MusicPlaybackState;
 import com.hon.fantasy.provider.RecentStore;
 import com.hon.fantasy.provider.SongPlayCount;
+import com.hon.fantasy.utils.Constants;
 import com.hon.fantasy.utils.FantasyUtils;
-import com.hon.fantasy.utils.NavigationUtils;
+import com.hon.fantasy.utils.NotificationUtil;
 import com.hon.fantasy.utils.PreferencesUtility;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -82,48 +80,7 @@ import de.Maxr1998.trackselectorlib.TrackItem;
  * E-mail:frank_hon@foxmail.com
  */
 
-public class MusicService extends Service{
-    public static final String PLAYSTATE_CHANGED = "com.naman14.timber.playstatechanged";
-    public static final String POSITION_CHANGED = "com.naman14.timber.positionchanged";
-    public static final String META_CHANGED = "com.naman14.timber.metachanged";
-    public static final String QUEUE_CHANGED = "com.naman14.timber.queuechanged";
-    public static final String PLAYLIST_CHANGED = "com.naman14.timber.playlistchanged";
-    public static final String REPEATMODE_CHANGED = "com.naman14.timber.repeatmodechanged";
-    public static final String SHUFFLEMODE_CHANGED = "com.naman14.timber.shufflemodechanged";
-    public static final String TRACK_ERROR = "com.naman14.timber.trackerror";
-    public static final String TIMBER_PACKAGE_NAME = "com.naman14.timber";
-    public static final String MUSIC_PACKAGE_NAME = "com.android.music";
-    public static final String SERVICECMD = "com.naman14.timber.musicservicecommand";
-    public static final String TOGGLEPAUSE_ACTION = "com.naman14.timber.togglepause";
-    public static final String PAUSE_ACTION = "com.naman14.timber.pause";
-    public static final String STOP_ACTION = "com.naman14.timber.stop";
-    public static final String PREVIOUS_ACTION = "com.naman14.timber.previous";
-    public static final String PREVIOUS_FORCE_ACTION = "com.naman14.timber.previous.force";
-    public static final String NEXT_ACTION = "fcom.naman14.timber.next";
-    public static final String REPEAT_ACTION = "com.naman14.timber.repeat";
-    public static final String SHUFFLE_ACTION = "com.naman14.timber.shuffle";
-    public static final String FROM_MEDIA_BUTTON = "frommediabutton";
-    public static final String REFRESH = "com.naman14.timber.refresh";
-    public static final String UPDATE_LOCKSCREEN = "com.naman14.timber.updatelockscreen";
-    public static final String CMDNAME = "command";
-    public static final String CMDTOGGLEPAUSE = "togglepause";
-    public static final String CMDSTOP = "stop";
-    public static final String CMDPAUSE = "pause";
-    public static final String CMDPLAY = "play";
-    public static final String CMDPREVIOUS = "previous";
-    public static final String CMDNEXT = "next";
-    public static final String CMDNOTIF = "buttonId";
-    public static final String UPDATE_PREFERENCES = "updatepreferences";
-    public static final String CHANNEL_ID = "timber_channel_01";
-    public static final int NEXT = 2;
-    public static final int LAST = 3;
-    public static final int SHUFFLE_NONE = 0;
-    public static final int SHUFFLE_NORMAL = 1;
-    public static final int SHUFFLE_AUTO = 2;
-    public static final int REPEAT_NONE = 0;
-    public static final int REPEAT_CURRENT = 1;
-    public static final int REPEAT_ALL = 2;
-    public static final int MAX_HISTORY_SIZE = 1000;
+public class MusicService extends Service {
     private static final String TAG = "MusicPlaybackService";
     private static final boolean D = true;
     private static final String SHUTDOWN = "com.naman14.timber.shutdown";
@@ -198,9 +155,9 @@ public class MusicService extends Service{
 
     private int mMediaMountedCount = 0;
 
-    private int mShuffleMode = SHUFFLE_NONE;
+    private int mShuffleMode = Constants.SHUFFLE_NONE;
 
-    private int mRepeatMode = REPEAT_NONE;
+    private int mRepeatMode = Constants.REPEAT_NONE;
 
     private int mServiceStartId = -1;
 
@@ -227,7 +184,7 @@ public class MusicService extends Service{
 
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            final String command = intent.getStringExtra(CMDNAME);
+            final String command = intent.getStringExtra(Constants.CMDNAME);
 
 
             handleCommandIntent(intent);
@@ -278,15 +235,15 @@ public class MusicService extends Service{
 
         // Initialize the intent filter and each action
         final IntentFilter filter = new IntentFilter();
-        filter.addAction(SERVICECMD);
-        filter.addAction(TOGGLEPAUSE_ACTION);
-        filter.addAction(PAUSE_ACTION);
-        filter.addAction(STOP_ACTION);
-        filter.addAction(NEXT_ACTION);
-        filter.addAction(PREVIOUS_ACTION);
-        filter.addAction(PREVIOUS_FORCE_ACTION);
-        filter.addAction(REPEAT_ACTION);
-        filter.addAction(SHUFFLE_ACTION);
+        filter.addAction(Constants.SERVICECMD);
+        filter.addAction(Constants.TOGGLE_PAUSE_ACTION);
+        filter.addAction(Constants.PAUSE_ACTION);
+        filter.addAction(Constants.STOP_ACTION);
+        filter.addAction(Constants.NEXT_ACTION);
+        filter.addAction(Constants.PREVIOUS_ACTION);
+        filter.addAction(Constants.PREVIOUS_FORCE_ACTION);
+        filter.addAction(Constants.REPEAT_ACTION);
+        filter.addAction(Constants.SHUFFLE_ACTION);
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         // Attach the broadcast listener
@@ -313,8 +270,8 @@ public class MusicService extends Service{
         scheduleDelayedShutdown();
 
         reloadQueueAfterPermissionCheck();
-        notifyChange(QUEUE_CHANGED);
-        notifyChange(META_CHANGED);
+        notifyChange(Constants.QUEUE_CHANGED);
+        notifyChange(Constants.META_CHANGED);
         //Try to push LastFMCache
         if (LastfmUserSession.getSession(this) != null) {
             LastFmClient.getInstance(this).Scrobble(null);
@@ -483,7 +440,7 @@ public class MusicService extends Service{
 
         scheduleDelayedShutdown();
 
-        if (intent != null && intent.getBooleanExtra(FROM_MEDIA_BUTTON, false)) {
+        if (intent != null && intent.getBooleanExtra(Constants.FROM_MEDIA_BUTTON, false)) {
             MediaButtonIntentReceiver.completeWakefulIntent(intent);
         }
 
@@ -520,7 +477,7 @@ public class MusicService extends Service{
 
     private void handleCommandIntent(Intent intent) {
         final String action = intent.getAction();
-        final String command = SERVICECMD.equals(action) ? intent.getStringExtra(CMDNAME) : null;
+        final String command = Constants.SERVICECMD.equals(action) ? intent.getStringExtra(Constants.CMDNAME) : null;
 
         if (D) Log.d(TAG, "handleCommandIntent: action = " + action + ", command = " + command);
 
@@ -529,36 +486,35 @@ public class MusicService extends Service{
             return;
         }
 
-        if (CMDNEXT.equals(command) || NEXT_ACTION.equals(action)) {
+        if (Constants.CMDNEXT.equals(command) || Constants.NEXT_ACTION.equals(action)) {
             gotoNext(true);
-        } else if (CMDPREVIOUS.equals(command) || PREVIOUS_ACTION.equals(action)
-                || PREVIOUS_FORCE_ACTION.equals(action)) {
-            prev(PREVIOUS_FORCE_ACTION.equals(action));
-        } else if (CMDTOGGLEPAUSE.equals(command) || TOGGLEPAUSE_ACTION.equals(action)) {
+        } else if (Constants.CMDPREVIOUS.equals(command) || Constants.PREVIOUS_ACTION.equals(action)
+                || Constants.PREVIOUS_FORCE_ACTION.equals(action)) {
+            prev(Constants.PREVIOUS_FORCE_ACTION.equals(action));
+        } else if (Constants.CMDTOGGLEPAUSE.equals(command) || Constants.TOGGLE_PAUSE_ACTION.equals(action)) {
             if (isPlaying()) {
                 pause();
                 mPausedByTransientLossOfFocus = false;
             } else {
                 play();
             }
-        } else if (CMDPAUSE.equals(command) || PAUSE_ACTION.equals(action)) {
+        } else if (Constants.CMDPAUSE.equals(command) || Constants.PAUSE_ACTION.equals(action)) {
             pause();
             mPausedByTransientLossOfFocus = false;
-        } else if (CMDPLAY.equals(command)) {
+        } else if (Constants.CMDPLAY.equals(command)) {
             play();
-        } else if (CMDSTOP.equals(command) || STOP_ACTION.equals(action)) {
+        } else if (Constants.CMDSTOP.equals(command) || Constants.STOP_ACTION.equals(action)) {
             pause();
             mPausedByTransientLossOfFocus = false;
             seek(0);
             releaseServiceUiAndStop();
-        } else if (REPEAT_ACTION.equals(action)) {
+        } else if (Constants.REPEAT_ACTION.equals(action)) {
             cycleRepeat();
-        } else if (SHUFFLE_ACTION.equals(action)) {
+        } else if (Constants.SHUFFLE_ACTION.equals(action)) {
             cycleShuffle();
-        } else if (UPDATE_PREFERENCES.equals(action)) {
+        } else if (Constants.UPDATE_PREFERENCES.equals(action)) {
             onPreferencesUpdate(intent.getExtras());
-        }
-        else if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
+        } else if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
             if (PreferencesUtility.getInstance(getApplicationContext()).pauseEnabledOnDetach()) {
                 pause();
             }
@@ -567,7 +523,7 @@ public class MusicService extends Service{
 
     private void onPreferencesUpdate(Bundle extras) {
         mShowAlbumArtOnLockscreen = extras.getBoolean("lockscreen", mShowAlbumArtOnLockscreen);
-        mActivateXTrackSelector = extras.getBoolean("xtrack",mActivateXTrackSelector);
+        mActivateXTrackSelector = extras.getBoolean("xtrack", mActivateXTrackSelector);
         LastfmUserSession session = LastfmUserSession.getSession(this);
         session.mToken = extras.getString("lf_token", session.mToken);
         session.mUsername = extras.getString("lf_user", session.mUsername);
@@ -575,7 +531,7 @@ public class MusicService extends Service{
             session.mToken = null;
             session.mUsername = null;
         }
-        notifyChange(META_CHANGED);
+        notifyChange(Constants.META_CHANGED);
 
     }
 
@@ -611,6 +567,26 @@ public class MusicService extends Service{
         mNotifyMode = newNotifyMode;
     }
 
+    private Notification buildNotification() {
+        if (mNotificationPostTime == 0) {
+            mNotificationPostTime = System.currentTimeMillis();
+        }
+
+        Notification notification = NotificationUtil.buildNotification(
+                getAlbumName(), getArtistName(), isPlaying(), getAlbumId(), mNotificationPostTime, getTrackName(),
+                retrievePlaybackAction(Constants.PREVIOUS_ACTION),
+                retrievePlaybackAction(Constants.TOGGLE_PAUSE_ACTION),
+                retrievePlaybackAction(Constants.NEXT_ACTION),
+                mSession.getSessionToken()
+        );
+
+        if (mActivateXTrackSelector) {
+            addXTrackSelector(notification);
+        }
+
+        return notification;
+    }
+
     private void cancelNotification() {
         stopForeground(true);
         mNotificationManager.cancel(hashCode());
@@ -643,8 +619,8 @@ public class MusicService extends Service{
 
     public void closeExternalStorageFiles(final String storagePath) {
         stop(true);
-        notifyChange(QUEUE_CHANGED);
-        notifyChange(META_CHANGED);
+        notifyChange(Constants.QUEUE_CHANGED);
+        notifyChange(Constants.META_CHANGED);
     }
 
     public void registerExternalStorageListener() {
@@ -664,8 +640,8 @@ public class MusicService extends Service{
                         mCardId = getCardId();
                         reloadQueueAfterPermissionCheck();
                         mQueueIsSaveable = true;
-                        notifyChange(QUEUE_CHANGED);
-                        notifyChange(META_CHANGED);
+                        notifyChange(Constants.QUEUE_CHANGED);
+                        notifyChange(Constants.META_CHANGED);
                     }
                 }
             };
@@ -759,7 +735,7 @@ public class MusicService extends Service{
                     mPlayPos = -1;
                     closeCursor();
                 } else {
-                    if (mShuffleMode != SHUFFLE_NONE) {
+                    if (mShuffleMode != Constants.SHUFFLE_NONE) {
                         mPlayPos = getNextPosition(true);
                     } else if (mPlayPos >= mPlaylist.size()) {
                         mPlayPos = 0;
@@ -771,7 +747,7 @@ public class MusicService extends Service{
                         play();
                     }
                 }
-                notifyChange(META_CHANGED);
+                notifyChange(Constants.META_CHANGED);
             }
             return last - first + 1;
         }
@@ -798,7 +774,7 @@ public class MusicService extends Service{
 
         if (mPlaylist.size() == 0) {
             closeCursor();
-            notifyChange(META_CHANGED);
+            notifyChange(Constants.META_CHANGED);
         }
     }
 
@@ -904,7 +880,7 @@ public class MusicService extends Service{
                 scheduleDelayedShutdown();
                 if (mIsSupposedToBePlaying) {
                     mIsSupposedToBePlaying = false;
-                    notifyChange(PLAYSTATE_CHANGED);
+                    notifyChange(Constants.PLAYSTATE_CHANGED);
                 }
             } else if (openNext) {
                 setNextTrack();
@@ -913,7 +889,7 @@ public class MusicService extends Service{
     }
 
     private void sendErrorMessage(final String trackName) {
-        final Intent i = new Intent(TRACK_ERROR);
+        final Intent i = new Intent(Constants.TRACK_ERROR);
         i.putExtra(TrackErrorExtra.TRACK_NAME, trackName);
         sendBroadcast(i);
     }
@@ -922,12 +898,12 @@ public class MusicService extends Service{
         if (mPlaylist == null || mPlaylist.isEmpty()) {
             return -1;
         }
-        if (!force && mRepeatMode == REPEAT_CURRENT) {
+        if (!force && mRepeatMode == Constants.REPEAT_CURRENT) {
             if (mPlayPos < 0) {
                 return 0;
             }
             return mPlayPos;
-        } else if (mShuffleMode == SHUFFLE_NORMAL) {
+        } else if (mShuffleMode == Constants.SHUFFLE_NORMAL) {
             final int numTracks = mPlaylist.size();
 
 
@@ -962,7 +938,7 @@ public class MusicService extends Service{
 
 
             if (minNumPlays > 0 && numTracksWithMinNumPlays == numTracks
-                    && mRepeatMode != REPEAT_ALL && !force) {
+                    && mRepeatMode != Constants.REPEAT_ALL && !force) {
                 return -1;
             }
 
@@ -981,14 +957,14 @@ public class MusicService extends Service{
             if (D)
                 Log.e(TAG, "Getting the next position resulted did not get a result when it should have");
             return -1;
-        } else if (mShuffleMode == SHUFFLE_AUTO) {
+        } else if (mShuffleMode == Constants.SHUFFLE_AUTO) {
             doAutoShuffleUpdate();
             return mPlayPos + 1;
         } else {
             if (mPlayPos >= mPlaylist.size() - 1) {
-                if (mRepeatMode == REPEAT_NONE && !force) {
+                if (mRepeatMode == Constants.REPEAT_NONE && !force) {
                     return -1;
-                } else if (mRepeatMode == REPEAT_ALL || force) {
+                } else if (mRepeatMode == Constants.REPEAT_ALL || force) {
                     return 0;
                 }
                 return -1;
@@ -1059,14 +1035,14 @@ public class MusicService extends Service{
                 lookback /= 2;
             }
             mHistory.add(idx);
-            if (mHistory.size() > MAX_HISTORY_SIZE) {
+            if (mHistory.size() > Constants.MAX_HISTORY_SIZE) {
                 mHistory.remove(0);
             }
             mPlaylist.add(new MusicPlaybackTrack(mAutoShuffleList[idx], -1, FantasyUtils.IdType.NA, -1));
             notify = true;
         }
         if (notify) {
-            notifyChange(QUEUE_CHANGED);
+            notifyChange(Constants.QUEUE_CHANGED);
         }
     }
 
@@ -1097,7 +1073,7 @@ public class MusicService extends Service{
         else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
             updateRemoteControlClient(what);
 
-        if (what.equals(POSITION_CHANGED)) {
+        if (what.equals(Constants.POSITION_CHANGED)) {
             return;
         }
 
@@ -1112,20 +1088,20 @@ public class MusicService extends Service{
         sendStickyBroadcast(intent);
 
         final Intent musicIntent = new Intent(intent);
-        musicIntent.setAction(what.replace(TIMBER_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
+        musicIntent.setAction(what.replace(Constants.TIMBER_PACKAGE_NAME, Constants.MUSIC_PACKAGE_NAME));
         sendStickyBroadcast(musicIntent);
 
-        if (what.equals(META_CHANGED)) {
+        if (what.equals(Constants.META_CHANGED)) {
 
             mRecentStore.addSongId(getAudioId());
             mSongPlayCount.bumpSongCount(getAudioId());
 
-        } else if (what.equals(QUEUE_CHANGED)) {
+        } else if (what.equals(Constants.QUEUE_CHANGED)) {
             saveQueue(true);
             if (isPlaying()) {
 
                 if (mNextPlayPos >= 0 && mNextPlayPos < mPlaylist.size()
-                        && getShuffleMode() != SHUFFLE_NONE) {
+                        && getShuffleMode() != Constants.SHUFFLE_NONE) {
                     setNextTrack(mNextPlayPos);
                 } else {
                     setNextTrack();
@@ -1136,7 +1112,7 @@ public class MusicService extends Service{
         }
 
 //        if (what.equals(PLAYSTATE_CHANGED)) {
-            updateNotification();
+        updateNotification();
 //        }
 
     }
@@ -1149,7 +1125,7 @@ public class MusicService extends Service{
             int playState = mIsSupposedToBePlaying
                     ? RemoteControlClient.PLAYSTATE_PLAYING
                     : RemoteControlClient.PLAYSTATE_PAUSED;
-            if (what.equals(META_CHANGED) || what.equals(QUEUE_CHANGED)) {
+            if (what.equals(Constants.META_CHANGED) || what.equals(Constants.QUEUE_CHANGED)) {
                 Bitmap albumArt = null;
                 if (mShowAlbumArtOnLockscreen) {
                     albumArt = ImageLoader.getInstance().loadImageSync(FantasyUtils.getAlbumArtUri(getAlbumId()).toString());
@@ -1182,7 +1158,7 @@ public class MusicService extends Service{
                 ? PlaybackStateCompat.STATE_PLAYING
                 : PlaybackStateCompat.STATE_PAUSED;
 
-        if (what.equals(PLAYSTATE_CHANGED) || what.equals(POSITION_CHANGED)) {
+        if (what.equals(Constants.PLAYSTATE_CHANGED) || what.equals(Constants.POSITION_CHANGED)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 mSession.setPlaybackState(new PlaybackStateCompat.Builder()
                         .setState(playState, position(), 1.0f)
@@ -1190,7 +1166,7 @@ public class MusicService extends Service{
                                 PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
                         .build());
             }
-        } else if (what.equals(META_CHANGED) || what.equals(QUEUE_CHANGED)) {
+        } else if (what.equals(Constants.META_CHANGED) || what.equals(Constants.QUEUE_CHANGED)) {
             Bitmap albumArt = null;
             if (mShowAlbumArtOnLockscreen) {
                 albumArt = ImageLoader.getInstance().loadImageSync(FantasyUtils.getAlbumArtUri(getAlbumId()).toString());
@@ -1230,77 +1206,11 @@ public class MusicService extends Service{
             CharSequence name = "Timber";
             int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            NotificationChannel mChannel = new NotificationChannel(Constants.CHANNEL_ID, name, importance);
             manager.createNotificationChannel(mChannel);
         }
     }
 
-    private Notification buildNotification() {
-        final String albumName = getAlbumName();
-        final String artistName = getArtistName();
-        final boolean isPlaying = isPlaying();
-        String text = TextUtils.isEmpty(albumName)
-                ? artistName : artistName + " - " + albumName;
-
-        int playButtonResId = isPlaying
-                ? R.drawable.ic_pause_white_36dp : R.drawable.ic_play_white_36dp;
-
-        Intent nowPlayingIntent = NavigationUtils.getNowPlayingIntent(this);
-        PendingIntent clickIntent = PendingIntent.getActivity(this, 0, nowPlayingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        Bitmap artwork;
-        artwork = ImageLoader.getInstance().loadImageSync(FantasyUtils.getAlbumArtUri(getAlbumId()).toString());
-
-        if (artwork == null) {
-            artwork = ImageLoader.getInstance().loadImageSync("drawable://" + R.drawable.ic_empty_music2);
-        }
-
-        if (mNotificationPostTime == 0) {
-            mNotificationPostTime = System.currentTimeMillis();
-        }
-
-        android.support.v4.app.NotificationCompat.Builder builder = new android.support.v4.app.NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setLargeIcon(artwork)
-                .setContentIntent(clickIntent)
-                .setContentTitle(getTrackName())
-                .setContentText(text)
-                .setWhen(mNotificationPostTime)
-                .addAction(R.drawable.ic_skip_previous_white_36dp,
-                        "",
-                        retrievePlaybackAction(PREVIOUS_ACTION))
-                .addAction(playButtonResId, "",
-                        retrievePlaybackAction(TOGGLEPAUSE_ACTION))
-                .addAction(R.drawable.ic_skip_next_white_36dp,
-                        "",
-                        retrievePlaybackAction(NEXT_ACTION));
-
-        if (FantasyUtils.isJellyBeanMR1()) {
-            builder.setShowWhen(false);
-        }
-
-        if (FantasyUtils.isLollipop()) {
-            builder.setVisibility(Notification.VISIBILITY_PUBLIC);
-            android.support.v4.media.app.NotificationCompat.MediaStyle style = new android.support.v4.media.app.NotificationCompat.MediaStyle()
-                    .setMediaSession(mSession.getSessionToken())
-                    .setShowActionsInCompactView(0, 1, 2, 3);
-            builder.setStyle(style);
-        }
-        if (artwork != null && FantasyUtils.isLollipop()) {
-            builder.setColor(Palette.from(artwork).generate().getVibrantColor(Color.parseColor("#403f4d")));
-        }
-
-        if (FantasyUtils.isOreo()) {
-            builder.setColorized(true);
-        }
-
-        Notification n = builder.build();
-
-        if (mActivateXTrackSelector) {
-            addXTrackSelector(n);
-        }
-
-        return n;
-    }
 
     private void addXTrackSelector(Notification n) {
         if (NotificationHelper.isSupported(n)) {
@@ -1349,7 +1259,7 @@ public class MusicService extends Service{
         final SharedPreferences.Editor editor = mPreferences.edit();
         if (full) {
             mPlaybackStateStore.saveState(mPlaylist,
-                    mShuffleMode != SHUFFLE_NONE ? mHistory : null);
+                    mShuffleMode != Constants.SHUFFLE_NONE ? mHistory : null);
             editor.putInt("cardid", mCardId);
         }
         editor.putInt("curpos", mPlayPos);
@@ -1410,22 +1320,22 @@ public class MusicService extends Service{
                         + " (requested " + seekpos + ")");
             }
 
-            int repmode = mPreferences.getInt("repeatmode", REPEAT_NONE);
-            if (repmode != REPEAT_ALL && repmode != REPEAT_CURRENT) {
-                repmode = REPEAT_NONE;
+            int repmode = mPreferences.getInt("repeatmode", Constants.REPEAT_NONE);
+            if (repmode != Constants.REPEAT_ALL && repmode != Constants.REPEAT_CURRENT) {
+                repmode = Constants.REPEAT_NONE;
             }
             mRepeatMode = repmode;
 
-            int shufmode = mPreferences.getInt("shufflemode", SHUFFLE_NONE);
-            if (shufmode != SHUFFLE_AUTO && shufmode != SHUFFLE_NORMAL) {
-                shufmode = SHUFFLE_NONE;
+            int shufmode = mPreferences.getInt("shufflemode", Constants.SHUFFLE_NONE);
+            if (shufmode != Constants.SHUFFLE_AUTO && shufmode != Constants.SHUFFLE_NORMAL) {
+                shufmode = Constants.SHUFFLE_NONE;
             }
-            if (shufmode != SHUFFLE_NONE) {
+            if (shufmode != Constants.SHUFFLE_NONE) {
                 mHistory = mPlaybackStateStore.getHistory(mPlaylist.size());
             }
-            if (shufmode == SHUFFLE_AUTO) {
+            if (shufmode == Constants.SHUFFLE_AUTO) {
                 if (!makeAutoShuffleList()) {
-                    shufmode = SHUFFLE_NONE;
+                    shufmode = Constants.SHUFFLE_NONE;
                 }
             }
             mShuffleMode = shufmode;
@@ -1463,7 +1373,7 @@ public class MusicService extends Service{
                     if (D) Log.i(TAG, "Downloaded file's MP uri : " + mpUri);
                     if (!TextUtils.isEmpty(mpUri)) {
                         if (openFile(mpUri)) {
-                            notifyChange(META_CHANGED);
+                            notifyChange(Constants.META_CHANGED);
                             return true;
                         } else {
                             return false;
@@ -1483,7 +1393,7 @@ public class MusicService extends Service{
                         mPlaylist.clear();
                         mPlaylist.add(new MusicPlaybackTrack(
                                 mCursor.getLong(IDCOLIDX), -1, FantasyUtils.IdType.NA, -1));
-                        notifyChange(QUEUE_CHANGED);
+                        notifyChange(Constants.QUEUE_CHANGED);
                         mPlayPos = 0;
                         mHistory.clear();
                     }
@@ -1571,23 +1481,23 @@ public class MusicService extends Service{
             }
 
             mShuffleMode = shufflemode;
-            if (mShuffleMode == SHUFFLE_AUTO) {
+            if (mShuffleMode == Constants.SHUFFLE_AUTO) {
                 if (makeAutoShuffleList()) {
                     mPlaylist.clear();
                     doAutoShuffleUpdate();
                     mPlayPos = 0;
                     openCurrentAndNext();
                     play();
-                    notifyChange(META_CHANGED);
+                    notifyChange(Constants.META_CHANGED);
                     return;
                 } else {
-                    mShuffleMode = SHUFFLE_NONE;
+                    mShuffleMode = Constants.SHUFFLE_NONE;
                 }
             } else {
                 setNextTrack();
             }
             saveQueue(false);
-            notifyChange(SHUFFLEMODE_CHANGED);
+            notifyChange(Constants.SHUFFLEMODE_CHANGED);
         }
     }
 
@@ -1600,7 +1510,7 @@ public class MusicService extends Service{
             mRepeatMode = repeatmode;
             setNextTrack();
             saveQueue(false);
-            notifyChange(REPEATMODE_CHANGED);
+            notifyChange(Constants.REPEATMODE_CHANGED);
         }
     }
 
@@ -1615,7 +1525,7 @@ public class MusicService extends Service{
             }
         }
         if (numremoved > 0) {
-            notifyChange(QUEUE_CHANGED);
+            notifyChange(Constants.QUEUE_CHANGED);
         }
         return numremoved;
     }
@@ -1635,7 +1545,7 @@ public class MusicService extends Service{
     public int removeTracks(final int first, final int last) {
         final int numremoved = removeTracksInternal(first, last);
         if (numremoved > 0) {
-            notifyChange(QUEUE_CHANGED);
+            notifyChange(Constants.QUEUE_CHANGED);
         }
         return numremoved;
     }
@@ -1652,8 +1562,8 @@ public class MusicService extends Service{
             mPlayPos = index;
             openCurrentAndNext();
             play();
-            notifyChange(META_CHANGED);
-            if (mShuffleMode == SHUFFLE_AUTO) {
+            notifyChange(Constants.META_CHANGED);
+            if (mShuffleMode == Constants.SHUFFLE_AUTO) {
                 doAutoShuffleUpdate();
             }
         }
@@ -1823,7 +1733,7 @@ public class MusicService extends Service{
                 position = mPlayer.duration();
             }
             long result = mPlayer.seek(position);
-            notifyChange(POSITION_CHANGED);
+            notifyChange(Constants.POSITION_CHANGED);
             return result;
         }
         return -1;
@@ -1905,7 +1815,7 @@ public class MusicService extends Service{
             }
 
             if (notify) {
-                notifyChange(PLAYSTATE_CHANGED);
+                notifyChange(Constants.PLAYSTATE_CHANGED);
             }
         }
     }
@@ -1916,8 +1826,8 @@ public class MusicService extends Service{
 
     public void open(final long[] list, final int position, long sourceId, FantasyUtils.IdType sourceType) {
         synchronized (this) {
-            if (mShuffleMode == SHUFFLE_AUTO) {
-                mShuffleMode = SHUFFLE_NORMAL;
+            if (mShuffleMode == Constants.SHUFFLE_AUTO) {
+                mShuffleMode = Constants.SHUFFLE_NORMAL;
             }
             final long oldId = getAudioId();
             final int listlength = list.length;
@@ -1933,7 +1843,7 @@ public class MusicService extends Service{
             }
             if (newlist) {
                 addToPlayList(list, -1, sourceId, sourceType);
-                notifyChange(QUEUE_CHANGED);
+                notifyChange(Constants.QUEUE_CHANGED);
             }
             if (position >= 0) {
                 mPlayPos = position;
@@ -1943,7 +1853,7 @@ public class MusicService extends Service{
             mHistory.clear();
             openCurrentAndNext();
             if (oldId != getAudioId()) {
-                notifyChange(META_CHANGED);
+                notifyChange(Constants.META_CHANGED);
             }
         }
     }
@@ -1984,7 +1894,7 @@ public class MusicService extends Service{
 
         if (mPlayer.isInitialized()) {
             final long duration = mPlayer.duration();
-            if (mRepeatMode != REPEAT_CURRENT && duration > 2000
+            if (mRepeatMode != Constants.REPEAT_CURRENT && duration > 2000
                     && mPlayer.position() >= duration - 2000) {
                 gotoNext(true);
             }
@@ -1997,9 +1907,9 @@ public class MusicService extends Service{
 
             cancelShutdown();
             updateNotification();
-            notifyChange(META_CHANGED);
+            notifyChange(Constants.META_CHANGED);
         } else if (mPlaylist.size() <= 0) {
-            setShuffleMode(SHUFFLE_AUTO);
+            setShuffleMode(Constants.SHUFFLE_AUTO);
         }
     }
 
@@ -2015,7 +1925,7 @@ public class MusicService extends Service{
                 sendBroadcast(intent);
 
                 mPlayer.pause();
-                notifyChange(META_CHANGED);
+                notifyChange(Constants.META_CHANGED);
                 setIsSupposedToBePlaying(false, true);
             }
         }
@@ -2043,7 +1953,7 @@ public class MusicService extends Service{
             setAndRecordPlayPos(pos);
             openCurrentAndNext();
             play();
-            notifyChange(META_CHANGED);
+            notifyChange(Constants.META_CHANGED);
         }
     }
 
@@ -2067,16 +1977,16 @@ public class MusicService extends Service{
             setAndRecordPlayPos(pos);
             openCurrentAndNext();
             play();
-            notifyChange(META_CHANGED);
+            notifyChange(Constants.META_CHANGED);
         }
     }
 
     public void setAndRecordPlayPos(int nextPos) {
         synchronized (this) {
 
-            if (mShuffleMode != SHUFFLE_NONE) {
+            if (mShuffleMode != Constants.SHUFFLE_NONE) {
                 mHistory.add(mPlayPos);
-                if (mHistory.size() > MAX_HISTORY_SIZE) {
+                if (mHistory.size() > Constants.MAX_HISTORY_SIZE) {
                     mHistory.remove(0);
                 }
             }
@@ -2087,7 +1997,7 @@ public class MusicService extends Service{
 
     public void prev(boolean forcePrevious) {
         synchronized (this) {
-            boolean goPrevious = getRepeatMode() != REPEAT_CURRENT &&
+            boolean goPrevious = getRepeatMode() != Constants.REPEAT_CURRENT &&
                     (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD || forcePrevious);
 
             if (goPrevious) {
@@ -2102,7 +2012,7 @@ public class MusicService extends Service{
                 stop(false);
                 openCurrent();
                 play(false);
-                notifyChange(META_CHANGED);
+                notifyChange(Constants.META_CHANGED);
             } else {
                 if (D) Log.d(TAG, "Going to beginning of track");
                 seek(0);
@@ -2113,7 +2023,7 @@ public class MusicService extends Service{
 
     public int getPreviousPlayPosition(boolean removeFromHistory) {
         synchronized (this) {
-            if (mShuffleMode == SHUFFLE_NORMAL) {
+            if (mShuffleMode == Constants.SHUFFLE_NORMAL) {
 
                 final int histsize = mHistory.size();
                 if (histsize == 0) {
@@ -2167,58 +2077,58 @@ public class MusicService extends Service{
                     mPlayPos++;
                 }
             }
-            notifyChange(QUEUE_CHANGED);
+            notifyChange(Constants.QUEUE_CHANGED);
         }
     }
 
     public void enqueue(final long[] list, final int action, long sourceId, FantasyUtils.IdType sourceType) {
         synchronized (this) {
-            if (action == NEXT && mPlayPos + 1 < mPlaylist.size()) {
+            if (action == Constants.NEXT && mPlayPos + 1 < mPlaylist.size()) {
                 addToPlayList(list, mPlayPos + 1, sourceId, sourceType);
                 mNextPlayPos = mPlayPos + 1;
-                notifyChange(QUEUE_CHANGED);
+                notifyChange(Constants.QUEUE_CHANGED);
             } else {
                 addToPlayList(list, Integer.MAX_VALUE, sourceId, sourceType);
-                notifyChange(QUEUE_CHANGED);
+                notifyChange(Constants.QUEUE_CHANGED);
             }
 
             if (mPlayPos < 0) {
                 mPlayPos = 0;
                 openCurrentAndNext();
                 play();
-                notifyChange(META_CHANGED);
+                notifyChange(Constants.META_CHANGED);
             }
         }
     }
 
     private void cycleRepeat() {
-        if (mRepeatMode == REPEAT_NONE) {
-            setRepeatMode(REPEAT_CURRENT);
-            if (mShuffleMode != SHUFFLE_NONE) {
-                setShuffleMode(SHUFFLE_NONE);
+        if (mRepeatMode == Constants.REPEAT_NONE) {
+            setRepeatMode(Constants.REPEAT_CURRENT);
+            if (mShuffleMode != Constants.SHUFFLE_NONE) {
+                setShuffleMode(Constants.SHUFFLE_NONE);
             }
         } else {
-            setRepeatMode(REPEAT_NONE);
+            setRepeatMode(Constants.REPEAT_NONE);
         }
     }
 
     private void cycleShuffle() {
-        if (mShuffleMode == SHUFFLE_NONE) {
-            setShuffleMode(SHUFFLE_NORMAL);
-//            if (mRepeatMode == REPEAT_CURRENT) {
+        if (mShuffleMode == Constants.SHUFFLE_NONE) {
+            setShuffleMode(Constants.SHUFFLE_NORMAL);
+//            if (mRepeatMode == Constants.REPEAT_CURRENT) {
 //                setRepeatMode(REPEAT_ALL);
 //            }
-        } else if (mShuffleMode == SHUFFLE_NORMAL || mShuffleMode == SHUFFLE_AUTO) {
-            setShuffleMode(SHUFFLE_NONE);
+        } else if (mShuffleMode == Constants.SHUFFLE_NORMAL || mShuffleMode == Constants.SHUFFLE_AUTO) {
+            setShuffleMode(Constants.SHUFFLE_NONE);
         }
     }
 
     public void refresh() {
-        notifyChange(REFRESH);
+        notifyChange(Constants.REFRESH);
     }
 
     public void playlistChanged() {
-        notifyChange(PLAYLIST_CHANGED);
+        notifyChange(Constants.PLAYLIST_CHANGED);
     }
 
     public interface TrackErrorExtra {
@@ -2284,11 +2194,11 @@ public class MusicService extends Service{
                             service.mCursor = null;
                         }
                         service.updateCursor(service.mPlaylist.get(service.mPlayPos).mId);
-                        service.notifyChange(META_CHANGED);
+                        service.notifyChange(Constants.META_CHANGED);
                         service.updateNotification();
                         break;
                     case TRACK_ENDED:
-                        if (service.mRepeatMode == REPEAT_CURRENT) {
+                        if (service.mRepeatMode == Constants.REPEAT_CURRENT) {
                             service.seek(0);
                             service.play();
                         } else {
@@ -2366,8 +2276,8 @@ public class MusicService extends Service{
 
 
         private void cleanUpHistory() {
-            if (!mHistoryOfNumbers.isEmpty() && mHistoryOfNumbers.size() >= MAX_HISTORY_SIZE) {
-                for (int i = 0; i < Math.max(1, MAX_HISTORY_SIZE / 2); i++) {
+            if (!mHistoryOfNumbers.isEmpty() && mHistoryOfNumbers.size() >= Constants.MAX_HISTORY_SIZE) {
+                for (int i = 0; i < Math.max(1, Constants.MAX_HISTORY_SIZE / 2); i++) {
                     mPreviousNumbers.remove(mHistoryOfNumbers.removeFirst());
                 }
             }

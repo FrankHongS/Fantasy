@@ -58,7 +58,7 @@ public class LyricsFragment extends Fragment {
         poweredbyTextView.setVisibility(View.GONE);
         final TextView lyricsTextView = (TextView) lyricsView.findViewById(R.id.lyrics_text);
         lyricsTextView.setText(getString(R.string.lyrics_loading));
-        String filename = getRealPathFromURI(Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + MusicPlayer.getCurrentAudioId()));
+        String filename = getRealPathFromURI(Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + MusicPlayer.getInstance().getCurrentAudioId()));
         if (filename != null && lyrics == null) {
             lyrics = LyricsExtractor.getLyrics(new File(filename));
         }
@@ -66,14 +66,14 @@ public class LyricsFragment extends Fragment {
         if (lyrics != null) {
             lyricsTextView.setText(lyrics);
         } else {
-            String artist = MusicPlayer.getArtistName();
+            String artist = MusicPlayer.getInstance().getArtistName();
             if (artist != null) {
                 int i = artist.lastIndexOf(" feat");
                 if (i != -1) {
                     artist = artist.substring(0, i);
                 }
 
-                LyricsLoader.getInstance(this.getContext()).getLyrics(artist, MusicPlayer.getTrackName(), new Callback<String>() {
+                LyricsLoader.getInstance(this.getContext()).getLyrics(artist, MusicPlayer.getInstance().getTrackName(), new Callback<String>() {
                     @Override
                     public void success(String s, Response response) {
                         lyrics = s;
@@ -103,8 +103,8 @@ public class LyricsFragment extends Fragment {
 
         final ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-        if (MusicPlayer.getTrackName() != null) {
-            ab.setTitle(MusicPlayer.getTrackName());
+        if (MusicPlayer.getInstance().getTrackName() != null) {
+            ab.setTitle(MusicPlayer.getInstance().getTrackName());
         }
     }
 

@@ -207,15 +207,15 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    MusicPlayer.clearQueue();
-                    MusicPlayer.openFile(getIntent().getData().getPath());
-                    MusicPlayer.playOrPause();
+                    musicPlayer.clearQueue();
+                    musicPlayer.openFile(getIntent().getData().getPath());
+                    musicPlayer.playOrPause();
                     navigateNowplaying.run();
                 }
             }, 350);
         }
 
-        if (!panelLayout.isPanelHidden() && MusicPlayer.getTrackName() == null ) {
+        if (!panelLayout.isPanelHidden() && musicPlayer.getTrackName() == null ) {
             panelLayout.hidePanel();
         }
 
@@ -399,14 +399,14 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     }
 
     public void setDetailsToHeader() {
-        String name = MusicPlayer.getTrackName();
-        String artist = MusicPlayer.getArtistName();
+        String name = musicPlayer.getTrackName();
+        String artist = musicPlayer.getArtistName();
 
         if (name != null && artist != null) {
             songtitle.setText(name);
             songartist.setText(artist);
         }
-        ImageLoader.getInstance().displayImage(FantasyUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
+        ImageLoader.getInstance().displayImage(FantasyUtils.getAlbumArtUri(musicPlayer.getCurrentAlbumId()).toString(), albumart,
                 new DisplayImageOptions.Builder().cacheInMemory(true)
                         .showImageOnFail(R.drawable.ic_empty_music2)
                         .resetViewBeforeLoading(true)
@@ -418,7 +418,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         super.onMetaChanged();
         setDetailsToHeader();
 
-        if (panelLayout.isPanelHidden() && MusicPlayer.getTrackName() != null) {
+        if (panelLayout.isPanelHidden() && musicPlayer.getTrackName() != null) {
             panelLayout.showPanel();
         }
     }

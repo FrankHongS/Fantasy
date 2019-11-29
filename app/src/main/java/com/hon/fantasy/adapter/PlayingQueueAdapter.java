@@ -43,7 +43,7 @@ public class PlayingQueueAdapter extends RecyclerView.Adapter<PlayingQueueAdapte
     public PlayingQueueAdapter(Activity context, List<Song> arraylist) {
         this.arraylist = arraylist;
         this.mContext = context;
-        this.currentlyPlayingPosition = MusicPlayer.getQueuePosition();
+        this.currentlyPlayingPosition = MusicPlayer.getInstance().getQueuePosition();
         this.ateKey = Helpers.getATEKey(context);
     }
 
@@ -61,9 +61,9 @@ public class PlayingQueueAdapter extends RecyclerView.Adapter<PlayingQueueAdapte
         itemHolder.title.setText(localItem.title);
         itemHolder.artist.setText(localItem.artistName);
 
-        if (MusicPlayer.getCurrentAudioId() == localItem.id) {
+        if (MusicPlayer.getInstance().getCurrentAudioId() == localItem.id) {
             itemHolder.title.setTextColor(Config.accentColor(mContext, ateKey));
-            if (MusicPlayer.isPlaying()) {
+            if (MusicPlayer.getInstance().isPlaying()) {
                 itemHolder.visualizer.setColor(Config.accentColor(mContext, ateKey));
                 itemHolder.visualizer.setVisibility(View.VISIBLE);
             } else {
@@ -92,12 +92,12 @@ public class PlayingQueueAdapter extends RecyclerView.Adapter<PlayingQueueAdapte
                         switch (item.getItemId()) {
                             case R.id.popup_song_remove_queue:
                                 Log.v(TAG,"Removing " + position);
-                                MusicPlayer.removeTrackAtPosition(getSongAt(position).id, position);
+                                MusicPlayer.getInstance().removeTrackAtPosition(getSongAt(position).id, position);
                                 removeSongAt(position);
                                 notifyItemRemoved(position);
                                 break;
                             case R.id.popup_song_play:
-                                MusicPlayer.playAll(mContext, getSongIds(), position, -1, FantasyUtils.IdType.NA, false);
+                                MusicPlayer.getInstance().playAll(mContext, getSongIds(), position, -1, FantasyUtils.IdType.NA, false);
                                 break;
                             case R.id.popup_song_goto_album:
                                 NavigationUtils.goToAlbum(mContext, arraylist.get(position).albumId);
@@ -166,7 +166,7 @@ public class PlayingQueueAdapter extends RecyclerView.Adapter<PlayingQueueAdapte
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    MusicPlayer.setQueuePosition(getAdapterPosition());
+                    MusicPlayer.getInstance().setQueuePosition(getAdapterPosition());
                     Handler handler1 = new Handler();
                     handler1.postDelayed(new Runnable() {
                         @Override

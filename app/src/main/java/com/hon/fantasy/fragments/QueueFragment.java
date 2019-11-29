@@ -103,7 +103,7 @@ public class QueueFragment extends Fragment implements MusicStateListener {
                     mAdapter.removeSongAt(from);
                     mAdapter.addSongTo(to, song);
                     mAdapter.notifyDataSetChanged();
-                    MusicPlayer.moveQueueItem(from, to);
+                    MusicPlayer.getInstance().moveQueueItem(from, to);
                 }
             });
 

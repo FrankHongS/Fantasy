@@ -25,7 +25,6 @@ import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.Session;
 import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.SessionManagerListener;
-import com.hon.fantasy.IFantasyService;
 import com.hon.fantasy.MusicPlayer;
 import com.hon.fantasy.MusicService;
 import com.hon.fantasy.R;
@@ -61,6 +60,8 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
 
     public boolean playServicesAvailable = false;
 
+    protected MusicPlayer musicPlayer;
+
     private class SessionManagerListenerImpl extends SimpleSessionManagerListener {
         @Override
         public void onSessionStarting(Session session) {
@@ -74,11 +75,13 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
             mCastSession = mSessionManager.getCurrentCastSession();
             showCastMiniController();
         }
+
         @Override
         public void onSessionResumed(Session session, boolean wasSuspended) {
             invalidateOptionsMenu();
             mCastSession = mSessionManager.getCurrentCastSession();
         }
+
         @Override
         public void onSessionEnded(Session session, int error) {
             mCastSession = null;
@@ -103,7 +106,8 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MusicPlayer.getInstance().bindToService(this, this);
+        musicPlayer = MusicPlayer.getInstance();
+        musicPlayer.bindToService(this, this);
 
         mPlaybackStatus = new PlaybackStatus(this);
         //make volume keys change multimedia volume even if music is not playing now

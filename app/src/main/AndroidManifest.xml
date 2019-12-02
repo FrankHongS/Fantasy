@@ -62,8 +62,9 @@
                 <data android:mimeType="application/itunes" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.SettingsActivity"
-            android:theme="@style/AppThemeNormalLight"/>
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:theme="@style/AppThemeNormalLight" />
         <activity
             android:name=".activities.PlaylistDetailActivity"
             android:theme="@style/AppTheme.FullScreen.Light" />
@@ -79,9 +80,8 @@
         <activity
             android:name=".cast.ExpandedControlsActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.ExpandedCastController"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.ExpandedCastController"></activity>
 
         <receiver android:name=".helpers.MediaButtonIntentReceiver">
             <intent-filter>
@@ -96,38 +96,52 @@
             android:process=":player" />
 
         <meta-data
-            android:name=
-                "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.naman14.timber.cast.CastOptionsProvider" />
 
-        <receiver android:name=".widget.desktop.StandardWidget" android:label="@string/widget_standard">
+        <receiver
+            android:name=".widget.desktop.StandardWidget"
+            android:label="@string/widget_standard">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.hon.fantasy.metachanged" />
                 <action android:name="com.hon.fantasy.playstatechanged" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/widget_standard" />
         </receiver>
 
-        <receiver android:name=".widget.desktop.WhiteWidget" android:label="@string/widget_white">
+        <receiver
+            android:name=".widget.desktop.WhiteWidget"
+            android:label="@string/widget_white">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.hon.fantasy.metachanged" />
                 <action android:name="com.hon.fantasy.playstatechanged" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/widget_white" />
         </receiver>
 
-        <receiver android:name=".widget.desktop.SmallWidget" android:label="@string/widget_small">
+        <receiver
+            android:name=".widget.desktop.SmallWidget"
+            android:label="@string/widget_small">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.hon.fantasy.metachanged" />
                 <action android:name="com.hon.fantasy.playstatechanged" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/widget_small" />
+        </receiver>
+        <receiver android:name=".AudioNoisyReceiver">
+            <intent-filter>
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+                <action android:name="android.intent.action.SCREEN_ON"/>
+            </intent-filter>
         </receiver>
     </application>
 

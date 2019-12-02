@@ -282,6 +282,32 @@ public class MusicService extends Service {
     }
 
     @Override
+    public int onStartCommand(final Intent intent, final int flags, final int startId) {
+        if (D) Log.d(TAG, "Got new intent " + intent + ", startId = " + startId);
+        mServiceStartId = startId;
+
+        if (intent != null) {
+            final String action = intent.getAction();
+
+            if (SHUTDOWN.equals(action)) {
+                mShutdownScheduled = false;
+                releaseServiceUiAndStop();
+                return START_NOT_STICKY;
+            }
+
+            handleCommandIntent(intent);
+        }
+
+        scheduleDelayedShutdown();
+
+        if (intent != null && intent.getBooleanExtra(Constants.FROM_MEDIA_BUTTON, false)) {
+            MediaButtonIntentReceiver.completeWakefulIntent(intent);
+        }
+
+        return START_NOT_STICKY; //no sense to use START_STICKY with using startForeground
+    }
+
+    @Override
     public IBinder onBind(final Intent intent) {
         if (D) Log.d(TAG, "Service bound, intent = " + intent);
         cancelShutdown();
@@ -419,32 +445,6 @@ public class MusicService extends Service {
         }
 
         mWakeLock.release();
-    }
-
-    @Override
-    public int onStartCommand(final Intent intent, final int flags, final int startId) {
-        if (D) Log.d(TAG, "Got new intent " + intent + ", startId = " + startId);
-        mServiceStartId = startId;
-
-        if (intent != null) {
-            final String action = intent.getAction();
-
-            if (SHUTDOWN.equals(action)) {
-                mShutdownScheduled = false;
-                releaseServiceUiAndStop();
-                return START_NOT_STICKY;
-            }
-
-            handleCommandIntent(intent);
-        }
-
-        scheduleDelayedShutdown();
-
-        if (intent != null && intent.getBooleanExtra(Constants.FROM_MEDIA_BUTTON, false)) {
-            MediaButtonIntentReceiver.completeWakefulIntent(intent);
-        }
-
-        return START_NOT_STICKY; //no sense to use START_STICKY with using startForeground
     }
 
     void scrobble() {
@@ -612,7 +612,6 @@ public class MusicService extends Service {
         if (cursor != null && cursor.moveToFirst()) {
             mCardId = cursor.getInt(0);
             cursor.close();
-            cursor = null;
         }
         return mCardId;
     }
@@ -838,7 +837,7 @@ public class MusicService extends Service {
         openCurrentAndMaybeNext(true);
     }
 
-    private void openCurrentAndMaybeNext(final boolean openNext) {
+    private void openCurrentAndMaybeNext(boolean openNext) {
         synchronized (this) {
             closeCursor();
 
@@ -1211,7 +1210,6 @@ public class MusicService extends Service {
         }
     }
 
-
     private void addXTrackSelector(Notification n) {
         if (NotificationHelper.isSupported(n)) {
             StringBuilder selection = new StringBuilder();
@@ -1243,7 +1241,7 @@ public class MusicService extends Service {
         }
     }
 
-    private final PendingIntent retrievePlaybackAction(final String action) {
+    private PendingIntent retrievePlaybackAction(final String action) {
         final ComponentName serviceName = new ComponentName(this, MusicService.class);
         Intent intent = new Intent(action);
         intent.setComponent(serviceName);
@@ -1474,7 +1472,7 @@ public class MusicService extends Service {
         return mShuffleMode;
     }
 
-    public void setShuffleMode(final int shufflemode) {
+    public void setShuffleMode(int shufflemode) {
         synchronized (this) {
             if (mShuffleMode == shufflemode && mPlaylist.size() > 0) {
                 return;
@@ -1505,7 +1503,7 @@ public class MusicService extends Service {
         return mRepeatMode;
     }
 
-    public void setRepeatMode(final int repeatmode) {
+    public void setRepeatMode(int repeatmode) {
         synchronized (this) {
             mRepeatMode = repeatmode;
             setNextTrack();
@@ -1514,7 +1512,7 @@ public class MusicService extends Service {
         }
     }
 
-    public int removeTrack(final long id) {
+    public int removeTrack(long id) {
         int numremoved = 0;
         synchronized (this) {
             for (int i = 0; i < mPlaylist.size(); i++) {
@@ -1530,7 +1528,7 @@ public class MusicService extends Service {
         return numremoved;
     }
 
-    public boolean removeTrackAtPosition(final long id, final int position) {
+    public boolean removeTrackAtPosition(long id, int position) {
         synchronized (this) {
             if (position >= 0 &&
                     position < mPlaylist.size() &&
@@ -1542,7 +1540,7 @@ public class MusicService extends Service {
         return false;
     }
 
-    public int removeTracks(final int first, final int last) {
+    public int removeTracks(int first, int last) {
         final int numremoved = removeTracksInternal(first, last);
         if (numremoved > 0) {
             notifyChange(Constants.QUEUE_CHANGED);
@@ -2136,7 +2134,7 @@ public class MusicService extends Service {
         String TRACK_NAME = "trackname";
     }
 
-    private static final class MusicPlayerHandler extends Handler {
+    private static class MusicPlayerHandler extends Handler {
         private final WeakReference<MusicService> mService;
         private float mCurrentVolume = 1.0f;
 
@@ -2245,7 +2243,7 @@ public class MusicService extends Service {
         }
     }
 
-    private static final class Shuffler {
+    private static class Shuffler {
 
         private final LinkedList<Integer> mHistoryOfNumbers = new LinkedList<Integer>();
 
@@ -2284,7 +2282,7 @@ public class MusicService extends Service {
         }
     }
 
-    private static final class TrackErrorInfo {
+    private static class TrackErrorInfo {
         public long mId;
         public String mTrackName;
 
@@ -2294,7 +2292,7 @@ public class MusicService extends Service {
         }
     }
 
-    private static final class MultiPlayer implements MediaPlayer.OnErrorListener,
+    private static class MultiPlayer implements MediaPlayer.OnErrorListener,
             MediaPlayer.OnCompletionListener {
 
         private final WeakReference<MusicService> mService;
@@ -2492,7 +2490,7 @@ public class MusicService extends Service {
         }
     }
 
-    private static final class ServiceStub extends IFantasyService.Stub {
+    private static class ServiceStub extends IFantasyService.Stub {
 
         private final WeakReference<MusicService> mService;
 

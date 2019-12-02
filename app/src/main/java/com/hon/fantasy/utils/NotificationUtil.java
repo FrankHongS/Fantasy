@@ -1,7 +1,10 @@
 package com.hon.fantasy.utils;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -22,6 +25,16 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public final class NotificationUtil {
 
     private NotificationUtil() {
+    }
+
+    public static void createNotificationChannel() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationManager manager = (NotificationManager) Fantasy.sContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = null;
+            channel = new NotificationChannel(Constants.CHANNEL_ID, "Fantasy", importance);
+            manager.createNotificationChannel(channel);
+        }
     }
 
     public static Notification buildNotification(String album, String artist, boolean isPlaying, long albumId,
@@ -71,6 +84,16 @@ public final class NotificationUtil {
         }
 
         return builder.build();
+    }
+
+    public static void cancelNotification(int id) {
+        NotificationManager manager = (NotificationManager) Fantasy.sContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancel(id);
+    }
+
+    public static void notifyNotification(int id, Notification notification) {
+        NotificationManager manager = (NotificationManager) Fantasy.sContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(id, notification);
     }
 
 }

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.hon.fantasy.dataloader.SongLoader;
 import com.hon.fantasy.helpers.MusicPlaybackTrack;
+import com.hon.fantasy.utils.Constants;
 import com.hon.fantasy.utils.FantasyUtils;
 
 import java.util.Arrays;
@@ -81,16 +82,16 @@ public class MusicPlayer {
 
     public static void asyncNext(Context context) {
         Intent previous = new Intent(context, MusicService.class);
-        previous.setAction(MusicService.NEXT_ACTION);
+        previous.setAction(Constants.NEXT_ACTION);
         context.startService(previous);
     }
 
     public static void previous(Context context, boolean force) {
         Intent previous = new Intent(context, MusicService.class);
         if (force) {
-            previous.setAction(MusicService.PREVIOUS_FORCE_ACTION);
+            previous.setAction(Constants.PREVIOUS_FORCE_ACTION);
         } else {
-            previous.setAction(MusicService.PREVIOUS_ACTION);
+            previous.setAction(Constants.PREVIOUS_ACTION);
         }
         context.startService(previous);
     }
@@ -109,21 +110,33 @@ public class MusicPlayer {
         }
     }
 
+    public void pause() {
+        try {
+            if (mService != null) {
+                if (mService.isPlaying()) {
+                    mService.pause();
+                }
+            }
+        } catch (Exception ignored) {
+
+        }
+    }
+
     public void cycleRepeat() {
         try {
             if (mService != null) {
                 switch (mService.getRepeatMode()) {
-                    case MusicService.REPEAT_NONE:
-                        mService.setRepeatMode(MusicService.REPEAT_ALL);
+                    case Constants.REPEAT_NONE:
+                        mService.setRepeatMode(Constants.REPEAT_ALL);
                         break;
-                    case MusicService.REPEAT_ALL:
-                        mService.setRepeatMode(MusicService.REPEAT_CURRENT);
-                        if (mService.getShuffleMode() != MusicService.SHUFFLE_NONE) {
-                            mService.setShuffleMode(MusicService.SHUFFLE_NONE);
+                    case Constants.REPEAT_ALL:
+                        mService.setRepeatMode(Constants.REPEAT_CURRENT);
+                        if (mService.getShuffleMode() != Constants.SHUFFLE_NONE) {
+                            mService.setShuffleMode(Constants.SHUFFLE_NONE);
                         }
                         break;
                     default:
-                        mService.setRepeatMode(MusicService.REPEAT_NONE);
+                        mService.setRepeatMode(Constants.REPEAT_NONE);
                         break;
                 }
             }
@@ -136,17 +149,17 @@ public class MusicPlayer {
         try {
             if (mService != null) {
                 switch (mService.getShuffleMode()) {
-                    case MusicService.SHUFFLE_NONE:
-                        mService.setShuffleMode(MusicService.SHUFFLE_NORMAL);
-                        if (mService.getRepeatMode() == MusicService.REPEAT_CURRENT) {
-                            mService.setRepeatMode(MusicService.REPEAT_ALL);
+                    case Constants.SHUFFLE_NONE:
+                        mService.setShuffleMode(Constants.SHUFFLE_NORMAL);
+                        if (mService.getRepeatMode() == Constants.REPEAT_CURRENT) {
+                            mService.setRepeatMode(Constants.REPEAT_ALL);
                         }
                         break;
-                    case MusicService.SHUFFLE_NORMAL:
-                        mService.setShuffleMode(MusicService.SHUFFLE_NONE);
+                    case Constants.SHUFFLE_NORMAL:
+                        mService.setShuffleMode(Constants.SHUFFLE_NONE);
                         break;
-                    case MusicService.SHUFFLE_AUTO:
-                        mService.setShuffleMode(MusicService.SHUFFLE_NONE);
+                    case Constants.SHUFFLE_AUTO:
+                        mService.setShuffleMode(Constants.SHUFFLE_NONE);
                         break;
                     default:
                         break;
@@ -455,7 +468,7 @@ public class MusicPlayer {
         }
         try {
             if (forceShuffle) {
-                mService.setShuffleMode(MusicService.SHUFFLE_NORMAL);
+                mService.setShuffleMode(Constants.SHUFFLE_NORMAL);
             }
             long currentId = mService.getAudioId();
             int currentQueuePosition = getQueuePosition();
@@ -482,7 +495,7 @@ public class MusicPlayer {
             return;
         }
         try {
-            mService.enqueue(list, MusicService.NEXT, sourceId, sourceType.mId);
+            mService.enqueue(list, Constants.NEXT, sourceId, sourceType.mId);
             String message = makeLabel(context, R.plurals.NNNtrackstoqueue, list.length);
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         } catch (RemoteException ignored) {
@@ -496,7 +509,7 @@ public class MusicPlayer {
             return;
         }
         try {
-            mService.setShuffleMode(MusicService.SHUFFLE_NORMAL);
+            mService.setShuffleMode(Constants.SHUFFLE_NORMAL);
             if (getQueuePosition() == 0 && mService.getAudioId() == trackList[0] && Arrays.equals(trackList, getQueue())) {
                 mService.play();
                 return;
@@ -648,7 +661,7 @@ public class MusicPlayer {
             return;
         }
         try {
-            mService.enqueue(list, MusicService.LAST, sourceId, sourceType.mId);
+            mService.enqueue(list, Constants.LAST, sourceId, sourceType.mId);
             String message = makeLabel(context, R.plurals.NNNtrackstoqueue, list.length);
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         } catch (RemoteException ignored) {

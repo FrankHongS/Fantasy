@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Fantasy</string>
+
+    <!--draw view-->
+    <string name="library">音乐库</string>
+    <string name="playlist">播放列表</string>
+    <string name="folder">文件夹</string>
+    <string name="playing_queue">播放队列</string>
+    <string name="now_playing">正在播放</string>
+    <string name="settings">设置</string>
+    <string name="about">关于</string>
 </resources>

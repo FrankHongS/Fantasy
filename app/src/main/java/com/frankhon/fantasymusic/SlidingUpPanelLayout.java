@@ -309,6 +309,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
     }
 
     public boolean isSlidingEnabled() {
+//        return false;
         return mIsSlidingEnabled && mSlideableView != null;
     }
 
@@ -706,7 +707,6 @@ public class SlidingUpPanelLayout extends ViewGroup {
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = MotionEventCompat.getActionMasked(ev);
 
-
         if (!isEnabled() || !mIsSlidingEnabled || (mIsUnableToDrag && action != MotionEvent.ACTION_DOWN)) {
             mDragHelper.cancel();
             return super.onInterceptTouchEvent(ev);
@@ -721,14 +721,12 @@ public class SlidingUpPanelLayout extends ViewGroup {
         final float y = ev.getY();
 
         switch (action) {
-            case MotionEvent.ACTION_DOWN: {
+            case MotionEvent.ACTION_DOWN:
                 mIsUnableToDrag = false;
                 mInitialMotionX = x;
                 mInitialMotionY = y;
                 break;
-            }
-
-            case MotionEvent.ACTION_MOVE: {
+            case MotionEvent.ACTION_MOVE:
                 final float adx = Math.abs(x - mInitialMotionX);
                 final float ady = Math.abs(y - mInitialMotionY);
                 final int dragSlop = mDragHelper.getTouchSlop();
@@ -744,12 +742,12 @@ public class SlidingUpPanelLayout extends ViewGroup {
                     return false;
                 }
                 break;
-            }
         }
 
         return mDragHelper.shouldInterceptTouchEvent(ev);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         if (!isSlidingEnabled()) {
@@ -1012,9 +1010,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
     }
 
     @Override
-    public void draw(Canvas c) {
-        super.draw(c);
-
+    protected void onDraw(Canvas c) {
         if (!isSlidingEnabled()) {
             // No need to draw a shadow if we don't have one.
             return;

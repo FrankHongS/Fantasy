@@ -30,6 +30,13 @@ dependencies {
     implementation deps.support.material
     implementation deps.support.constraintlayout
 
+    // navigation
+    implementation deps.navigation.navigation_fragment
+    implementation deps.navigation.navigation_ui
+    // room
+    implementation deps.room.runtime
+    annotationProcessor deps.room.compiler
+
     testImplementation deps.test.junit
     androidTestImplementation deps.test.runner
     androidTestImplementation deps.espresso.core

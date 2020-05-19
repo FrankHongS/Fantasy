@@ -6,13 +6,13 @@
         android:layout_height="match_parent"
         app:panelHeight="@dimen/default_panel_height">
 
-    <FrameLayout
-            android:id="@+id/fl_container"
+    <fragment
+            android:id="@+id/fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-    >
-
-    </FrameLayout>
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/main_nav_graph" />
 
     <androidx.cardview.widget.CardView android:layout_width="match_parent"
                                        android:layout_height="300dp"

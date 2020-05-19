@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Fantasy</string>
-
+    <!--tool bar-->
+    <string name="search_songs">Search songs</string>
     <!--draw view-->
     <string name="library">Library</string>
     <string name="playlist">Playlist</string>

@@ -1,11 +1,10 @@
 package com.frankhon.fantasymusic.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.adapter.MainAdapter
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -21,6 +20,7 @@ class MainFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
         val targetActivity = activity as AppCompatActivity
         targetActivity.setSupportActionBar(toolbar_main)
         val actionBar = targetActivity.supportActionBar
@@ -39,6 +39,21 @@ class MainFragment : Fragment() {
         )
         val mainAdapter = fragmentManager?.let { MainAdapter(it, fragments) }
         vp_main.adapter = mainAdapter
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        activity?.menuInflater?.inflate(R.menu.menu_main, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_search -> {
+                NavHostFragment.findNavController(this)
+                    .navigate(R.id.searchFragment)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }

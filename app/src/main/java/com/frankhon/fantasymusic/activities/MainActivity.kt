@@ -14,9 +14,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_main)
         tv_haha.setOnClickListener(this)
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fl_container, MainFragment())
-            .commit()
+//        supportFragmentManager.beginTransaction()
+//            .replace(R.id.fl_container, MainFragment())
+//            .commit()
     }
 
     override fun onClick(v: View?) {

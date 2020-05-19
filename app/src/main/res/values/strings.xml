@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Fantasy</string>
-
+    <!--tool bar-->
+    <string name="search_songs">搜索歌曲</string>
     <!--draw view-->
     <string name="library">音乐库</string>
     <string name="playlist">播放列表</string>

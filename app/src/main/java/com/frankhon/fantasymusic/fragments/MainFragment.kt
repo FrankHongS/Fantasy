@@ -12,23 +12,33 @@ import kotlinx.android.synthetic.main.fragment_main.*
 /**
  * Created by Frank Hon on 2020-04-14 23:41.
  * E-mail: frank_hon@foxmail.com
+ *
+ * 使用navigation，navigate到新的fragment时，旧的fragment的view会被销毁，但实例会保留。
+ * 针对这个issue，目前暂时通过全局变量mainView和标识位isInstantiate来避免重复创建view，否则FragmentViewPager无法正常创建
  */
-class MainFragment : Fragment() {
+class MainFragment : BaseFragment() {
+
+    private var mainView: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        if (mainView == null) {
+            mainView = inflater.inflate(R.layout.fragment_main, container, false)
+        }
+        return mainView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setHasOptionsMenu(true)
-        val targetActivity = activity as AppCompatActivity
-        targetActivity.setSupportActionBar(toolbar_main)
-        val actionBar = targetActivity.supportActionBar
-        actionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
-        actionBar?.setDisplayHomeAsUpEnabled(true)
+        if (!isInstantiate) {
+            setHasOptionsMenu(true)
+            val targetActivity = activity as AppCompatActivity
+            targetActivity.setSupportActionBar(toolbar_main)
+            val actionBar = targetActivity.supportActionBar
+            actionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
+            actionBar?.setDisplayHomeAsUpEnabled(true)
 
-        initViewPager()
-        tl_main.setupWithViewPager(vp_main)
+            initViewPager()
+            tl_main.setupWithViewPager(vp_main)
+        }
     }
 
     private fun initViewPager() {

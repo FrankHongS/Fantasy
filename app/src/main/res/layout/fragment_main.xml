@@ -18,12 +18,13 @@
                 android:id="@+id/tl_main"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:tabTextColor="@color/colorTitle"
-        />
+                app:tabSelectedTextColor="@color/colorTitle"
+                app:tabTextColor="@color/secondText"
+                app:tabIndicatorHeight="3dp"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
+    <com.frankhon.fantasymusic.view.NoScrollViewPager
             android:id="@+id/vp_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

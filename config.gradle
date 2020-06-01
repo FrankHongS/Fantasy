@@ -6,7 +6,7 @@ ext.versions = [
         'core_ktx'        : '1.1.0',
         'gradle_version'  : '3.4.2',
 
-        'navigation'      : '2.1.0-rc01',
+        'navigation'      : '2.1.0',
         'room'            : '2.1.0',
 
         'supportLibrary'  : '1.0.0',

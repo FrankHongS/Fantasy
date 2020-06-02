@@ -203,7 +203,6 @@ public class PanelLayout extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        Log.d(TAG, "onInterceptTouchEvent: " + ev.getActionMasked());
         //当panel处于滑上的状态时，panel以上的阴影区域，所有事件屏蔽，不能进行交互
         if (ev.getY() <= mSlideView.getTop() && !isCollapsed) {
             return true;
@@ -214,7 +213,6 @@ public class PanelLayout extends ViewGroup {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.d(TAG, "onTouchEvent: " + event.getActionMasked());
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 eventX = event.getX();

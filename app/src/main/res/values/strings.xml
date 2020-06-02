@@ -10,4 +10,6 @@
     <string name="now_playing">正在播放</string>
     <string name="settings">设置</string>
     <string name="about">关于</string>
+    <!--Search songs page-->
+    <string name="search_hint">输入歌曲名或艺术家名字</string>
 </resources>

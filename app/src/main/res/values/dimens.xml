@@ -2,4 +2,5 @@
 <resources>
     <dimen name="default_panel_height">68dp</dimen>
     <dimen name="default_card_elevation">8dp</dimen>
+    <dimen name="default_card_margin">4dp</dimen>
 </resources>

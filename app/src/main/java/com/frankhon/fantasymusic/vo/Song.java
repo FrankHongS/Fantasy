@@ -2,13 +2,14 @@ package com.frankhon.fantasymusic.vo;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Frank Hon on 2020-06-01 23:47.
  * E-mail: frank_hon@foxmail.com
  */
-public class Song {
+public class Song implements Serializable {
 
     public String name;
 
@@ -22,7 +23,7 @@ public class Song {
 
     public String bgPic;
 
-    public class Album{
+    public class Album implements Serializable{
         public String name;
 
         public String picUrl;
@@ -36,7 +37,7 @@ public class Song {
         }
     }
 
-    public class Artist{
+    public class Artist implements Serializable{
         @SerializedName("name")
         public String name;
 

@@ -11,7 +11,12 @@ import com.frankhon.fantasymusic.R
  * Created by Frank Hon on 2020-04-19 20:20.
  * E-mail: frank_hon@foxmail.com
  */
-class AlbumFragment(name: String) : BaseFragment(name) {
+class AlbumFragment : BaseFragment {
+
+    constructor() : super()
+
+    constructor(name: String) : super(name)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_album, container, false)
     }

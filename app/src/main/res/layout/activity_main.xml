@@ -14,31 +14,9 @@
             app:defaultNavHost="true"
             app:navGraph="@navigation/main_nav_graph" />
 
-    <androidx.cardview.widget.CardView android:layout_width="match_parent"
-                                       android:layout_height="300dp"
-                                       app:cardElevation="@dimen/default_card_elevation">
-
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="match_parent"
-                      android:orientation="vertical">
-
-            <TextView
-                    android:id="@+id/tv_hello"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/default_panel_height"
-                    android:textSize="20sp"
-                    android:text="hello world !"
-                    android:gravity="center"/>
-
-            <TextView
-                    android:id="@+id/tv_haha"
-                    android:layout_width="match_parent"
-                    android:layout_height="168dp"
-                    android:textSize="20sp"
-                    android:text="haha !"
-                    android:gravity="center"/>
-
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_panel_total_height"
+        layout="@layout/layout_panel"/>
 
 </com.frankhon.fantasymusic.view.PanelLayout>

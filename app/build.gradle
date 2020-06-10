@@ -20,6 +20,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 }
 
 dependencies {
@@ -29,6 +33,9 @@ dependencies {
     implementation deps.support.appCompat
     implementation deps.support.material
     implementation deps.support.constraintlayout
+
+    // lifecycle
+    implementation deps.lifecycle_extensions
 
     // navigation
     implementation deps.navigation.navigation_fragment
@@ -43,6 +50,10 @@ dependencies {
 
     implementation deps.glide.root
     annotationProcessor deps.glide.compiler
+
+    implementation deps.eventbus
+
+    implementation 'com.danikula:videocache:2.7.1'
 
     implementation deps.mylogger
 

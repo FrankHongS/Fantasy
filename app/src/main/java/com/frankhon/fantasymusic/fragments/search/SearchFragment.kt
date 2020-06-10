@@ -14,10 +14,12 @@ import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.api.MusicServiceImpl
 import com.frankhon.fantasymusic.fragments.BaseFragment
 import com.frankhon.fantasymusic.media.MediaPlayerManager
+import com.frankhon.fantasymusic.vo.PlaySongEvent
 import com.frankhon.fantasymusic.vo.Song
 import com.frankhon.fantasymusic.vo.SongWrapper
 import com.hon.mylogger.MyLogger
 import kotlinx.android.synthetic.main.fragment_search.*
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,9 +28,13 @@ import retrofit2.Response
  * Created by Frank Hon on 2020-05-19 21:06.
  * E-mail: frank_hon@foxmail.com
  */
+private const val SONG_LIST_KEY = "song_list"
+
 class SearchFragment : BaseFragment() {
 
     private lateinit var searchResultAdapter: SearchResultAdapter
+
+    private var songWrapper: SongWrapper? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_search, container, false)
@@ -36,10 +42,19 @@ class SearchFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         rv_search_result.layoutManager = LinearLayoutManager(context)
-        searchResultAdapter = SearchResultAdapter(AppExecutors.getInstance()){
-            MediaPlayerManager.getInstance().play(it.url){
+        searchResultAdapter = SearchResultAdapter(AppExecutors.getInstance()) {
+            MediaPlayerManager.getInstance().play(it.url) {
                 // do nothing
+                EventBus.getDefault().post(PlaySongEvent(false))
             }
+            EventBus.getDefault().post(
+                PlaySongEvent(
+                    isPlaying = true,
+                    picUrl = it.album.picUrl,
+                    songName = it.name,
+                    artistName = it.artists[0].name
+                )
+            )
         }
         rv_search_result.adapter = searchResultAdapter
 
@@ -52,9 +67,7 @@ class SearchFragment : BaseFragment() {
                         object : Callback<SongWrapper> {
                             override fun onResponse(call: Call<SongWrapper>, response: Response<SongWrapper>) {
                                 val songWrapper = response.body()
-                                if (songWrapper != null) {
-                                    searchResultAdapter.submitList(listOf(songWrapper.data))
-                                }
+                                songWrapper?.let { updateSongList(it) }
                             }
 
                             override fun onFailure(call: Call<SongWrapper>, t: Throwable) {
@@ -67,5 +80,21 @@ class SearchFragment : BaseFragment() {
                 false
             }
         }
+    }
+
+    private fun updateSongList(songWrapper: SongWrapper) {
+        this.songWrapper = songWrapper
+        searchResultAdapter.submitList(listOf(songWrapper.data))
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        songWrapper = savedInstanceState?.getParcelable(SONG_LIST_KEY)
+        songWrapper?.let { updateSongList(it) }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        songWrapper?.let { outState.putParcelable(SONG_LIST_KEY, it) }
     }
 }

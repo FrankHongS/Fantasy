@@ -11,6 +11,7 @@ ext.versions = [
 
         'supportLibrary'  : '1.0.0',
         'constraintlayout': '1.1.3',
+        'lifecycle'       : '2.0.0',
         'preference'      : '1.0.0',
         'retrofit'        : '2.3.0',
         'okhttp'          : '3.4.1',
@@ -48,6 +49,7 @@ ext.deps = [
                 'constraintlayout': "androidx.constraintlayout:constraintlayout:${versions.constraintlayout}",
                 'preference'      : "androidx.preference:preference:${versions.preference}"
         ],
+        'lifecycle_extensions': "androidx.lifecycle:lifecycle-extensions:${versions.lifecycle}",
         'test'           : [
                 'junit' : "junit:junit:${versions.junit}",
                 'runner': "androidx.test:runner:${versions.test}",

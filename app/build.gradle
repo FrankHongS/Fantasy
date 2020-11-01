@@ -56,6 +56,7 @@ dependencies {
     implementation 'com.danikula:videocache:2.7.1'
 
     implementation deps.mylogger
+    implementation deps.simplesearchview
 
     testImplementation deps.test.junit
     androidTestImplementation deps.test.runner

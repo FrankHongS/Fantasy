@@ -4,19 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.recyclerview.widget.*
-import com.bumptech.glide.Glide
+import androidx.navigation.fragment.NavHostFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.frankhon.fantasymusic.AppExecutors
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.api.MusicServiceImpl
 import com.frankhon.fantasymusic.fragments.BaseFragment
 import com.frankhon.fantasymusic.media.MediaPlayerManager
 import com.frankhon.fantasymusic.vo.PlaySongEvent
-import com.frankhon.fantasymusic.vo.Song
 import com.frankhon.fantasymusic.vo.SongWrapper
+import com.frankhon.simplesearchview.generator.DefaultSearchSuggestionGenerator
 import com.hon.mylogger.MyLogger
 import kotlinx.android.synthetic.main.fragment_search.*
 import org.greenrobot.eventbus.EventBus
@@ -58,11 +55,10 @@ class SearchFragment : BaseFragment() {
         }
         rv_search_result.adapter = searchResultAdapter
 
-        et_search_songs.setOnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val text = et_search_songs.text.toString()
-                MyLogger.d("text: $text")
-                MusicServiceImpl.getInstance().findSong(text)
+        svg_search_songs.setSuggestionGenerator(DefaultSearchSuggestionGenerator(context))
+        svg_search_songs.setOnSearchListener {
+                MyLogger.d("text: $it")
+                MusicServiceImpl.getInstance().findSong(it)
                     .enqueue(
                         object : Callback<SongWrapper> {
                             override fun onResponse(call: Call<SongWrapper>, response: Response<SongWrapper>) {
@@ -75,10 +71,9 @@ class SearchFragment : BaseFragment() {
                             }
                         }
                     )
-                true
-            } else {
-                false
-            }
+        }
+        svg_search_songs.setOnBackClickListener {
+            NavHostFragment.findNavController(this).popBackStack()
         }
     }
 

@@ -12,10 +12,12 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
+
 import com.frankhon.fantasymusic.R;
 import com.frankhon.fantasymusic.Util;
 
@@ -32,8 +34,8 @@ public class PanelLayout extends ViewGroup {
     private View mMainView;
     private View mSlideView;
 
+    private static final int TINT_COLOR = 0x44000000;
     private Rect mClipRect;
-    private int mCoveredFadeColor = 0x44000000;
     private Paint mCoveredFadePaint = new Paint();
 
     private ViewDragHelper mViewDragHelper;
@@ -153,22 +155,22 @@ public class PanelLayout extends ViewGroup {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
-
-        mMainView = getChildAt(0);
-        mMainView.layout(
-                paddingLeft,
-                paddingTop,
-                paddingLeft + mMainView.getMeasuredWidth(),
-                paddingTop + mMainView.getMeasuredHeight()
-        );
-
-        mSlideView = getChildAt(1);
-        mSlideView.layout(
-                paddingLeft,
-                paddingTop + mMainView.getMeasuredHeight(),
-                paddingLeft + mSlideView.getMeasuredWidth(),
-                paddingTop + mMainView.getMeasuredHeight() + mSlideView.getMeasuredHeight()
-        );
+        int childCount = getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View view = getChildAt(i);
+            if (i == 0) {
+                mMainView = view;
+            } else if (i == 1) {
+                mSlideView = view;
+            }
+            view.layout(
+                    paddingLeft,
+                    paddingTop,
+                    paddingLeft + view.getMeasuredWidth(),
+                    paddingTop + view.getMeasuredHeight()
+            );
+            paddingTop += view.getMeasuredHeight();
+        }
     }
 
     @Override
@@ -190,13 +192,11 @@ public class PanelLayout extends ViewGroup {
         result = super.drawChild(canvas, child, drawingTime);
         canvas.restoreToCount(save);
 
-        if (mCoveredFadeColor != 0) {
-            int baseAlpha = mCoveredFadeColor >>> 24;
-            int imag = (int) (baseAlpha * mSlideOffsetPercent);
-            int color = imag << 24 | (mCoveredFadeColor & 0xffffff);
-            mCoveredFadePaint.setColor(color);
-            canvas.drawRect(mClipRect, mCoveredFadePaint);
-        }
+        int baseAlpha = TINT_COLOR >>> 24;
+        int imag = (int) (baseAlpha * mSlideOffsetPercent);
+        int color = imag << 24 | (TINT_COLOR & 0xffffff);
+        mCoveredFadePaint.setColor(color);
+        canvas.drawRect(mClipRect, mCoveredFadePaint);
 
         return result;
     }

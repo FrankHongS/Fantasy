@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.frankhon.fantasymusic.R
+import com.hon.mylogger.MyLogger
 
 /**
  * Created by Frank Hon on 2020-04-19 20:19.
@@ -17,8 +18,8 @@ class SongFragment : BaseFragment {
     constructor(name: String) : super(name)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        MyLogger.d("onCreateView")
         return inflater.inflate(R.layout.fragment_song, container, false)
     }
-
 
 }

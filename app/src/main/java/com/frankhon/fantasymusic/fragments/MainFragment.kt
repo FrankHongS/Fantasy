@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.adapter.MainAdapter
+import com.hon.mylogger.MyLogger
 import kotlinx.android.synthetic.main.fragment_main.*
 
 /**
@@ -21,6 +22,7 @@ class MainFragment : BaseFragment() {
     private var mainView: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        MyLogger.d("onCreateView")
         if (mainView == null) {
             mainView = inflater.inflate(R.layout.fragment_main, container, false)
         }

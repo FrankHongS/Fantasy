@@ -11,6 +11,7 @@ import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.api.MusicServiceImpl
 import com.frankhon.fantasymusic.fragments.BaseFragment
 import com.frankhon.fantasymusic.media.MediaPlayerManager
+import com.frankhon.fantasymusic.media.MusicPlayer
 import com.frankhon.fantasymusic.vo.PlaySongEvent
 import com.frankhon.fantasymusic.vo.SongWrapper
 import com.frankhon.simplesearchview.generator.DefaultSearchSuggestionGenerator
@@ -40,10 +41,7 @@ class SearchFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         rv_search_result.layoutManager = LinearLayoutManager(context)
         searchResultAdapter = SearchResultAdapter(AppExecutors.getInstance()) {
-            MediaPlayerManager.getInstance().play(it.url) {
-                // do nothing
-                EventBus.getDefault().post(PlaySongEvent(false))
-            }
+            MusicPlayer.getInstance().play(it.url)
             EventBus.getDefault().post(
                 PlaySongEvent(
                     isPlaying = true,

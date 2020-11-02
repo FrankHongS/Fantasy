@@ -21,7 +21,7 @@ import com.frankhon.fantasymusic.vo.Song
  */
 class SearchResultAdapter(appExecutors: AppExecutors, private val onItemClickListener: (song: Song) -> Unit) :
     ListAdapter<Song, SearchResultAdapter.SearchResultViewHolder>(
-        AsyncDifferConfig.Builder<Song>(
+        AsyncDifferConfig.Builder(
             object : DiffUtil.ItemCallback<Song>() {
                 override fun areContentsTheSame(oldItem: Song, newItem: Song): Boolean {
                     if (oldItem.artists.size > 0 && newItem.artists.size > 0) {

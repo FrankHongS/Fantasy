@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.widget.Toast;
+
 import com.frankhon.fantasymusic.Fantasy;
 import com.hon.mylogger.MyLogger;
 
@@ -66,28 +67,33 @@ public class MediaPlayerManager {
         return duration;
     }
 
-    public void play(String audioFilePath, MediaPlayer.OnCompletionListener onCompletionListener) throws IOException {
+    public void play(String audioFilePath, MediaPlayer.OnCompletionListener onCompletionListener) {
         int result = requestAudioFocus();
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            mMediaPlayer.reset();
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mMediaPlayer.setOnCompletionListener(mp -> {
-                mPlayerState = State.STOPPED;
-                onCompletionListener.onCompletion(mp);
-            });
-            mMediaPlayer.setOnPreparedListener(mp -> {
-                mp.start();
-                mPlayerState = State.PLAYING;
-            });
-            if (audioFilePath.startsWith("content://")) {
-                mMediaPlayer.setDataSource(audioFilePath);
-            } else {
-                if (mHttpProxyCache == null) {
-                    mHttpProxyCache = HttpProxyCache.getInstance();
+            try {
+
+                mMediaPlayer.reset();
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mMediaPlayer.setOnCompletionListener(mp -> {
+                    mPlayerState = State.STOPPED;
+                    onCompletionListener.onCompletion(mp);
+                });
+                mMediaPlayer.setOnPreparedListener(mp -> {
+                    mp.start();
+                    mPlayerState = State.PLAYING;
+                });
+                if (audioFilePath.startsWith("content://")) {
+                    mMediaPlayer.setDataSource(audioFilePath);
+                } else {
+                    if (mHttpProxyCache == null) {
+                        mHttpProxyCache = HttpProxyCache.getInstance();
+                    }
+                    mMediaPlayer.setDataSource(mHttpProxyCache.getProxyUrl(audioFilePath));
                 }
-                mMediaPlayer.setDataSource(mHttpProxyCache.getProxyUrl(audioFilePath));
+                mMediaPlayer.prepareAsync();
+            } catch (IOException e) {
+                // do nothing
             }
-            mMediaPlayer.prepareAsync();
         } else {
             MyLogger.e("Error to request playing: " + result);
             Toast.makeText(Fantasy.getAppContext(), "请求播放失败", Toast.LENGTH_SHORT).show();

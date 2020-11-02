@@ -12,14 +12,15 @@ data class PlaySongEvent(
     val picUrl: String? = null,
     val songName: String? = null,
     val artistName: String? = null
-):Parcelable {
+) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readByte() != 0.toByte(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString()
-    ) {
-    }
+    )
+
+    constructor(isPlaying: Boolean) : this(isPlaying, null, null, null)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeByte(if (isPlaying) 1 else 0)

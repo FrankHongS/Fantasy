@@ -6,6 +6,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.media.MediaPlayerManager
+import com.frankhon.fantasymusic.media.MusicPlayer
 import com.frankhon.fantasymusic.vo.PlaySongEvent
 import kotlinx.android.synthetic.main.layout_panel.*
 import kotlinx.android.synthetic.main.layout_song_control.*
@@ -26,9 +27,9 @@ class MainActivity : AppCompatActivity() {
 
         ib_pause_or_resume.setOnClickListener {
             if (isPlaying) {
-                MediaPlayerManager.getInstance().pause()
+                MusicPlayer.getInstance().pause()
             } else {
-                MediaPlayerManager.getInstance().resume()
+                MusicPlayer.getInstance().resume()
             }
             isPlaying = !isPlaying
             updatePlayControlIcon(isPlaying)
@@ -42,9 +43,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun update(event: PlaySongEvent) {
         this.event = event
-
-        updatePlayControlIcon(event.isPlaying)
         isPlaying = event.isPlaying
+        updatePlayControlIcon(isPlaying)
         if (isPlaying) {
             if (event.picUrl != null) {
                 Glide.with(this)

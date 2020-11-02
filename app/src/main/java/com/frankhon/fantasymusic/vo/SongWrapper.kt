@@ -11,8 +11,7 @@ data class SongWrapper(val result:Int, val data: Song) :Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readSerializable() as Song
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(result)

@@ -10,17 +10,21 @@ import com.frankhon.fantasymusic.AppExecutors
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.api.MusicServiceImpl
 import com.frankhon.fantasymusic.fragments.BaseFragment
-import com.frankhon.fantasymusic.media.MediaPlayerManager
 import com.frankhon.fantasymusic.media.MusicPlayer
 import com.frankhon.fantasymusic.vo.PlaySongEvent
+import com.frankhon.fantasymusic.vo.Song
 import com.frankhon.fantasymusic.vo.SongWrapper
 import com.frankhon.simplesearchview.generator.DefaultSearchSuggestionGenerator
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.hon.mylogger.MyLogger
 import kotlinx.android.synthetic.main.fragment_search.*
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.*
 
 /**
  * Created by Frank Hon on 2020-05-19 21:06.
@@ -34,7 +38,11 @@ class SearchFragment : BaseFragment() {
 
     private var songWrapper: SongWrapper? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_search, container, false)
     }
 
@@ -55,24 +63,65 @@ class SearchFragment : BaseFragment() {
 
         svg_search_songs.setSuggestionGenerator(DefaultSearchSuggestionGenerator(context))
         svg_search_songs.setOnSearchListener {
-                MyLogger.d("text: $it")
-                MusicServiceImpl.getInstance().findSong(it)
-                    .enqueue(
-                        object : Callback<SongWrapper> {
-                            override fun onResponse(call: Call<SongWrapper>, response: Response<SongWrapper>) {
-                                val songWrapper = response.body()
-                                songWrapper?.let { updateSongList(it) }
-                            }
-
-                            override fun onFailure(call: Call<SongWrapper>, t: Throwable) {
-                                t.printStackTrace()
-                            }
+            MyLogger.d("text: $it")
+            MusicServiceImpl.getInstance().findSong(it)
+                .enqueue(
+                    object : Callback<SongWrapper> {
+                        override fun onResponse(
+                            call: Call<SongWrapper>,
+                            response: Response<SongWrapper>
+                        ) {
+                            val songWrapper = response.body()
+                            songWrapper?.let { updateSongList(it) }
                         }
-                    )
+
+                        override fun onFailure(call: Call<SongWrapper>, t: Throwable) {
+                            t.printStackTrace()
+                        }
+                    }
+                )
         }
         svg_search_songs.setOnBackClickListener {
             NavHostFragment.findNavController(this).popBackStack()
         }
+    }
+
+    private fun getSongsFromRaw(): List<SongWrapper> {
+        val inputStream = context!!.assets.open("config.json")
+        val songs = Gson().fromJson(InputStreamReader(inputStream, "utf-8"), JsonArray::class.java)
+        val target = arrayListOf<SongWrapper>()
+        for (i in 0 until songs.size()) {
+            val song = songs[i] as JsonObject
+            val data = Song()
+            data.name = song["name"].asString
+            val artists = arrayListOf<Song.Artist>()
+            val artist = Song.Artist()
+            artist.name = song["artist"].asString
+            artists.add(artist)
+            data.artists = artists
+            val file = File(context!!.getExternalFilesDir(null), "${data.name}.mp3")
+            if (!file.exists()) {
+                file.mkdirs()
+            }
+            val outputStream = BufferedOutputStream(FileOutputStream(file))
+            val songInputStream = BufferedInputStream(context!!.assets.open(song["url"].asString))
+            val buffer = ByteArray(1024 * 1024)
+            var count: Int
+            while (true) {
+                count = songInputStream.read(buffer)
+                if (count == -1) {
+                    break
+                }
+                outputStream.write(buffer, 0, count)
+            }
+            outputStream.flush()
+            outputStream.close()
+            songInputStream.close()
+            data.url = file.absolutePath
+
+            target.add(SongWrapper(100, data))
+        }
+        return target
     }
 
     private fun updateSongList(songWrapper: SongWrapper) {

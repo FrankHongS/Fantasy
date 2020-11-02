@@ -38,7 +38,7 @@ public class MusicPlayerService extends Service {
         @Override
         public void play(String audioFilePath) {
             MediaPlayerManager.getInstance().play(audioFilePath,
-                    mp -> EventBus.getDefault().post(new PlaySongEvent(false)));
+                    mp -> EventBus.getDefault().post(new PlaySongEvent()));
         }
 
         @Override

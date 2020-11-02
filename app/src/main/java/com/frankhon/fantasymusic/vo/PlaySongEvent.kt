@@ -9,9 +9,9 @@ import android.os.Parcelable
  */
 data class PlaySongEvent(
     val isPlaying: Boolean = false,
-    val picUrl: String? = null,
-    val songName: String? = null,
-    val artistName: String? = null
+    val picUrl: String? = "",
+    val songName: String? = "",
+    val artistName: String? = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readByte() != 0.toByte(),
@@ -19,8 +19,6 @@ data class PlaySongEvent(
         parcel.readString(),
         parcel.readString()
     )
-
-    constructor(isPlaying: Boolean) : this(isPlaying, null, null, null)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeByte(if (isPlaying) 1 else 0)

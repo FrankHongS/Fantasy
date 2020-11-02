@@ -37,7 +37,7 @@ public class Song implements Serializable {
         }
     }
 
-    public class Artist implements Serializable{
+    public static class Artist implements Serializable{
         @SerializedName("name")
         public String name;
 

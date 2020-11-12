@@ -9,6 +9,7 @@ import android.os.RemoteException;
 
 import com.frankhon.fantasymusic.Fantasy;
 import com.frankhon.fantasymusic.IMusicPlayer;
+import com.hon.mylogger.MyLogger;
 
 /**
  * Created by Frank Hon on 2020/11/1 8:26 PM.
@@ -19,22 +20,19 @@ public final class MusicPlayer {
     private static volatile MusicPlayer INSTANCE;
 
     private IMusicPlayer musicPlayer;
+    private final ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            musicPlayer = IMusicPlayer.Stub.asInterface(service);
+            MyLogger.d("onServiceConnected "+(musicPlayer==null));
+        }
 
-    private MusicPlayer() {
-        Intent intent = new Intent(Fantasy.getAppContext(), MusicPlayerService.class);
-        ServiceConnection connection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                musicPlayer = (IMusicPlayer) service;
-            }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
 
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-
-            }
-        };
-        Fantasy.getAppContext().bindService(intent, connection, Context.BIND_AUTO_CREATE);
-    }
+        }
+    };
+    private MusicPlayer() { }
 
     public static MusicPlayer getInstance() {
         if (INSTANCE == null) {
@@ -45,6 +43,15 @@ public final class MusicPlayer {
             }
         }
         return INSTANCE;
+    }
+
+    public void init(){
+        Intent intent = new Intent(Fantasy.getAppContext(), MusicPlayerService.class);
+        Fantasy.getAppContext().bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    public void clear(){
+        Fantasy.getAppContext().unbindService(connection);
     }
 
     public void play(String audioFile){

@@ -33,7 +33,8 @@ object FileUtil {
             val simpleSong = SimpleSong(
                 name = song.get("name").asString,
                 artist = song.get("artist").asString,
-                location = Uri.fromFile(tempFile).toString()
+                location = Uri.fromFile(tempFile).toString(),
+                songPic = song.get("songPic").asString
             )
             songs.add(simpleSong)
         }

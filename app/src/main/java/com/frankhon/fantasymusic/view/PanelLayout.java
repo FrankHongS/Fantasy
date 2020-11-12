@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,7 @@ import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
 
 import com.frankhon.fantasymusic.R;
-import com.frankhon.fantasymusic.Util;
+import com.frankhon.fantasymusic.utils.Util;
 
 /**
  * Created by Frank_Hon on 1/6/2020.

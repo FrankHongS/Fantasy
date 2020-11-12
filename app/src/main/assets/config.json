@@ -3,7 +3,16 @@
     "id": 0,
     "name": "晴天",
     "artist": "周杰伦",
-    "path":"songs/晴天_周杰伦.mp3",
-    "fileName": "晴天_周杰伦.mp3"
+    "path": "songs/晴天_周杰伦.mp3",
+    "fileName": "晴天_周杰伦.mp3",
+    "songPic": ""
+  },
+  {
+    "id": 1,
+    "name": "园游会",
+    "artist": "周杰伦",
+    "path": "songs/园游会_周杰伦.mp3",
+    "fileName": "园游会_周杰伦.mp3",
+    "songPic": "https://mcontent.migu.cn/newlv2/new/album/20200918/7949/s_XqFeoZdGOiPaNgY8.jpg"
   }
 ]

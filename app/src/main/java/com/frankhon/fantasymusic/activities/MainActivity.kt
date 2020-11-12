@@ -1,12 +1,15 @@
 package com.frankhon.fantasymusic.activities
 
+import android.content.IntentFilter
 import android.os.Bundle
+import android.text.TextUtils
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.media.MediaPlayerManager
 import com.frankhon.fantasymusic.media.MusicPlayer
+import com.frankhon.fantasymusic.receivers.MusicInfoReceiver
+import com.frankhon.fantasymusic.utils.Constants
 import com.frankhon.fantasymusic.vo.PlaySongEvent
 import kotlinx.android.synthetic.main.layout_panel.*
 import kotlinx.android.synthetic.main.layout_song_control.*
@@ -23,8 +26,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        EventBus.getDefault().register(this)
 
+        EventBus.getDefault().register(this)
+        MusicPlayer.getInstance().init()
+
+        initView()
+        // todo unregister
+        registerReceiver(MusicInfoReceiver(), IntentFilter(Constants.MUSIC_INFO_ACTION))
+    }
+
+    private fun initView() {
         ib_pause_or_resume.setOnClickListener {
             if (isPlaying) {
                 MusicPlayer.getInstance().pause()
@@ -34,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             isPlaying = !isPlaying
             updatePlayControlIcon(isPlaying)
         }
+        setDefaultImageToPanel()
     }
 
     @Subscribe
@@ -41,16 +53,25 @@ class MainActivity : AppCompatActivity() {
         update(event)
     }
 
+    private fun setDefaultImageToPanel() {
+        Glide.with(this)
+            .load(R.mipmap.ic_launcher)
+            .apply(RequestOptions.circleCropTransform())
+            .into(iv_song_bottom_pic)
+    }
+
     private fun update(event: PlaySongEvent) {
         this.event = event
         isPlaying = event.isPlaying
         updatePlayControlIcon(isPlaying)
         if (isPlaying) {
-            if (event.picUrl != null) {
+            if (!TextUtils.isEmpty(event.picUrl)) {
                 Glide.with(this)
                     .load(event.picUrl)
                     .apply(RequestOptions.circleCropTransform())
                     .into(iv_song_bottom_pic)
+            } else {
+                setDefaultImageToPanel()
             }
             tv_bottom_song_name.text = event.songName
             tv_bottom_artist_name.text = event.artistName

@@ -2,16 +2,15 @@ package com.frankhon.fantasymusic.media;
 
 import android.app.Service;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
 
+import com.frankhon.fantasymusic.Fantasy;
 import com.frankhon.fantasymusic.IMusicPlayer;
-import com.frankhon.fantasymusic.vo.PlaySongEvent;
-
-import org.greenrobot.eventbus.EventBus;
+import com.frankhon.fantasymusic.utils.Constants;
+import com.hon.mylogger.MyLogger;
 
 /**
  * Created by Frank Hon on 2020/11/1 7:52 PM.
@@ -19,11 +18,24 @@ import org.greenrobot.eventbus.EventBus;
  */
 public class MusicPlayerService extends Service {
 
-    private IMusicPlayer.Stub musicPlayer;
+    private IBinder musicPlayer;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        MyLogger.d("onCreate");
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        MyLogger.d("onStartCommand");
+        return super.onStartCommand(intent, flags, startId);
+    }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        MyLogger.d("onBind");
         musicPlayer = new ServiceStub();
         return musicPlayer;
     }
@@ -38,7 +50,10 @@ public class MusicPlayerService extends Service {
         @Override
         public void play(String audioFilePath) {
             MediaPlayerManager.getInstance().play(audioFilePath,
-                    mp -> EventBus.getDefault().post(new PlaySongEvent()));
+                    mp -> {
+                        Intent intent = new Intent(Constants.MUSIC_INFO_ACTION);
+                        Fantasy.getAppContext().sendBroadcast(intent);
+                    });
         }
 
         @Override

@@ -1,4 +1,6 @@
-package com.frankhon.fantasymusic;
+package com.frankhon.fantasymusic.utils;
+
+import com.frankhon.fantasymusic.Fantasy;
 
 /**
  * Created by Frank_Hon on 1/6/2020.

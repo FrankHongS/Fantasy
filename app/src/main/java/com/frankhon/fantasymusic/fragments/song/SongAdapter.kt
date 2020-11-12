@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.vo.SimpleSong
 
@@ -50,6 +51,7 @@ class SongAdapter(
             } else {
                 Glide.with(itemView)
                     .load(songPic)
+                    .apply(RequestOptions.placeholderOf(R.mipmap.ic_launcher))
                     .into(songPicView)
             }
             songName.text = song.name

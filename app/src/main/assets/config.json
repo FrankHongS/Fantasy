@@ -3,6 +3,7 @@
     "id": 0,
     "name": "晴天",
     "artist": "周杰伦",
-    "url":"songs/晴天_周杰伦.mp3"
+    "path":"songs/晴天_周杰伦.mp3",
+    "fileName": "晴天_周杰伦.mp3"
   }
 ]

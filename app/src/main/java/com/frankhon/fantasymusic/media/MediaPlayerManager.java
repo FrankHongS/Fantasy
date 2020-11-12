@@ -82,7 +82,7 @@ public class MediaPlayerManager {
                     mp.start();
                     mPlayerState = State.PLAYING;
                 });
-                if (audioFilePath.startsWith("content://")) {
+                if (audioFilePath.startsWith("file://")) {
                     mMediaPlayer.setDataSource(audioFilePath);
                 } else {
                     if (mHttpProxyCache == null) {

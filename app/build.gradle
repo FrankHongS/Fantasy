@@ -30,6 +30,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation deps.kotlin.kotlin_lib
     implementation deps.kotlin.core_ktx
+    implementation deps.kotlin.kotlin_coroutine
+    implementation deps.kotlin.lifecyclescope
+
     implementation deps.support.appCompat
     implementation deps.support.material
     implementation deps.support.constraintlayout

@@ -86,44 +86,6 @@ class SearchFragment : BaseFragment() {
         }
     }
 
-    private fun getSongsFromRaw(): List<SongWrapper> {
-        val inputStream = context!!.assets.open("config.json")
-        val songs = Gson().fromJson(InputStreamReader(inputStream, "utf-8"), JsonArray::class.java)
-        val target = arrayListOf<SongWrapper>()
-        for (i in 0 until songs.size()) {
-            val song = songs[i] as JsonObject
-            val data = Song()
-            data.name = song["name"].asString
-            val artists = arrayListOf<Song.Artist>()
-            val artist = Song.Artist()
-            artist.name = song["artist"].asString
-            artists.add(artist)
-            data.artists = artists
-            val file = File(context!!.getExternalFilesDir(null), "${data.name}.mp3")
-            if (!file.exists()) {
-                file.mkdirs()
-            }
-            val outputStream = BufferedOutputStream(FileOutputStream(file))
-            val songInputStream = BufferedInputStream(context!!.assets.open(song["url"].asString))
-            val buffer = ByteArray(1024 * 1024)
-            var count: Int
-            while (true) {
-                count = songInputStream.read(buffer)
-                if (count == -1) {
-                    break
-                }
-                outputStream.write(buffer, 0, count)
-            }
-            outputStream.flush()
-            outputStream.close()
-            songInputStream.close()
-            data.url = file.absolutePath
-
-            target.add(SongWrapper(100, data))
-        }
-        return target
-    }
-
     private fun updateSongList(songWrapper: SongWrapper) {
         this.songWrapper = songWrapper
         searchResultAdapter.submitList(listOf(songWrapper.data))

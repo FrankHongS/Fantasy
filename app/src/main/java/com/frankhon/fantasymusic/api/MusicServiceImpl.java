@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public final class MusicServiceImpl {
 
-    private static final String BASE_URL = "http://192.168.0.100:3400/";
+    private static final String BASE_URL = "http://192.168.0.114:3400/";
 
     private static volatile MusicServiceImpl INSTANCE;
 

@@ -21,7 +21,7 @@ private const val SONG_EVENT_KEY = "playSongEvent"
 class MainActivity : AppCompatActivity() {
 
     private var isPlaying = false
-    private var event: PlaySongEvent? = null
+    private var curEvent: PlaySongEvent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +42,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 MusicPlayer.getInstance().resume()
             }
-            isPlaying = !isPlaying
-            updatePlayControlIcon(isPlaying)
         }
         setDefaultImageToPanel()
     }
@@ -61,9 +59,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun update(event: PlaySongEvent) {
-        this.event = event
-        isPlaying = event.isPlaying
-        updatePlayControlIcon(isPlaying)
+        curEvent = event
+        if (event.isResumed) {
+            isPlaying = true
+            updatePlayControlIcon(isPlaying)
+            return
+        } else {
+            isPlaying = event.isPlaying
+            updatePlayControlIcon(isPlaying)
+        }
         if (isPlaying) {
             if (!TextUtils.isEmpty(event.picUrl)) {
                 Glide.with(this)
@@ -88,13 +92,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
-        event = savedInstanceState?.getParcelable<PlaySongEvent?>(SONG_EVENT_KEY)
-        event?.let { update(it) }
+        curEvent = savedInstanceState?.getParcelable<PlaySongEvent?>(SONG_EVENT_KEY)
+        curEvent?.let { update(it) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        event?.let { outState.putParcelable(SONG_EVENT_KEY, it) }
+        curEvent?.let { outState.putParcelable(SONG_EVENT_KEY, it) }
     }
 
 

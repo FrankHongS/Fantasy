@@ -49,11 +49,7 @@ public class MusicPlayerService extends Service {
 
         @Override
         public void play(String audioFilePath) {
-            MediaPlayerManager.getInstance().play(audioFilePath,
-                    mp -> {
-                        Intent intent = new Intent(Constants.MUSIC_INFO_ACTION);
-                        Fantasy.getAppContext().sendBroadcast(intent);
-                    });
+            MediaPlayerManager.getInstance().play(audioFilePath);
         }
 
         @Override

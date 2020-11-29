@@ -1,6 +1,7 @@
 package com.frankhon.fantasymusic.media;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -8,6 +9,7 @@ import android.media.MediaPlayer;
 import android.widget.Toast;
 
 import com.frankhon.fantasymusic.Fantasy;
+import com.frankhon.fantasymusic.utils.Constants;
 import com.hon.mylogger.MyLogger;
 
 import java.io.IOException;
@@ -37,10 +39,13 @@ public class MediaPlayerManager {
         });
         mAudioManager = (AudioManager) Fantasy.getAppContext().getSystemService(Context.AUDIO_SERVICE);
         mOnAudioFocusChangeListener = focusChange -> {
+            MyLogger.d("focusChange: " + focusChange);
             if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT) {
-                pause();
+                transientPause();
             } else if (focusChange == AUDIOFOCUS_GAIN) {
-                resume();
+                if (mPlayerState == State.TRANSIENT_PAUSED) {
+                    resume();
+                }
             } else if (focusChange == AUDIOFOCUS_LOSS) {
                 release();
             }
@@ -67,16 +72,15 @@ public class MediaPlayerManager {
         return duration;
     }
 
-    public void play(String audioFilePath, MediaPlayer.OnCompletionListener onCompletionListener) {
+    public void play(String audioFilePath) {
         int result = requestAudioFocus();
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             try {
-
                 mMediaPlayer.reset();
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.setOnCompletionListener(mp -> {
-                    mPlayerState = State.STOPPED;
-                    onCompletionListener.onCompletion(mp);
+                    mPlayerState = State.COMPLETED;
+                    sendState(State.COMPLETED.ordinal());
                 });
                 mMediaPlayer.setOnPreparedListener(mp -> {
                     mp.start();
@@ -106,18 +110,28 @@ public class MediaPlayerManager {
             mMediaPlayer.pause();
             mPlayerState = State.PAUSED;
 //            abandonAudioFocus();
+            sendState(State.PAUSED.ordinal());
+        }
+    }
+
+    private void transientPause() {
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.pause();
+            mPlayerState = State.TRANSIENT_PAUSED;
+            sendState(State.TRANSIENT_PAUSED.ordinal());
         }
     }
 
     public void resume() {
         switch (mPlayerState) {
-            case IDLE:
-                break;
             case PAUSED:
-            case STOPPED:
+            case TRANSIENT_PAUSED:
+            case COMPLETED:
                 int result = requestAudioFocus();
                 if (result == AUDIOFOCUS_REQUEST_GRANTED) {
                     mMediaPlayer.start();
+                    mPlayerState = State.RESUMED;
+                    sendState(State.RESUMED.ordinal());
                 }
                 break;
             default:
@@ -131,6 +145,12 @@ public class MediaPlayerManager {
         if (mHttpProxyCache != null) {
             mHttpProxyCache.shutdown();
         }
+    }
+
+    private void sendState(int state) {
+        Intent intent = new Intent(Constants.MUSIC_INFO_ACTION);
+        intent.putExtra(Constants.KEY_PLAYER_STATE, state);
+        Fantasy.getAppContext().sendBroadcast(intent);
     }
 
     private int requestAudioFocus() {
@@ -149,7 +169,9 @@ public class MediaPlayerManager {
     private enum State {
         IDLE,
         PLAYING,
+        RESUMED,
+        TRANSIENT_PAUSED,// passive pause
         PAUSED,
-        STOPPED
+        COMPLETED
     }
 }

@@ -7,5 +7,5 @@ package com.frankhon.fantasymusic.utils
 object Constants {
 
     const val MUSIC_INFO_ACTION = "com.frankhon.fantasy.music"
-
+    const val KEY_PLAYER_STATE = "PLAYER_STATE"
 }

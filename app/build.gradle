@@ -1,15 +1,16 @@
-apply plugin: 'com.android.application'
-
-apply plugin: 'kotlin-android'
-
-apply plugin: 'kotlin-android-extensions'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-android-extensions'
+}
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
     defaultConfig {
         applicationId "com.frankhon.fantasymusic"
-        minSdkVersion 15
-        targetSdkVersion 28
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.compileSdk
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -31,14 +32,14 @@ dependencies {
     implementation deps.kotlin.kotlin_lib
     implementation deps.kotlin.core_ktx
     implementation deps.kotlin.kotlin_coroutine
-    implementation deps.kotlin.lifecyclescope
 
     implementation deps.support.appCompat
     implementation deps.support.material
     implementation deps.support.constraintlayout
 
     // lifecycle
-    implementation deps.lifecycle_extensions
+    implementation deps.lifecycle.runtime
+    implementation deps.lifecycle.viewmodel
 
     // navigation
     implementation deps.navigation.navigation_fragment

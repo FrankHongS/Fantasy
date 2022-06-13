@@ -1,30 +1,25 @@
 package com.frankhon.fantasymusic.fragments.search
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.frankhon.fantasymusic.AppExecutors
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.api.MusicServiceImpl
+import com.frankhon.fantasymusic.data.MusicSource
 import com.frankhon.fantasymusic.fragments.BaseFragment
 import com.frankhon.fantasymusic.media.MusicPlayer
 import com.frankhon.fantasymusic.vo.PlaySongEvent
-import com.frankhon.fantasymusic.vo.Song
 import com.frankhon.fantasymusic.vo.SongWrapper
 import com.frankhon.simplesearchview.generator.DefaultSearchSuggestionGenerator
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.hon.mylogger.MyLogger
 import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.*
 
 /**
  * Created by Frank Hon on 2020-05-19 21:06.
@@ -49,13 +44,13 @@ class SearchFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         rv_search_result.layoutManager = LinearLayoutManager(context)
         searchResultAdapter = SearchResultAdapter(AppExecutors.getInstance()) {
-            MusicPlayer.getInstance().play(it.url)
+            MusicPlayer.getInstance().play(it)
             EventBus.getDefault().post(
                 PlaySongEvent(
                     isPlaying = true,
-                    picUrl = it.album.picUrl,
+                    picUrl = it.songPic,
                     songName = it.name,
-                    artistName = it.artists[0].name
+                    artistName = it.artist
                 )
             )
         }
@@ -64,22 +59,16 @@ class SearchFragment : BaseFragment() {
         svg_search_songs.setSuggestionGenerator(DefaultSearchSuggestionGenerator(context))
         svg_search_songs.setOnSearchListener {
             MyLogger.d("text: $it")
-            MusicServiceImpl.getInstance().findSong(it)
-                .enqueue(
-                    object : Callback<SongWrapper> {
-                        override fun onResponse(
-                            call: Call<SongWrapper>,
-                            response: Response<SongWrapper>
-                        ) {
-                            val songWrapper = response.body()
-                            songWrapper?.let { updateSongList(it) }
-                        }
-
-                        override fun onFailure(call: Call<SongWrapper>, t: Throwable) {
-                            t.printStackTrace()
-                        }
+            lifecycleScope.launch {
+                val result = MusicSource.findSong(it)
+                if (result.isSuccess) {
+                    result.data?.let { songWrapper ->
+                        updateSongList(songWrapper)
                     }
-                )
+                } else {
+                    Log.e("frankhon", "onViewCreated: ${result.errorMessage}")
+                }
+            }
         }
         svg_search_songs.setOnBackClickListener {
             NavHostFragment.findNavController(this).popBackStack()

@@ -9,7 +9,10 @@ import androidx.annotation.Nullable;
 
 import com.frankhon.fantasymusic.Fantasy;
 import com.frankhon.fantasymusic.IMusicPlayer;
+import com.frankhon.fantasymusic.activities.MainActivity;
 import com.frankhon.fantasymusic.utils.Constants;
+import com.frankhon.fantasymusic.utils.Util;
+import com.frankhon.fantasymusic.vo.SimpleSong;
 import com.hon.mylogger.MyLogger;
 
 /**
@@ -40,7 +43,9 @@ public class MusicPlayerService extends Service {
         return musicPlayer;
     }
 
-    private static class ServiceStub extends IMusicPlayer.Stub {
+    private class ServiceStub extends IMusicPlayer.Stub {
+
+        private SimpleSong currentSong;
 
         @Override
         public void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat, double aDouble, String aString) throws RemoteException {
@@ -48,8 +53,15 @@ public class MusicPlayerService extends Service {
         }
 
         @Override
-        public void play(String audioFilePath) {
-            MediaPlayerManager.getInstance().play(audioFilePath);
+        public void play(SimpleSong song) {
+            if (song != null) {
+                currentSong = song;
+                startForeground(1,
+                        Util.buildNotification(MusicPlayerService.this,
+                                new Intent(MusicPlayerService.this, MainActivity.class),
+                                song));
+            }
+            MediaPlayerManager.getInstance().play(song.getLocation());
         }
 
         @Override

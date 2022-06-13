@@ -9,6 +9,8 @@ import android.os.RemoteException;
 
 import com.frankhon.fantasymusic.Fantasy;
 import com.frankhon.fantasymusic.IMusicPlayer;
+import com.frankhon.fantasymusic.vo.PlaySongEvent;
+import com.frankhon.fantasymusic.vo.SimpleSong;
 import com.hon.mylogger.MyLogger;
 
 /**
@@ -24,7 +26,6 @@ public final class MusicPlayer {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             musicPlayer = IMusicPlayer.Stub.asInterface(service);
-            MyLogger.d("onServiceConnected "+(musicPlayer==null));
         }
 
         @Override
@@ -54,9 +55,9 @@ public final class MusicPlayer {
         Fantasy.getAppContext().unbindService(connection);
     }
 
-    public void play(String audioFile){
+    public void play(SimpleSong song){
         try {
-            musicPlayer.play(audioFile);
+            musicPlayer.play(song);
         } catch (RemoteException e) {
             // do nothing
         }

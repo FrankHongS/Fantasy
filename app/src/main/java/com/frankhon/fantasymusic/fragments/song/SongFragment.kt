@@ -56,10 +56,10 @@ class SongFragment : BaseFragment {
     }
 
     private fun initView(view: View) {
-        val songsList=view.findViewById<RecyclerView>(R.id.rv_songs)
+        val songsList = view.findViewById<RecyclerView>(R.id.rv_songs)
         songsList.layoutManager = LinearLayoutManager(context)
         songAdapter = SongAdapter(songs) {
-            MusicPlayer.getInstance().play(it.location)
+            MusicPlayer.getInstance().play(it)
             EventBus.getDefault().post(
                 PlaySongEvent(
                     isPlaying = true,

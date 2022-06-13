@@ -2,6 +2,7 @@
 package com.frankhon.fantasymusic;
 
 // Declare any non-default types here with import statements
+import com.frankhon.fantasymusic.vo.SimpleSong;
 
 interface IMusicPlayer {
     /**
@@ -11,7 +12,7 @@ interface IMusicPlayer {
     void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat,
             double aDouble, String aString);
 
-    void play(String audioFilePath);
+    void play(in SimpleSong song);
     void pause();
     void resume();
 }

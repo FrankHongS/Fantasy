@@ -6,6 +6,11 @@ package com.frankhon.fantasymusic.utils
  */
 object Constants {
 
+    const val PLAYER_CHANNEL_ID = "Player"
+    const val ACTION_PREVIOUS = "Previous"
+    const val ACTION_PLAY = "Play"
+    const val ACTION_NEXT = "Next"
+
     const val MUSIC_INFO_ACTION = "com.frankhon.fantasy.music"
     const val KEY_PLAYER_STATE = "PLAYER_STATE"
 }

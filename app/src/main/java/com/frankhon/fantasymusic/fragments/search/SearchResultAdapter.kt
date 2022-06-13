@@ -13,13 +13,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.frankhon.fantasymusic.AppExecutors
 import com.frankhon.fantasymusic.R
+import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.Song
 
 /**
  * Created by Frank Hon on 2020-06-03 00:50.
  * E-mail: frank_hon@foxmail.com
  */
-class SearchResultAdapter(appExecutors: AppExecutors, private val onItemClickListener: (song: Song) -> Unit) :
+class SearchResultAdapter(
+    appExecutors: AppExecutors,
+    private val onItemClickListener: (song: SimpleSong) -> Unit
+) :
     ListAdapter<Song, SearchResultAdapter.SearchResultViewHolder>(
         AsyncDifferConfig.Builder(
             object : DiffUtil.ItemCallback<Song>() {
@@ -39,7 +43,8 @@ class SearchResultAdapter(appExecutors: AppExecutors, private val onItemClickLis
             .setBackgroundThreadExecutor(appExecutors.diskIO)
             .build()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_search_result, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_search_result, parent, false)
         return SearchResultViewHolder(view)
     }
 
@@ -54,7 +59,7 @@ class SearchResultAdapter(appExecutors: AppExecutors, private val onItemClickLis
         private val songName = itemView.findViewById<TextView>(R.id.tv_song_name)
         private val artistName = itemView.findViewById<TextView>(R.id.tv_artist_name)
 
-        fun bindView(song: Song, onItemClickListener: (song: Song) -> Unit) {
+        fun bindView(song: Song, onItemClickListener: (song: SimpleSong) -> Unit) {
             if (song.album != null) {
                 Glide.with(itemView)
                     .load(song.album.picUrl)
@@ -63,7 +68,14 @@ class SearchResultAdapter(appExecutors: AppExecutors, private val onItemClickLis
                 artistName.text = song.artists[0].name
             }
             songItem.setOnClickListener {
-                onItemClickListener(song)
+                onItemClickListener(
+                    SimpleSong(
+                        song.name,
+                        song.artists[0].name,
+                        song.url,
+                        if (song.album != null) song.album.picUrl else ""
+                    )
+                )
             }
         }
     }

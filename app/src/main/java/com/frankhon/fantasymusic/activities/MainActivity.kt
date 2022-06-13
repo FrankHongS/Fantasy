@@ -1,5 +1,6 @@
 package com.frankhon.fantasymusic.activities
 
+import android.app.NotificationManager
 import android.content.IntentFilter
 import android.os.Bundle
 import android.text.TextUtils
@@ -10,6 +11,7 @@ import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.media.MusicPlayer
 import com.frankhon.fantasymusic.receivers.MusicInfoReceiver
 import com.frankhon.fantasymusic.utils.Constants
+import com.frankhon.fantasymusic.utils.Util
 import com.frankhon.fantasymusic.vo.PlaySongEvent
 import kotlinx.android.synthetic.main.layout_panel.*
 import kotlinx.android.synthetic.main.layout_song_control.*
@@ -29,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         EventBus.getDefault().register(this)
         MusicPlayer.getInstance().init()
+        createNotificationChannel()
 
         initView()
         // todo unregister
@@ -90,9 +93,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+    private fun createNotificationChannel(){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            Util.createNotificationChannel(
+                Constants.PLAYER_CHANNEL_ID, Constants.PLAYER_CHANNEL_ID,
+                NotificationManager.IMPORTANCE_LOW
+            )
+        }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        curEvent = savedInstanceState?.getParcelable<PlaySongEvent?>(SONG_EVENT_KEY)
+        curEvent = savedInstanceState.getParcelable<PlaySongEvent?>(SONG_EVENT_KEY)
         curEvent?.let { update(it) }
     }
 

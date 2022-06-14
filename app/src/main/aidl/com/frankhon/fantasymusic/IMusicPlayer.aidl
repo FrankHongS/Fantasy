@@ -3,6 +3,7 @@ package com.frankhon.fantasymusic;
 
 // Declare any non-default types here with import statements
 import com.frankhon.fantasymusic.vo.SimpleSong;
+import java.util.List;
 
 interface IMusicPlayer {
     /**
@@ -13,6 +14,7 @@ interface IMusicPlayer {
             double aDouble, String aString);
 
     void play(in SimpleSong song);
+    void setPlayList(in List<SimpleSong> songs);
     void pause();
     void resume();
 }

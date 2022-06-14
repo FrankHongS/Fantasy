@@ -9,12 +9,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.fragments.BaseFragment
-import com.frankhon.fantasymusic.media.MediaPlayerManager
-import com.frankhon.fantasymusic.media.MusicPlayer
+import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.utils.FileUtil
 import com.frankhon.fantasymusic.vo.PlaySongEvent
 import com.frankhon.fantasymusic.vo.SimpleSong
-import kotlinx.android.synthetic.main.fragment_song.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -59,7 +57,7 @@ class SongFragment : BaseFragment {
         val songsList = view.findViewById<RecyclerView>(R.id.rv_songs)
         songsList.layoutManager = LinearLayoutManager(context)
         songAdapter = SongAdapter(songs) {
-            MusicPlayer.getInstance().play(it)
+            AudioPlayerManager.getInstance().play(it)
             EventBus.getDefault().post(
                 PlaySongEvent(
                     isPlaying = true,

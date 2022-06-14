@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.media.MusicPlayer
+import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.receivers.MusicInfoReceiver
 import com.frankhon.fantasymusic.utils.Constants
 import com.frankhon.fantasymusic.utils.Util
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         EventBus.getDefault().register(this)
-        MusicPlayer.getInstance().init()
+        AudioPlayerManager.getInstance().init()
         createNotificationChannel()
 
         initView()
@@ -41,9 +41,9 @@ class MainActivity : AppCompatActivity() {
     private fun initView() {
         ib_pause_or_resume.setOnClickListener {
             if (isPlaying) {
-                MusicPlayer.getInstance().pause()
+                AudioPlayerManager.getInstance().pause()
             } else {
-                MusicPlayer.getInstance().resume()
+                AudioPlayerManager.getInstance().resume()
             }
         }
         setDefaultImageToPanel()

@@ -9,17 +9,15 @@ import android.os.RemoteException;
 
 import com.frankhon.fantasymusic.Fantasy;
 import com.frankhon.fantasymusic.IMusicPlayer;
-import com.frankhon.fantasymusic.vo.PlaySongEvent;
 import com.frankhon.fantasymusic.vo.SimpleSong;
-import com.hon.mylogger.MyLogger;
 
 /**
  * Created by Frank Hon on 2020/11/1 8:26 PM.
  * E-mail: frank_hon@foxmail.com
  */
-public final class MusicPlayer {
+public final class AudioPlayerManager {
 
-    private static volatile MusicPlayer INSTANCE;
+    private static volatile AudioPlayerManager INSTANCE;
 
     private IMusicPlayer musicPlayer;
     private final ServiceConnection connection = new ServiceConnection() {
@@ -33,13 +31,13 @@ public final class MusicPlayer {
 
         }
     };
-    private MusicPlayer() { }
+    private AudioPlayerManager() { }
 
-    public static MusicPlayer getInstance() {
+    public static AudioPlayerManager getInstance() {
         if (INSTANCE == null) {
-            synchronized (MusicPlayer.class) {
+            synchronized (AudioPlayerManager.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new MusicPlayer();
+                    INSTANCE = new AudioPlayerManager();
                 }
             }
         }
@@ -47,7 +45,7 @@ public final class MusicPlayer {
     }
 
     public void init(){
-        Intent intent = new Intent(Fantasy.getAppContext(), MusicPlayerService.class);
+        Intent intent = new Intent(Fantasy.getAppContext(), AudioPlayerService.class);
         Fantasy.getAppContext().bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 

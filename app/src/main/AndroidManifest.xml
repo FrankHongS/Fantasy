@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <service android:name=".media.MusicPlayerService"
+        <service android:name=".media.AudioPlayerService"
                 android:process=":music.player"/>
     </application>
 

@@ -3,15 +3,14 @@ package com.frankhon.fantasymusic.activities
 import android.app.NotificationManager
 import android.content.IntentFilter
 import android.os.Bundle
-import android.text.TextUtils
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.receivers.MusicInfoReceiver
-import com.frankhon.fantasymusic.utils.Constants
-import com.frankhon.fantasymusic.utils.Util
+import com.frankhon.fantasymusic.utils.*
+import com.frankhon.fantasymusic.view.PlayModeImageButton
 import com.frankhon.fantasymusic.vo.PlaySongEvent
 import kotlinx.android.synthetic.main.layout_panel.*
 import kotlinx.android.synthetic.main.layout_song_control.*
@@ -35,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         initView()
         // todo unregister
-        registerReceiver(MusicInfoReceiver(), IntentFilter(Constants.MUSIC_INFO_ACTION))
+        registerReceiver(MusicInfoReceiver(), IntentFilter(MUSIC_INFO_ACTION))
     }
 
     private fun initView() {
@@ -47,6 +46,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
         setDefaultImageToPanel()
+        ib_play_mode.setObserver {
+            ToastUtil.showToast(
+                when (it) {
+                    PlayModeImageButton.PlayMode.SHUFFLE -> "Shuffle"
+                    PlayModeImageButton.PlayMode.LOOP_SINGLE -> "Single loop"
+                    PlayModeImageButton.PlayMode.LOOP_LIST -> "List loop"
+                }
+            )
+        }
     }
 
     @Subscribe
@@ -72,16 +80,21 @@ class MainActivity : AppCompatActivity() {
             updatePlayControlIcon(isPlaying)
         }
         if (isPlaying) {
-            if (!TextUtils.isEmpty(event.picUrl)) {
-                Glide.with(this)
-                    .load(event.picUrl)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(iv_song_bottom_pic)
-            } else {
-                setDefaultImageToPanel()
+            val song = event.song
+            song?.run {
+                songPic?.takeIf { it.isNotEmpty() }?.let {
+                    Glide.with(this@MainActivity)
+                        .load(it)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(iv_song_bottom_pic)
+                } ?: kotlin.run {
+                    setDefaultImageToPanel()
+                }
+                tv_bottom_song_name.text = name
+                tv_bottom_artist_name.text = artist
+                tv_current_time.text = msToMMSS(0)
+                tv_duration.text = msToMMSS(duration)
             }
-            tv_bottom_song_name.text = event.songName
-            tv_bottom_artist_name.text = event.artistName
         }
     }
 
@@ -93,10 +106,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun createNotificationChannel(){
+    private fun createNotificationChannel() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             Util.createNotificationChannel(
-                Constants.PLAYER_CHANNEL_ID, Constants.PLAYER_CHANNEL_ID,
+                PLAYER_CHANNEL_ID,
+                PLAYER_CHANNEL_ID,
                 NotificationManager.IMPORTANCE_LOW
             )
         }

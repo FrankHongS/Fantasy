@@ -1,5 +1,6 @@
 package com.frankhon.fantasymusic.fragments.song
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,11 +42,12 @@ class SongFragment : BaseFragment {
         return view
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
             val newSongs = withContext(Dispatchers.IO) {
-                FileUtil.getSongsFromAssets(context!!)
+                FileUtil.getSongsFromAssets(requireContext())
             }
             songs.clear()
             songs.addAll(newSongs)
@@ -56,16 +58,8 @@ class SongFragment : BaseFragment {
     private fun initView(view: View) {
         val songsList = view.findViewById<RecyclerView>(R.id.rv_songs)
         songsList.layoutManager = LinearLayoutManager(context)
-        songAdapter = SongAdapter(songs) {
-            AudioPlayerManager.getInstance().play(it)
-            EventBus.getDefault().post(
-                PlaySongEvent(
-                    isPlaying = true,
-                    picUrl = it.songPic,
-                    songName = it.name,
-                    artistName = it.artist
-                )
-            )
+        songAdapter = SongAdapter(songs) { _, index ->
+            AudioPlayerManager.getInstance().setPlayList(songs, index)
         }
         songsList.adapter = songAdapter
     }

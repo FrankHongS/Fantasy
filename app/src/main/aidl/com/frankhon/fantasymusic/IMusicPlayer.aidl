@@ -14,7 +14,7 @@ interface IMusicPlayer {
             double aDouble, String aString);
 
     void play(in SimpleSong song);
-    void setPlayList(in List<SimpleSong> songs);
+    void setPlayList(in List<SimpleSong> songs, int index);
     void pause();
     void resume();
 }

@@ -3,8 +3,10 @@ package com.frankhon.fantasymusic.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.frankhon.fantasymusic.utils.Constants
+import com.frankhon.fantasymusic.media.PlayerState
+import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.vo.PlaySongEvent
+import com.frankhon.fantasymusic.vo.SimpleSong
 import org.greenrobot.eventbus.EventBus
 
 /**
@@ -15,12 +17,42 @@ import org.greenrobot.eventbus.EventBus
  */
 class MusicInfoReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        val state = intent!!.getIntExtra(Constants.KEY_PLAYER_STATE, -1)
-        when (state) {
-            2 -> EventBus.getDefault().post(PlaySongEvent(isResumed = true))
-            3 -> EventBus.getDefault().post(PlaySongEvent())
-            4 -> EventBus.getDefault().post(PlaySongEvent())
-            5 -> EventBus.getDefault().post(PlaySongEvent())
+        intent?.let {
+            val stateName = it.getStringExtra(KEY_PLAYER_STATE)
+            val picUrl = it.getStringExtra(KEY_PIC_URL)
+            val songName = it.getStringExtra(KEY_SONG_NAME)
+            val artistName = it.getStringExtra(KEY_ARTIST_NAME)
+            val duration = it.getLongExtra(KEY_DURATION, 0L)
+            val song = it.getParcelableExtra<SimpleSong>(KEY_CUR_SONG)
+            val state = if (stateName == null) {
+                null
+            } else {
+                PlayerState.valueOf(stateName)
+            }
+            var event: PlaySongEvent? = null
+            when (state) {
+                PlayerState.PLAYING -> event = PlaySongEvent(
+                    song = song,
+                    isPlaying = true
+                )
+                PlayerState.RESUMED -> event = PlaySongEvent(
+                    song = song,
+                    isResumed = true
+                )
+                PlayerState.PAUSED -> event = PlaySongEvent(
+                    song = song
+                )
+                PlayerState.TRANSIENT_PAUSED -> event = PlaySongEvent(
+                    song = song
+                )
+                PlayerState.COMPLETED -> event = PlaySongEvent(
+                    song = song
+                )
+                else -> {}
+            }
+            if (event != null) {
+                EventBus.getDefault().post(event)
+            }
         }
     }
 }

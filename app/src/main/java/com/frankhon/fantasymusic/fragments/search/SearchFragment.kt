@@ -13,13 +13,11 @@ import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.data.MusicSource
 import com.frankhon.fantasymusic.fragments.BaseFragment
 import com.frankhon.fantasymusic.media.AudioPlayerManager
-import com.frankhon.fantasymusic.vo.PlaySongEvent
 import com.frankhon.fantasymusic.vo.SongWrapper
 import com.frankhon.simplesearchview.generator.DefaultSearchSuggestionGenerator
 import com.hon.mylogger.MyLogger
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by Frank Hon on 2020-05-19 21:06.
@@ -45,14 +43,6 @@ class SearchFragment : BaseFragment() {
         rv_search_result.layoutManager = LinearLayoutManager(context)
         searchResultAdapter = SearchResultAdapter(AppExecutors.getInstance()) {
             AudioPlayerManager.getInstance().play(it)
-            EventBus.getDefault().post(
-                PlaySongEvent(
-                    isPlaying = true,
-                    picUrl = it.songPic,
-                    songName = it.name,
-                    artistName = it.artist
-                )
-            )
         }
         rv_search_result.adapter = searchResultAdapter
 

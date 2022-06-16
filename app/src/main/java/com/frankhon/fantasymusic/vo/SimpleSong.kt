@@ -7,17 +7,20 @@ import android.os.Parcelable
  * Created by Frank_Hon on 11/12/2020.
  * E-mail: v-shhong@microsoft.com
  */
-data class SimpleSong(
-    val name: String?,
-    val artist: String?,
-    val location: String?,
-    val songPic: String? = ""
+class SimpleSong(
+    var name: String?,
+    var artist: String?,
+    var location: String?,
+    var songPic: String? = "",
+    // unit, ms
+    var duration: Long = 0L
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString()
+        parcel.readString(),
+        parcel.readLong()
     ) {
     }
 
@@ -26,6 +29,7 @@ data class SimpleSong(
         parcel.writeString(artist)
         parcel.writeString(location)
         parcel.writeString(songPic)
+        parcel.writeLong(duration)
     }
 
     override fun describeContents(): Int {

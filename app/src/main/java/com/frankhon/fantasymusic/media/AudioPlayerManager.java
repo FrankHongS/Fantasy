@@ -11,6 +11,8 @@ import com.frankhon.fantasymusic.Fantasy;
 import com.frankhon.fantasymusic.IMusicPlayer;
 import com.frankhon.fantasymusic.vo.SimpleSong;
 
+import java.util.List;
+
 /**
  * Created by Frank Hon on 2020/11/1 8:26 PM.
  * E-mail: frank_hon@foxmail.com
@@ -31,7 +33,9 @@ public final class AudioPlayerManager {
 
         }
     };
-    private AudioPlayerManager() { }
+
+    private AudioPlayerManager() {
+    }
 
     public static AudioPlayerManager getInstance() {
         if (INSTANCE == null) {
@@ -44,16 +48,28 @@ public final class AudioPlayerManager {
         return INSTANCE;
     }
 
-    public void init(){
+    public void init() {
         Intent intent = new Intent(Fantasy.getAppContext(), AudioPlayerService.class);
         Fantasy.getAppContext().bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
-    public void clear(){
+    public void clear() {
         Fantasy.getAppContext().unbindService(connection);
     }
 
-    public void play(SimpleSong song){
+    public void setPlayList(List<SimpleSong> playList) {
+        setPlayList(playList, 0);
+    }
+
+    public void setPlayList(List<SimpleSong> playList, int index) {
+        try {
+            musicPlayer.setPlayList(playList, index);
+        } catch (RemoteException e) {
+            // do nothing
+        }
+    }
+
+    public void play(SimpleSong song) {
         try {
             musicPlayer.play(song);
         } catch (RemoteException e) {
@@ -61,7 +77,7 @@ public final class AudioPlayerManager {
         }
     }
 
-    public void pause(){
+    public void pause() {
         try {
             musicPlayer.pause();
         } catch (RemoteException e) {
@@ -69,7 +85,7 @@ public final class AudioPlayerManager {
         }
     }
 
-    public void resume(){
+    public void resume() {
         try {
             musicPlayer.resume();
         } catch (RemoteException e) {

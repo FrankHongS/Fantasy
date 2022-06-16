@@ -19,7 +19,7 @@ import com.frankhon.fantasymusic.vo.SimpleSong
  */
 class SongAdapter(
     private val songs: List<SimpleSong>,
-    private val onItemClickListener: (song: SimpleSong) -> Unit
+    private val onItemClickListener: (song: SimpleSong, index: Int) -> Unit
 ) :
     RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
@@ -34,7 +34,7 @@ class SongAdapter(
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = songs[position]
-        holder.bindView(song, onItemClickListener)
+        holder.bindView(song, position, onItemClickListener)
     }
 
     class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -44,7 +44,11 @@ class SongAdapter(
         private val songName = itemView.findViewById<TextView>(R.id.tv_song_name)
         private val artistName = itemView.findViewById<TextView>(R.id.tv_artist_name)
 
-        fun bindView(song: SimpleSong, onItemClickListener: (song: SimpleSong) -> Unit) {
+        fun bindView(
+            song: SimpleSong,
+            index: Int,
+            onItemClickListener: (song: SimpleSong, index: Int) -> Unit
+        ) {
             val songPic = song.songPic
             if (TextUtils.isEmpty(songPic)) {
                 songPicView.setImageResource(R.mipmap.ic_launcher)
@@ -57,7 +61,7 @@ class SongAdapter(
             songName.text = song.name
             artistName.text = song.artist
             songItem.setOnClickListener {
-                onItemClickListener(song)
+                onItemClickListener(song, index)
             }
         }
 

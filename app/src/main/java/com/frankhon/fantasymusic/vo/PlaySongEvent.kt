@@ -8,25 +8,21 @@ import android.os.Parcelable
  * E-mail: frank_hon@foxmail.com
  */
 data class PlaySongEvent(
+    val song: SimpleSong?,
     val isPlaying: Boolean = false,
-    val isResumed: Boolean = false,
-    val picUrl: String? = "",
-    val songName: String? = "",
-    val artistName: String? = ""
+    val isResumed: Boolean = false
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readParcelable(SimpleSong::class.java.classLoader),
         parcel.readByte() != 0.toByte(),
-        parcel.readByte() != 0.toByte(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString()
-    )
+        parcel.readByte() != 0.toByte()
+    ) {
+    }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeParcelable(song, flags)
         parcel.writeByte(if (isPlaying) 1 else 0)
-        parcel.writeString(picUrl)
-        parcel.writeString(songName)
-        parcel.writeString(artistName)
+        parcel.writeByte(if (isResumed) 1 else 0)
     }
 
     override fun describeContents(): Int {
@@ -42,4 +38,5 @@ data class PlaySongEvent(
             return arrayOfNulls(size)
         }
     }
+
 }

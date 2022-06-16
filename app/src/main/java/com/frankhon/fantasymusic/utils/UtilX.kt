@@ -1,6 +1,9 @@
 package com.frankhon.fantasymusic.utils
 
 import com.frankhon.fantasymusic.Fantasy
+import com.hon.mylogger.MyLogger
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Created by Frank Hon on 2022/6/14 11:18 下午.
@@ -22,4 +25,14 @@ val Int.dp: Int
 
 fun getSystemService(name: String): Any? {
     return Fantasy.getAppContext().getSystemService(name)
+}
+
+fun msToMMSS(millis: Long): String {
+    try {
+        val sdf = SimpleDateFormat("mm:ss", Locale.CHINA)
+        return sdf.format(millis)
+    } catch (e: IllegalArgumentException) {
+        MyLogger.e(e)
+    }
+    return ""
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:drawable="@drawable/ic_play_song">
+
+    <target
+            android:name="play"
+            android:animation="@animator/play_to_pause_path_morph" />
+
+</animated-vector>

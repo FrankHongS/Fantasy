@@ -24,6 +24,7 @@ import com.frankhon.fantasymusic.utils.Util;
  * Created by Frank_Hon on 1/6/2020.
  * E-mail: v-shhong@microsoft.com
  */
+//todo refactor
 public class PanelLayout extends ViewGroup {
 
     private static final String TAG = PanelLayout.class.getSimpleName();

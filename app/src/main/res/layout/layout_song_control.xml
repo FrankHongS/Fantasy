@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools" android:orientation="horizontal"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content">
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="wrap_content"
+        android:layout_height="68dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
     <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:src="@drawable/ic_previous_song"
             android:id="@+id/ib_previous_song"
-            android:layout_marginRight="8dp" android:layout_marginEnd="8dp" tools:ignore="ContentDescription"/>
-    <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
             android:background="@null"
-            android:src="@drawable/ic_play_song"
+            android:src="@drawable/selector_previous_song_btn"
+            tools:ignore="ContentDescription" />
+
+    <com.frankhon.fantasymusic.view.AnimatedAudioControlButton
             android:id="@+id/ib_pause_or_resume"
-            android:layout_marginRight="8dp" android:layout_marginEnd="8dp" tools:ignore="ContentDescription"/>
+            android:layout_width="48dp"
+            android:layout_height="match_parent" />
+
     <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/ib_next_song"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
             android:background="@null"
-            android:src="@drawable/ic_next_song"
-            android:id="@+id/ib_next_song" tools:ignore="ContentDescription"/>
+            android:src="@drawable/selector_next_song_btn"
+            tools:ignore="ContentDescription" />
 
 </LinearLayout>

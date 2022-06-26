@@ -21,4 +21,6 @@ interface AudioLifecycleObserver {
     fun onCompleted() {}
 
     fun onError() {}
+
+    fun onProgressUpdated(curPosition: Int, duration: Int) {}
 }

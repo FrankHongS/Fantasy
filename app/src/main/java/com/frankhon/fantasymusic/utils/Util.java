@@ -7,24 +7,16 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.media.session.MediaSession;
 import android.os.Build;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.frankhon.fantasymusic.Fantasy;
 import com.frankhon.fantasymusic.R;
 import com.frankhon.fantasymusic.receivers.MusicInfoReceiver;
 import com.frankhon.fantasymusic.vo.SimpleSong;
-
-import java.io.File;
 
 /**
  * Created by Frank_Hon on 1/6/2020.
@@ -78,7 +70,7 @@ public final class Util {
                 .setOnlyAlertOnce(true)
                 .setShowWhen(false)
                 .addAction(R.drawable.ic_previous_song, "Previous", previousPendingIntent)
-                .addAction(R.drawable.ic_play_song, "Play", playPendingIntent)
+                .addAction(R.drawable.ic_pause_song, "Play", playPendingIntent)
                 .addAction(R.drawable.ic_next_song, "Next", nextPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();

@@ -52,9 +52,8 @@
                 android:id="@+id/include"
                 layout="@layout/layout_song_control"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
+                android:layout_height="68dp"
+                android:layout_marginEnd="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -71,14 +70,15 @@
 
         <TextView
                 android:id="@+id/tv_current_time"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:textAlignment="viewEnd"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="@+id/sb_play_progress"
                 app:layout_constraintEnd_toStartOf="@+id/sb_play_progress"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/sb_play_progress"
-                android:textSize="12sp"
                 tools:text="00:21" />
 
         <SeekBar
@@ -94,13 +94,14 @@
 
         <TextView
                 android:id="@+id/tv_duration"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:textAlignment="viewStart"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="@+id/sb_play_progress"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/sb_play_progress"
                 app:layout_constraintTop_toTopOf="@id/sb_play_progress"
-                android:textSize="12sp"
                 tools:text="02:52" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

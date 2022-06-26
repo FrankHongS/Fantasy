@@ -1,12 +1,12 @@
 package com.frankhon.fantasymusic.media;
 
-import static com.frankhon.fantasymusic.utils.Constants.KEY_ARTIST_NAME;
 import static com.frankhon.fantasymusic.utils.Constants.KEY_CUR_SONG;
 import static com.frankhon.fantasymusic.utils.Constants.KEY_DURATION;
-import static com.frankhon.fantasymusic.utils.Constants.KEY_PIC_URL;
 import static com.frankhon.fantasymusic.utils.Constants.KEY_PLAYER_STATE;
-import static com.frankhon.fantasymusic.utils.Constants.KEY_SONG_NAME;
+import static com.frankhon.fantasymusic.utils.Constants.KEY_SONG_PROGRESS;
 import static com.frankhon.fantasymusic.utils.Constants.MUSIC_INFO_ACTION;
+import static com.frankhon.fantasymusic.utils.Constants.MUSIC_PROGRESS_ACTION;
+import static com.frankhon.fantasymusic.utils.Constants.PACKAGE_ID;
 
 import android.app.Service;
 import android.content.Intent;
@@ -90,10 +90,7 @@ public class AudioPlayerService extends Service {
         @Override
         public void setPlayList(List<SimpleSong> playList, int index) {
             this.playList = playList;
-            if (playList != null && index < playList.size()) {
-                play(playList.get(index));
-                curIndex = index;
-            }
+            play(index);
         }
 
         @Override
@@ -104,6 +101,23 @@ public class AudioPlayerService extends Service {
         @Override
         public void resume() {
             AudioPlayer.resume();
+        }
+
+        @Override
+        public void next() {
+            int index = curIndex + 1;
+            play(index);
+        }
+
+        @Override
+        public void previous() {
+            int index = curIndex - 1;
+            play(index);
+        }
+
+        @Override
+        public void seekTo(int msec) {
+            AudioPlayer.seekTo(msec);
         }
 
         //region Audio Lifecycle
@@ -141,28 +155,47 @@ public class AudioPlayerService extends Service {
         public void onCompleted() {
             this.curState = PlayerState.COMPLETED;
             sendState();
-            if (playList != null && curIndex + 1 < playList.size()) {
-                play(playList.get(curIndex + 1));
-                curIndex++;
-            }
+            int index = curIndex + 1;
+            play(index);
         }
 
         @Override
         public void onError() {
         }
+
+        @Override
+        public void onProgressUpdated(int curPosition, int duration) {
+            updateProgress(curPosition, duration);
+        }
+
         //endregion
+
+        private void play(int index) {
+            if (playList != null && index >= 0 && index < playList.size()) {
+                SimpleSong song = playList.get(index);
+                AudioPlayer.play(song);
+                curIndex = index;
+            }
+        }
 
         private void sendState() {
             if (curSong != null) {
                 Intent intent = new Intent(MUSIC_INFO_ACTION);
+                //在Android 8.0 以上要求静态注册的BroadcastReceiver所接收的消息必须是显式的，
+                // 我们通过设置包名的方式来告诉系统这个Intent是要发给哪个应用来接收。不设置的话就会接收不到消息
+                intent.setPackage(PACKAGE_ID);
                 intent.putExtra(KEY_PLAYER_STATE, curState.name());
                 intent.putExtra(KEY_CUR_SONG, curSong);
-                intent.putExtra(KEY_PIC_URL, curSong.getSongPic());
-                intent.putExtra(KEY_SONG_NAME, curSong.getName());
-                intent.putExtra(KEY_ARTIST_NAME, curSong.getArtist());
-                intent.putExtra(KEY_DURATION, curSong.getDuration());
                 Fantasy.getAppContext().sendBroadcast(intent);
             }
+        }
+
+        private void updateProgress(int curPosition, int duration) {
+            Intent intent = new Intent(MUSIC_PROGRESS_ACTION);
+            intent.setPackage(PACKAGE_ID);
+            intent.putExtra(KEY_SONG_PROGRESS, curPosition);
+            intent.putExtra(KEY_DURATION, duration);
+            Fantasy.getAppContext().sendBroadcast(intent);
         }
     }
 }

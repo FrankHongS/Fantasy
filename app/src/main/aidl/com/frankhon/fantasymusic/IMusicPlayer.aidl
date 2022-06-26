@@ -17,4 +17,7 @@ interface IMusicPlayer {
     void setPlayList(in List<SimpleSong> songs, int index);
     void pause();
     void resume();
+    void next();
+    void previous();
+    void seekTo(int progress);
 }

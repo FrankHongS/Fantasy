@@ -1,17 +1,21 @@
 package com.frankhon.fantasymusic.activities
 
 import android.app.NotificationManager
-import android.content.IntentFilter
 import android.os.Bundle
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.media.AudioPlayerManager
-import com.frankhon.fantasymusic.receivers.MusicInfoReceiver
-import com.frankhon.fantasymusic.utils.*
+import com.frankhon.fantasymusic.utils.PLAYER_CHANNEL_ID
+import com.frankhon.fantasymusic.utils.ToastUtil
+import com.frankhon.fantasymusic.utils.Util
+import com.frankhon.fantasymusic.utils.msToMMSS
+import com.frankhon.fantasymusic.view.AnimatedAudioControlButton.PlayState
 import com.frankhon.fantasymusic.view.PlayModeImageButton
 import com.frankhon.fantasymusic.vo.PlaySongEvent
+import com.frankhon.fantasymusic.vo.SongProgressEvent
 import kotlinx.android.synthetic.main.layout_panel.*
 import kotlinx.android.synthetic.main.layout_song_control.*
 import org.greenrobot.eventbus.EventBus
@@ -29,21 +33,27 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         EventBus.getDefault().register(this)
-        AudioPlayerManager.getInstance().init()
+        AudioPlayerManager.connect()
         createNotificationChannel()
 
         initView()
         // todo unregister
-        registerReceiver(MusicInfoReceiver(), IntentFilter(MUSIC_INFO_ACTION))
+//        registerReceiver(MusicInfoReceiver(), IntentFilter(MUSIC_INFO_ACTION))
     }
 
     private fun initView() {
-        ib_pause_or_resume.setOnClickListener {
-            if (isPlaying) {
-                AudioPlayerManager.getInstance().pause()
-            } else {
-                AudioPlayerManager.getInstance().resume()
+        ib_pause_or_resume.setOnControlButtonClickListener { curState ->
+            when (curState) {
+                PlayState.PLAYING -> AudioPlayerManager.resume()
+                PlayState.PAUSING -> AudioPlayerManager.pause()
+                else -> {}
             }
+        }
+        ib_next_song.setOnClickListener {
+            AudioPlayerManager.next()
+        }
+        ib_previous_song.setOnClickListener {
+            AudioPlayerManager.previous()
         }
         setDefaultImageToPanel()
         ib_play_mode.setObserver {
@@ -55,11 +65,35 @@ class MainActivity : AppCompatActivity() {
                 }
             )
         }
+        tv_current_time.text = msToMMSS(0)
+        sb_play_progress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                seekBar.tag = true
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                seekBar.tag = false
+                AudioPlayerManager.seekTo(seekBar.progress)
+            }
+        })
     }
 
     @Subscribe
     fun updatePanel(event: PlaySongEvent) {
         update(event)
+    }
+
+    @Subscribe
+    fun onProgressEventReceived(event: SongProgressEvent) {
+        tv_current_time.text = msToMMSS(event.progress.toLong())
+        val isTracking = (sb_play_progress.tag as? Boolean) ?: false
+        //未拖拽时更新进度条
+        if (!isTracking) {
+            sb_play_progress.progress = event.progress
+        }
     }
 
     private fun setDefaultImageToPanel() {
@@ -76,8 +110,10 @@ class MainActivity : AppCompatActivity() {
             updatePlayControlIcon(isPlaying)
             return
         } else {
-            isPlaying = event.isPlaying
-            updatePlayControlIcon(isPlaying)
+            if (isPlaying != event.isPlaying) {
+                isPlaying = event.isPlaying
+                updatePlayControlIcon(isPlaying)
+            }
         }
         if (isPlaying) {
             val song = event.song
@@ -85,6 +121,8 @@ class MainActivity : AppCompatActivity() {
                 songPic?.takeIf { it.isNotEmpty() }?.let {
                     Glide.with(this@MainActivity)
                         .load(it)
+                        .placeholder(R.mipmap.ic_launcher)
+                        .error(R.mipmap.ic_launcher)
                         .apply(RequestOptions.circleCropTransform())
                         .into(iv_song_bottom_pic)
                 } ?: kotlin.run {
@@ -92,17 +130,19 @@ class MainActivity : AppCompatActivity() {
                 }
                 tv_bottom_song_name.text = name
                 tv_bottom_artist_name.text = artist
-                tv_current_time.text = msToMMSS(0)
                 tv_duration.text = msToMMSS(duration)
+                sb_play_progress.run {
+                    max = duration.toInt()
+                }
             }
         }
     }
 
     private fun updatePlayControlIcon(isPlaying: Boolean) {
         if (isPlaying) {
-            ib_pause_or_resume.setImageResource(R.drawable.ic_pause_song)
+            ib_pause_or_resume.setPlayState(PlayState.PLAYING)
         } else {
-            ib_pause_or_resume.setImageResource(R.drawable.ic_play_song)
+            ib_pause_or_resume.setPlayState(PlayState.PAUSING)
         }
     }
 
@@ -118,7 +158,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        curEvent = savedInstanceState.getParcelable<PlaySongEvent?>(SONG_EVENT_KEY)
+        curEvent = savedInstanceState.getParcelable(SONG_EVENT_KEY)
         curEvent?.let { update(it) }
     }
 

@@ -9,6 +9,7 @@ import com.frankhon.fantasymusic.utils.ToastUtil.showToast
 import com.frankhon.fantasymusic.utils.getSystemService
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.hon.mylogger.MyLogger
+import kotlinx.coroutines.*
 import java.io.IOException
 
 /**
@@ -49,6 +50,8 @@ object AudioPlayer {
     private var isTransientPause = false
     private lateinit var curSong: SimpleSong
 
+    private lateinit var mainScope: CoroutineScope
+
     @JvmStatic
     fun registerObserver(observer: AudioLifecycleObserver) {
         if (!observers.contains(observer)) {
@@ -73,7 +76,7 @@ object AudioPlayer {
             MyLogger.d("prepare() playerState = ${PlayerState.PAUSED}")
             mMediaPlayer.pause()
             // abandonAudioFocus();
-            notifyLifecycleObserver(PlayerState.PAUSED)
+            updatePlayerState(PlayerState.PAUSED)
         }
     }
 
@@ -82,16 +85,23 @@ object AudioPlayer {
         if (!mMediaPlayer.isPlaying) {
             val result = requestAudioFocus()
             if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                MyLogger.d("prepare() playerState = ${PlayerState.RESUMED}")
                 isTransientPause = false
                 mMediaPlayer.start()
-                notifyLifecycleObserver(PlayerState.RESUMED)
+                MyLogger.d("resume() playerState = ${PlayerState.RESUMED}")
+                updatePlayerState(PlayerState.RESUMED)
+                MyLogger.d("resume() playerState = ${PlayerState.PLAYING}")
+                updatePlayerState(PlayerState.PLAYING)
             }
         }
     }
 
+    @JvmStatic
+    fun seekTo(msec: Int) {
+        mMediaPlayer.seekTo(msec)
+    }
+
     private fun prepare(audioFilePath: String) {
-        notifyLifecycleObserver(PlayerState.PREPARING)
+        updatePlayerState(PlayerState.PREPARING)
         MyLogger.d("prepare() playerState = ${PlayerState.PREPARING}")
         val result = requestAudioFocus()
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
@@ -112,22 +122,47 @@ object AudioPlayer {
         }
     }
 
-    private fun onPrepared(mediaPlayer: MediaPlayer) {
-        curSong?.duration = mediaPlayer.duration.toLong()
-        mediaPlayer.start()
-        notifyLifecycleObserver(PlayerState.PLAYING)
+    private fun onPrepared(player: MediaPlayer) {
+        curSong.duration = player.duration.toLong()
+        player.start()
+        updatePlayerState(PlayerState.PLAYING)
         MyLogger.d("onPrepared() playerState = ${PlayerState.PLAYING}")
+    }
+
+    private fun startUpdateProgress() {
+        mainScope = MainScope().apply {
+            launch {
+                while (true) {
+                    delay(1000)
+                    notifyPlayerProgress()
+                }
+            }
+        }
+    }
+
+    private fun notifyPlayerProgress() {
+        observers.forEach {
+            mMediaPlayer.let { player ->
+                it.onProgressUpdated(player.currentPosition, player.duration)
+            }
+        }
+    }
+
+    private fun stopUpdateProgress() {
+        mainScope.cancel()
     }
 
     private fun onCompleted(mediaPlayer: MediaPlayer) {
         MyLogger.d("onCompleted() playerState = ${PlayerState.COMPLETED}")
-        notifyLifecycleObserver(PlayerState.COMPLETED)
+        updatePlayerState(PlayerState.COMPLETED)
+        stopUpdateProgress()
     }
 
     private fun onError(mediaPlayer: MediaPlayer, what: Int, extra: Int): Boolean {
         MyLogger.d("onError() playerState = ${PlayerState.ERROR}")
         mediaPlayer.reset()
-        notifyLifecycleObserver(PlayerState.ERROR)
+        updatePlayerState(PlayerState.ERROR)
+        stopUpdateProgress()
         return false
     }
 
@@ -143,6 +178,15 @@ object AudioPlayer {
         mMediaPlayer.release()
         abandonAudioFocus()
         mHttpProxyCache?.shutdown()
+    }
+
+    private fun updatePlayerState(state: PlayerState) {
+        notifyLifecycleObserver(state)
+        when (state) {
+            PlayerState.PLAYING -> startUpdateProgress()
+            PlayerState.PAUSED, PlayerState.COMPLETED, PlayerState.ERROR -> stopUpdateProgress()
+            else -> {}
+        }
     }
 
     private fun notifyLifecycleObserver(state: PlayerState) {
@@ -168,8 +212,8 @@ object AudioPlayer {
             }
             else -> {}
         }
-        for (observer in observers) {
-            consumer?.invoke(observer)
+        observers.forEach {
+            consumer?.invoke(it)
         }
     }
 

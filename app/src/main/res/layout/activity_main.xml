@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.frankhon.fantasymusic.view.PanelLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<com.frankhon.fantasymusic.view.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:panelHeight="@dimen/default_panel_height">
+        android:layout_height="match_parent">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment"
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
@@ -15,8 +13,8 @@
             app:navGraph="@navigation/main_nav_graph" />
 
     <include
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/default_panel_total_height"
-        layout="@layout/layout_panel"/>
+            layout="@layout/layout_panel"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_panel_total_height" />
 
-</com.frankhon.fantasymusic.view.PanelLayout>
+</com.frankhon.fantasymusic.view.SlidingUpPanelLayout>

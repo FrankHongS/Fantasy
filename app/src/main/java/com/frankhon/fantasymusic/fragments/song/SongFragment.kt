@@ -59,7 +59,7 @@ class SongFragment : BaseFragment {
         val songsList = view.findViewById<RecyclerView>(R.id.rv_songs)
         songsList.layoutManager = LinearLayoutManager(context)
         songAdapter = SongAdapter(songs) { _, index ->
-            AudioPlayerManager.getInstance().setPlayList(songs, index)
+            AudioPlayerManager.setPlayList(songs, index)
         }
         songsList.adapter = songAdapter
     }

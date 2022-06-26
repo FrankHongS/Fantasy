@@ -42,7 +42,7 @@ class SearchFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         rv_search_result.layoutManager = LinearLayoutManager(context)
         searchResultAdapter = SearchResultAdapter(AppExecutors.getInstance()) {
-            AudioPlayerManager.getInstance().play(it)
+            AudioPlayerManager.play(it)
         }
         rv_search_result.adapter = searchResultAdapter
 

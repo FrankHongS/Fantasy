@@ -2,7 +2,6 @@ package com.frankhon.fantasymusic.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import androidx.appcompat.widget.AppCompatImageButton
 import com.frankhon.fantasymusic.R
 
@@ -26,9 +25,9 @@ class PlayModeImageButton @JvmOverloads constructor(
     private var position = 0
     private val size = PlayMode.values().size
     private var icons = listOf(
-        R.drawable.loop_list,
+        R.drawable.ic_loop_list,
         R.drawable.shuffle,
-        R.drawable.loop_single
+        R.drawable.ic_loop_single
     )
     private var observer: ((PlayMode) -> Unit)? = null
 

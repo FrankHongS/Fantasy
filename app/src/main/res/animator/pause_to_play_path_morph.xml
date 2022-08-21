@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--    valueFrom和valueTo结构要一致-->
+<!--    valueFrom和valueTo结构要一致-->
     <objectAnimator
             android:duration="500"
             android:propertyName="pathData"
-            android:valueFrom="M 2.5,1 L 2.5,9 L5.5,7 L5.5,3z M 5.5,3 L5.5,7 L8.5,5 L8.5,5z"
-            android:valueTo="M 2.5,2 L 2.5,8 L4,8 L4,2z M 6,2 L6,8 L7.5,8 L7.5,2z"
+            android:valueFrom="M 2.5,2 L 2.5,8 L4,8 L4,2z M 6,2 L6,8 L7.5,8 L7.5,2z"
+            android:valueTo="M 2.5,1 L 2.5,9 L5.5,7 L5.5,3z M 5.5,3 L5.5,7 L8.5,5 L8.5,5z"
             android:valueType="pathType" />
 </set>

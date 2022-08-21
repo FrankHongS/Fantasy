@@ -15,6 +15,8 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import androidx.core.animation.doOnCancel
+import androidx.core.view.postDelayed
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.utils.dp
 
@@ -64,6 +66,9 @@ class AnimatedAudioControlButton @JvmOverloads constructor(
                         }
                     }
             )
+            doOnCancel {
+                invalidate()
+            }
         }
     }
     //endregion
@@ -79,9 +84,9 @@ class AnimatedAudioControlButton @JvmOverloads constructor(
             setOnClickListener {
                 when (playState) {
                     PlayState.PLAYING -> {
-                        setPlayState(PlayState.PAUSING)
+                        setPlayState(PlayState.PAUSED)
                     }
-                    PlayState.PAUSING -> {
+                    PlayState.PAUSED -> {
                         setPlayState(PlayState.PLAYING)
                     }
                     else -> {
@@ -139,20 +144,25 @@ class AnimatedAudioControlButton @JvmOverloads constructor(
         )
     }
 
-    private fun switchState() {
-        if (playState != PlayState.PREPARING && loadingAnimator.isRunning) {
-            loadingAnimator.cancel()
-        }
+    private fun switchState(shouldAnimate: Boolean = true) {
         imageButton.run {
             when (playState) {
                 PlayState.PLAYING -> {
-                    setImageResource(R.drawable.pause_to_play_vector_drawable)
+                    if (shouldAnimate) {
+                        setImageResource(R.drawable.play_to_pause_vector_drawable)
+                    } else {
+                        setImageResource(R.drawable.ic_pause_song)
+                    }
                 }
-                PlayState.PAUSING -> {
-                    setImageResource(R.drawable.play_to_pause_vector_drawable)
+                PlayState.PAUSED -> {
+                    if (shouldAnimate) {
+                        setImageResource(R.drawable.pause_to_play_vector_drawable)
+                    } else {
+                        setImageResource(R.drawable.ic_play_song)
+                    }
                 }
                 PlayState.PREPARING -> {
-                    imageButton.setImageResource(R.drawable.ic_play_song)
+                    imageButton.setImageResource(R.drawable.ic_pause_song)
                     loadingAnimator.start()
                     return
                 }
@@ -168,8 +178,19 @@ class AnimatedAudioControlButton @JvmOverloads constructor(
         if (playState == state) {
             return
         }
+        if (state != PlayState.PREPARING && loadingAnimator.isRunning) {
+            postDelayed(500) {
+                loadingAnimator.cancel()
+                innerSetPlayState(state, false)
+            }
+        } else {
+            innerSetPlayState(state)
+        }
+    }
+
+    private fun innerSetPlayState(state: PlayState, shouldAnimate: Boolean = true) {
         this.playState = state
-        switchState()
+        switchState(shouldAnimate)
     }
 
     fun setOnControlButtonClickListener(listener: (PlayState) -> Unit) {
@@ -179,7 +200,7 @@ class AnimatedAudioControlButton @JvmOverloads constructor(
     enum class PlayState {
         INITIAL,
         PLAYING,
-        PAUSING,
+        PAUSED,
         PREPARING;
     }
 

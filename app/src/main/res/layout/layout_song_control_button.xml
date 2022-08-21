@@ -9,7 +9,7 @@
             android:layout_height="36dp"
             android:layout_gravity="center"
             android:background="@null"
-            android:src="@drawable/ic_pause_song"
+            android:src="@drawable/ic_play_song"
             tools:ignore="ContentDescription" />
 
 </merge>

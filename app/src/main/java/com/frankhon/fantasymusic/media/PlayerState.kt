@@ -9,8 +9,8 @@ enum class PlayerState {
     PREPARING,
     PLAYING,
     RESUMED,
-    TRANSIENT_PAUSED,  // passive pause
     PAUSED,
     COMPLETED,
+    FINISHED,
     ERROR
 }

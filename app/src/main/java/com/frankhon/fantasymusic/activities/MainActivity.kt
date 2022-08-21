@@ -8,13 +8,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.media.AudioPlayerManager
+import com.frankhon.fantasymusic.media.PlayerState
 import com.frankhon.fantasymusic.utils.PLAYER_CHANNEL_ID
 import com.frankhon.fantasymusic.utils.ToastUtil
 import com.frankhon.fantasymusic.utils.Util
 import com.frankhon.fantasymusic.utils.msToMMSS
 import com.frankhon.fantasymusic.view.AnimatedAudioControlButton.PlayState
 import com.frankhon.fantasymusic.view.PlayModeImageButton
-import com.frankhon.fantasymusic.vo.PlaySongEvent
+import com.frankhon.fantasymusic.vo.PlayingSongEvent
 import com.frankhon.fantasymusic.vo.SongProgressEvent
 import kotlinx.android.synthetic.main.layout_panel.*
 import kotlinx.android.synthetic.main.layout_song_control.*
@@ -26,7 +27,7 @@ private const val SONG_EVENT_KEY = "playSongEvent"
 class MainActivity : AppCompatActivity() {
 
     private var isPlaying = false
-    private var curEvent: PlaySongEvent? = null
+    private var curEvent: PlayingSongEvent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         ib_pause_or_resume.setOnControlButtonClickListener { curState ->
             when (curState) {
                 PlayState.PLAYING -> AudioPlayerManager.resume()
-                PlayState.PAUSING -> AudioPlayerManager.pause()
+                PlayState.PAUSED -> AudioPlayerManager.pause()
                 else -> {}
             }
         }
@@ -82,7 +83,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Subscribe
-    fun updatePanel(event: PlaySongEvent) {
+    fun updatePanel(event: PlayingSongEvent) {
         update(event)
     }
 
@@ -103,19 +104,10 @@ class MainActivity : AppCompatActivity() {
             .into(iv_song_bottom_pic)
     }
 
-    private fun update(event: PlaySongEvent) {
+    private fun update(event: PlayingSongEvent) {
         curEvent = event
-        if (event.isResumed) {
-            isPlaying = true
-            updatePlayControlIcon(isPlaying)
-            return
-        } else {
-            if (isPlaying != event.isPlaying) {
-                isPlaying = event.isPlaying
-                updatePlayControlIcon(isPlaying)
-            }
-        }
-        if (isPlaying) {
+        updatePlayControlIcon(event.playerState)
+        if (event.playerState == PlayerState.PLAYING) {
             val song = event.song
             song?.run {
                 songPic?.takeIf { it.isNotEmpty() }?.let {
@@ -142,7 +134,16 @@ class MainActivity : AppCompatActivity() {
         if (isPlaying) {
             ib_pause_or_resume.setPlayState(PlayState.PLAYING)
         } else {
-            ib_pause_or_resume.setPlayState(PlayState.PAUSING)
+            ib_pause_or_resume.setPlayState(PlayState.PAUSED)
+        }
+    }
+
+    private fun updatePlayControlIcon(playerState: PlayerState) {
+        when (playerState) {
+            PlayerState.PLAYING -> ib_pause_or_resume.setPlayState(PlayState.PLAYING)
+            PlayerState.PAUSED, PlayerState.FINISHED -> ib_pause_or_resume.setPlayState(PlayState.PAUSED)
+            PlayerState.PREPARING -> ib_pause_or_resume.setPlayState(PlayState.PREPARING)
+            else -> {}
         }
     }
 

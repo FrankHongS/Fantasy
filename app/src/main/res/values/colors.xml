@@ -7,4 +7,6 @@
 
     <color name="colorTitle">#ffffff</color>
     <color name="secondText">#e0e0e0</color>
+
+    <color name="navigationBarColor">#F2F2F2</color>
 </resources>

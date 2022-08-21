@@ -23,8 +23,8 @@ val Int.dp: Int
         return dp2px(this)
     }
 
-fun getSystemService(name: String): Any? {
-    return Fantasy.getAppContext().getSystemService(name)
+inline fun <reified T> getSystemService(name: String): T {
+    return Fantasy.getAppContext().getSystemService(name) as T
 }
 
 fun msToMMSS(millis: Long): String {

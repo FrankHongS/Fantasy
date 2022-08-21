@@ -10,7 +10,7 @@ interface AudioLifecycleObserver {
 
     fun onPrepare(song: SimpleSong) {}
 
-    fun onPlaying() {}
+    fun onPlaying(song: SimpleSong) {}
 
     fun onPause() {}
 
@@ -19,6 +19,8 @@ interface AudioLifecycleObserver {
     fun onStop() {}
 
     fun onCompleted() {}
+
+    fun onFinished() {}
 
     fun onError() {}
 

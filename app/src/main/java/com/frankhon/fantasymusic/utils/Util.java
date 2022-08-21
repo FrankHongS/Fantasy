@@ -1,5 +1,8 @@
 package com.frankhon.fantasymusic.utils;
 
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -39,20 +42,20 @@ public final class Util {
     }
 
     public static Notification buildNotification(Context context, Intent intent, SimpleSong song) {
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, FLAG_IMMUTABLE);
 
         Intent intentPrevious = new Intent(context, MusicInfoReceiver.class)
                 .setAction(Constants.ACTION_PREVIOUS);
         PendingIntent previousPendingIntent = PendingIntent.getBroadcast(context, 0,
-                intentPrevious, PendingIntent.FLAG_UPDATE_CURRENT);
+                intentPrevious, FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
         Intent intentPlay = new Intent(context, MusicInfoReceiver.class)
                 .setAction(Constants.ACTION_PREVIOUS);
         PendingIntent playPendingIntent = PendingIntent.getBroadcast(context, 0,
-                intentPlay, PendingIntent.FLAG_UPDATE_CURRENT);
+                intentPlay, FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
         Intent intentNext = new Intent(context, MusicInfoReceiver.class)
                 .setAction(Constants.ACTION_PREVIOUS);
         PendingIntent nextPendingIntent = PendingIntent.getBroadcast(context, 0,
-                intentNext, PendingIntent.FLAG_UPDATE_CURRENT);
+                intentNext, FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
 
         Notification.Style mediaStyle = null;
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -69,9 +72,9 @@ public final class Util {
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.song_pic))
                 .setOnlyAlertOnce(true)
                 .setShowWhen(false)
-                .addAction(R.drawable.ic_previous_song, "Previous", previousPendingIntent)
-                .addAction(R.drawable.ic_pause_song, "Play", playPendingIntent)
-                .addAction(R.drawable.ic_next_song, "Next", nextPendingIntent)
+                .addAction(R.drawable.ic_previous_song_notification, "Previous", previousPendingIntent)
+                .addAction(R.drawable.ic_play_song_notification, "Play", playPendingIntent)
+                .addAction(R.drawable.ic_next_song_notification, "Next", nextPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
 

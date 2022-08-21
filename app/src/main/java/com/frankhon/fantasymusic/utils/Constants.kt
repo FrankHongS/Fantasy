@@ -9,9 +9,11 @@ package com.frankhon.fantasymusic.utils
 const val PACKAGE_ID = "com.frankhon.fantasymusic"
 
 const val PLAYER_CHANNEL_ID = "Player"
-const val ACTION_PREVIOUS = "Previous"
-const val ACTION_PLAY = "Play"
-const val ACTION_NEXT = "Next"
+const val ACTION_PREVIOUS = "com.frankhon.fantasy.Previous"
+const val ACTION_NEXT = "com.frankhon.fantasy.Next"
+const val ACTION_RESUME = "com.frankhon.fantasy.Resume"
+const val ACTION_PAUSE = "com.frankhon.fantasy.Pause"
+const val ACTION_STOP = "com.frankhon.fantasy.Stop"
 
 const val MUSIC_INFO_ACTION = "com.frankhon.fantasy.MUSIC_INFO"
 const val MUSIC_PROGRESS_ACTION = "com.frankhon.fantasy.MUSIC_PROGRESS"

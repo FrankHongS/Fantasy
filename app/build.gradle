@@ -37,6 +37,8 @@ dependencies {
     implementation deps.support.material
     implementation deps.support.constraintlayout
 
+    implementation "androidx.media:media:1.6.0"
+
     // lifecycle
     implementation deps.lifecycle.runtime
     implementation deps.lifecycle.viewmodel

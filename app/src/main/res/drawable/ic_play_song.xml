@@ -3,10 +3,8 @@
         android:height="36dp"
         android:viewportWidth="10.0"
         android:viewportHeight="10.0">
-
     <path
             android:name="play"
             android:fillColor="@color/colorPrimary"
-            android:pathData="M 2.5,2 L 2.5,8 L4,8 L4,2z M 6,2 L6,8 L7.5,8 L7.5,2z" />
-
+            android:pathData="M 2.5,1 L 2.5,9 L5.5,7 L5.5,3z M 5.5,3 L5.5,7 L8.5,5 L8.5,5z" />
 </vector>

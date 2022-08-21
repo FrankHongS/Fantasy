@@ -3,8 +3,11 @@ package com.frankhon.fantasymusic.media
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioManager
-import android.media.AudioManager.OnAudioFocusChangeListener
+import android.media.AudioManager.*
 import android.media.MediaPlayer
+import androidx.media.AudioAttributesCompat
+import androidx.media.AudioFocusRequestCompat
+import androidx.media.AudioManagerCompat
 import com.frankhon.fantasymusic.utils.ToastUtil.showToast
 import com.frankhon.fantasymusic.utils.getSystemService
 import com.frankhon.fantasymusic.vo.SimpleSong
@@ -25,32 +28,48 @@ object AudioPlayer {
         setOnPreparedListener { mediaPlayer -> onPrepared(mediaPlayer) }
         setAudioAttributes(
             AudioAttributes.Builder()
-                .setLegacyStreamType(AudioManager.STREAM_MUSIC)
+                .setLegacyStreamType(STREAM_MUSIC)
                 .build()
         )
     }
-    private val mAudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-    private val mOnAudioFocusChangeListener: OnAudioFocusChangeListener =
+    private val audioManager = getSystemService<AudioManager>(Context.AUDIO_SERVICE)
+    private val onAudioFocusChangeListener: OnAudioFocusChangeListener =
         OnAudioFocusChangeListener { focusChange: Int ->
             MyLogger.d("focusChange: $focusChange")
-            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-                transientPause()
-            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                if (isTransientPause) {
-                    resume()
+            when (focusChange) {
+                AUDIOFOCUS_LOSS_TRANSIENT -> transientPause()
+                AUDIOFOCUS_GAIN -> {
+                    if (isTransientPause) {
+                        isTransientPause = false
+                        resume()
+                    }
                 }
-            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                release()
+                AUDIOFOCUS_LOSS -> pause()
             }
         }
+    private val audioFocusRequest by lazy {
+        AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
+            .setOnAudioFocusChangeListener(onAudioFocusChangeListener)
+            .setAudioAttributes(
+                AudioAttributesCompat.Builder()
+                    .setLegacyStreamType(STREAM_MUSIC)
+                    .build()
+            )
+            .build()
+    }
     private val mHttpProxyCache by lazy { HttpProxyCache.getInstance() }
     private val observers = mutableListOf<AudioLifecycleObserver>()
 
-    //是否为被动暂停
+    //是否为其他应用占用焦点，短暂暂停
     private var isTransientPause = false
-    private lateinit var curSong: SimpleSong
 
-    private lateinit var mainScope: CoroutineScope
+    private lateinit var curSong: SimpleSong
+    private var curIndex = -1
+    private var curState = PlayerState.IDLE
+    private val curPlayList by lazy { mutableListOf<SimpleSong>() }
+
+    private val mainScope by lazy { MainScope() }
+    private var monitorProgressJob: Job? = null
 
     @JvmStatic
     fun registerObserver(observer: AudioLifecycleObserver) {
@@ -65,9 +84,23 @@ object AudioPlayer {
     }
 
     @JvmStatic
-    fun play(song: SimpleSong) {
-        this.curSong = song
-        prepare(song.location.orEmpty())
+    fun play(song: SimpleSong?) {
+        song?.let {
+            if (curIndex == -1) {
+                curPlayList.add(it)
+                play(0)
+            } else {
+                curPlayList.add(curIndex + 1, it)
+                play(curIndex + 1)
+            }
+        }
+    }
+
+    @JvmStatic
+    fun setPlayList(playList: List<SimpleSong>, index: Int) {
+        curPlayList.clear()
+        curPlayList.addAll(playList)
+        play(index)
     }
 
     @JvmStatic
@@ -75,7 +108,6 @@ object AudioPlayer {
         if (mMediaPlayer.isPlaying) {
             MyLogger.d("prepare() playerState = ${PlayerState.PAUSED}")
             mMediaPlayer.pause()
-            // abandonAudioFocus();
             updatePlayerState(PlayerState.PAUSED)
         }
     }
@@ -84,8 +116,7 @@ object AudioPlayer {
     fun resume() {
         if (!mMediaPlayer.isPlaying) {
             val result = requestAudioFocus()
-            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                isTransientPause = false
+            if (result == AUDIOFOCUS_REQUEST_GRANTED) {
                 mMediaPlayer.start()
                 MyLogger.d("resume() playerState = ${PlayerState.RESUMED}")
                 updatePlayerState(PlayerState.RESUMED)
@@ -100,11 +131,40 @@ object AudioPlayer {
         mMediaPlayer.seekTo(msec)
     }
 
+    @JvmStatic
+    fun previous() {
+        if (curState != PlayerState.PREPARING) {
+            play(curIndex - 1)
+        }
+    }
+
+    @JvmStatic
+    fun next() {
+        if (curState != PlayerState.PREPARING) {
+            val success = play(curIndex + 1)
+            if (!success) {
+                updatePlayerState(PlayerState.FINISHED)
+            }
+        }
+    }
+
+    private fun play(index: Int): Boolean {
+        return if (index >= 0 && index < curPlayList.size) {
+            this.curSong = curPlayList[index]
+            this.curIndex = index
+            prepare(curSong.location.orEmpty())
+            true
+        } else {
+            MyLogger.d("index = $index is out of range, playList's size = ${curPlayList.size}")
+            false
+        }
+    }
+
     private fun prepare(audioFilePath: String) {
         updatePlayerState(PlayerState.PREPARING)
         MyLogger.d("prepare() playerState = ${PlayerState.PREPARING}")
         val result = requestAudioFocus()
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+        if (result == AUDIOFOCUS_REQUEST_GRANTED) {
             try {
                 mMediaPlayer.reset()
                 if (audioFilePath.startsWith("file://")) {
@@ -130,14 +190,28 @@ object AudioPlayer {
     }
 
     private fun startUpdateProgress() {
-        mainScope = MainScope().apply {
-            launch {
+        launchProgressMonitor()
+    }
+
+    private fun stopUpdateProgress() {
+        monitorProgressJob?.cancel()
+    }
+
+    private fun launchProgressMonitor() {
+        monitorProgressJob?.cancel()
+        monitorProgressJob = mainScope.launch {
+            //死循环会堵塞主线程，所以此处用IO线程
+            withContext(Dispatchers.IO) {
                 while (true) {
-                    delay(1000)
                     notifyPlayerProgress()
+                    delay(1000)
                 }
             }
         }
+    }
+
+    private fun cancelProgressMonitor() {
+        mainScope.cancel()
     }
 
     private fun notifyPlayerProgress() {
@@ -146,10 +220,6 @@ object AudioPlayer {
                 it.onProgressUpdated(player.currentPosition, player.duration)
             }
         }
-    }
-
-    private fun stopUpdateProgress() {
-        mainScope.cancel()
     }
 
     private fun onCompleted(mediaPlayer: MediaPlayer) {
@@ -167,25 +237,26 @@ object AudioPlayer {
     }
 
     private fun transientPause() {
-        if (mMediaPlayer.isPlaying) {
-            isTransientPause = true
-            mMediaPlayer.pause()
-            MyLogger.d("onError() playerState = ${PlayerState.TRANSIENT_PAUSED}")
-        }
+        MyLogger.d("transientPause()")
+        isTransientPause = true
+        pause()
     }
 
+    @JvmStatic
     fun release() {
         mMediaPlayer.release()
         abandonAudioFocus()
         mHttpProxyCache?.shutdown()
+        cancelProgressMonitor()
+        observers.clear()
     }
 
     private fun updatePlayerState(state: PlayerState) {
+        this.curState = state
         notifyLifecycleObserver(state)
         when (state) {
             PlayerState.PLAYING -> startUpdateProgress()
-            PlayerState.PAUSED, PlayerState.COMPLETED, PlayerState.ERROR -> stopUpdateProgress()
-            else -> {}
+            else -> stopUpdateProgress()
         }
     }
 
@@ -196,7 +267,7 @@ object AudioPlayer {
                 it.onPrepare(curSong)
             }
             PlayerState.PLAYING -> consumer = {
-                it.onPlaying()
+                it.onPlaying(curSong)
             }
             PlayerState.PAUSED -> consumer = {
                 it.onPause()
@@ -206,6 +277,9 @@ object AudioPlayer {
             }
             PlayerState.COMPLETED -> consumer = {
                 it.onCompleted()
+            }
+            PlayerState.FINISHED -> consumer = {
+                it.onFinished()
             }
             PlayerState.ERROR -> consumer = {
                 it.onError()
@@ -218,15 +292,11 @@ object AudioPlayer {
     }
 
     private fun requestAudioFocus(): Int {
-        return mAudioManager.requestAudioFocus(
-            mOnAudioFocusChangeListener,
-            AudioManager.STREAM_MUSIC,
-            AudioManager.AUDIOFOCUS_GAIN
-        )
+        return AudioManagerCompat.requestAudioFocus(audioManager, audioFocusRequest)
     }
 
     private fun abandonAudioFocus(): Int {
-        return mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener)
+        return AudioManagerCompat.abandonAudioFocusRequest(audioManager, audioFocusRequest)
     }
 
 }

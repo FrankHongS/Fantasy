@@ -110,6 +110,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
                     //消费touch事件，防止事件冒泡（bubble）传递给下层view
                     isFocusable = true
                     isClickable = true
+                    setOnTouchListener { _, _ -> true }
                 }
             }
         }

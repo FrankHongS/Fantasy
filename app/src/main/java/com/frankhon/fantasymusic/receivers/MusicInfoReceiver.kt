@@ -4,8 +4,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.frankhon.fantasymusic.media.PlayerState
-import com.frankhon.fantasymusic.utils.*
-import com.frankhon.fantasymusic.vo.PlaySongEvent
+import com.frankhon.fantasymusic.utils.KEY_CUR_SONG
+import com.frankhon.fantasymusic.utils.KEY_PLAYER_STATE
+import com.frankhon.fantasymusic.vo.PlayingSongEvent
 import com.frankhon.fantasymusic.vo.SimpleSong
 import org.greenrobot.eventbus.EventBus
 
@@ -26,29 +27,8 @@ class MusicInfoReceiver : BroadcastReceiver() {
             } else {
                 PlayerState.valueOf(stateName)
             }
-            var event: PlaySongEvent? = null
-            when (state) {
-                PlayerState.PLAYING -> event = PlaySongEvent(
-                    song = song,
-                    isPlaying = true
-                )
-                PlayerState.RESUMED -> event = PlaySongEvent(
-                    song = song,
-                    isResumed = true
-                )
-                PlayerState.PAUSED -> event = PlaySongEvent(
-                    song = song
-                )
-                PlayerState.TRANSIENT_PAUSED -> event = PlaySongEvent(
-                    song = song
-                )
-                PlayerState.COMPLETED -> event = PlaySongEvent(
-                    song = song
-                )
-                else -> {}
-            }
-            if (event != null) {
-                EventBus.getDefault().post(event)
+            if (state != null) {
+                EventBus.getDefault().post(PlayingSongEvent(song, state))
             }
         }
     }

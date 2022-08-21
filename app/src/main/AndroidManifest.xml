@@ -29,7 +29,12 @@
         </activity>
         <service
                 android:name=".media.AudioPlayerService"
-                android:process=":music.player" />
+                android:exported="false"
+                android:process=":music.player">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </service>
 
         <receiver
                 android:name=".receivers.MusicInfoReceiver"
@@ -43,6 +48,13 @@
                 android:exported="false">
             <intent-filter>
                 <action android:name="com.frankhon.fantasy.MUSIC_PROGRESS" />
+            </intent-filter>
+        </receiver>
+        <receiver
+                android:name="androidx.media.session.MediaButtonReceiver"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
     </application>

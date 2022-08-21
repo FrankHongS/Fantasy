@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <ImageView
+            android:id="@+id/iv_song_pic"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/song_pic"
+            tools:ignore="ContentDescription" />
+
+    <TextView
+            android:id="@+id/tv_song_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/iv_song_pic"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@id/iv_song_pic"
+            android:text="七里香"
+            android:textSize="16sp" />
+
+    <TextView
+            android:id="@+id/tv_artist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/iv_song_pic"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_toEndOf="@id/iv_song_pic"
+            android:text="周杰伦"
+            android:textSize="14sp" />
+
+    <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:layout_toStartOf="@id/iv_next_song"
+            android:src="@drawable/ic_play_song_notification"
+            app:tint="@color/colorPrimary"
+            tools:ignore="ContentDescription" />
+
+    <ImageView
+            android:id="@+id/iv_next_song"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:layout_toStartOf="@id/iv_stop_song"
+            android:src="@drawable/ic_next_song_notification"
+            app:tint="@color/colorPrimary"
+            tools:ignore="ContentDescription" />
+
+    <ImageView
+            android:id="@+id/iv_stop_song"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_stop_song_notification"
+            app:tint="@color/colorPrimary"
+            tools:ignore="ContentDescription" />
+
+</RelativeLayout>

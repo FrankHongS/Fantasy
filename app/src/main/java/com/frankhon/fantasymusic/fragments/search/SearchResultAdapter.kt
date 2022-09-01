@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.frankhon.fantasymusic.AppExecutors
+import com.frankhon.fantasymusic.application.AppExecutors
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.Song

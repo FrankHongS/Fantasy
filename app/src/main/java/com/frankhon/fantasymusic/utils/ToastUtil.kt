@@ -1,7 +1,7 @@
 package com.frankhon.fantasymusic.utils
 
 import android.widget.Toast
-import com.frankhon.fantasymusic.Fantasy
+import com.frankhon.fantasymusic.application.Fantasy
 
 /**
  * Created by Frank Hon on 2022/6/14 10:32 下午.

@@ -1,7 +1,7 @@
 package com.frankhon.fantasymusic.media;
 
 import com.danikula.videocache.HttpProxyCacheServer;
-import com.frankhon.fantasymusic.Fantasy;
+import com.frankhon.fantasymusic.application.Fantasy;
 
 /**
  * Created by Frank Hon on 2020-06-06 01:48.

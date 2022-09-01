@@ -5,7 +5,7 @@ import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.adapter.MainAdapter
+import com.frankhon.fantasymusic.activities.adapter.MainAdapter
 import com.frankhon.fantasymusic.fragments.song.SongFragment
 import com.hon.mylogger.MyLogger
 import kotlinx.android.synthetic.main.fragment_main.*

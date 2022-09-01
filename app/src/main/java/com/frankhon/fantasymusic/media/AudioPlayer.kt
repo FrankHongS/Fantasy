@@ -1,6 +1,7 @@
 package com.frankhon.fantasymusic.media
 
 import android.content.Context
+import android.content.Intent
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.AudioManager.*
@@ -8,36 +9,47 @@ import android.media.MediaPlayer
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
+import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.utils.ToastUtil.showToast
-import com.frankhon.fantasymusic.utils.getSystemService
+import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.hon.mylogger.MyLogger
 import kotlinx.coroutines.*
-import java.io.IOException
 
 /**
+ * Note:
+ * 1. MediaPlayerNative: error (-38, 0)
+ * 当`MediaPlayer`处于uninitialized和preparing(该状态即：还在准备当中，未完成准备)状态时,调用
+ * `getDuration()`或者`getCurrentPosition()`，native将报错 error (-38, 0)
+ *
  * Created by Frank_Hon on 3/11/2019.
  * E-mail: v-shhong@microsoft.com
  */
 object AudioPlayer {
-    private val mMediaPlayer: MediaPlayer = MediaPlayer().apply {
-        setOnErrorListener { mediaPlayer, what, extra ->
-            onError(mediaPlayer, what, extra)
+    private val mediaPlayer by lazy {
+        MediaPlayer().apply {
+            setOnErrorListener { mediaPlayer, what, extra ->
+                onError(mediaPlayer, what, extra)
+            }
+            setOnCompletionListener { mediaPlayer -> onCompleted(mediaPlayer) }
+            setOnPreparedListener { mediaPlayer -> onPrepared(mediaPlayer) }
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setLegacyStreamType(STREAM_MUSIC)
+                    .build()
+            )
         }
-        setOnCompletionListener { mediaPlayer -> onCompleted(mediaPlayer) }
-        setOnPreparedListener { mediaPlayer -> onPrepared(mediaPlayer) }
-        setAudioAttributes(
-            AudioAttributes.Builder()
-                .setLegacyStreamType(STREAM_MUSIC)
-                .build()
-        )
     }
     private val audioManager = getSystemService<AudioManager>(Context.AUDIO_SERVICE)
     private val onAudioFocusChangeListener: OnAudioFocusChangeListener =
         OnAudioFocusChangeListener { focusChange: Int ->
             MyLogger.d("focusChange: $focusChange")
             when (focusChange) {
-                AUDIOFOCUS_LOSS_TRANSIENT -> transientPause()
+                AUDIOFOCUS_LOSS_TRANSIENT -> {
+                    if (curState == PlayerState.PLAYING || curState == PlayerState.RESUMED) {
+                        transientPause()
+                    }
+                }
                 AUDIOFOCUS_GAIN -> {
                     if (isTransientPause) {
                         isTransientPause = false
@@ -58,31 +70,20 @@ object AudioPlayer {
             .build()
     }
     private val mHttpProxyCache by lazy { HttpProxyCache.getInstance() }
-    private val observers = mutableListOf<AudioLifecycleObserver>()
 
     //是否为其他应用占用焦点，短暂暂停
     private var isTransientPause = false
 
-    private lateinit var curSong: SimpleSong
+    private var curSong: SimpleSong? = null
     private var curIndex = -1
     private var curState = PlayerState.IDLE
     private val curPlayList by lazy { mutableListOf<SimpleSong>() }
+    private var errorMsg = ""
 
     private val mainScope by lazy { MainScope() }
     private var monitorProgressJob: Job? = null
 
-    @JvmStatic
-    fun registerObserver(observer: AudioLifecycleObserver) {
-        if (!observers.contains(observer)) {
-            observers.add(observer)
-        }
-    }
-
-    @JvmStatic
-    fun unregisterObserver(observer: AudioLifecycleObserver) {
-        observers.remove(observer)
-    }
-
+    //region 播放器对外暴露的方法
     @JvmStatic
     fun play(song: SimpleSong?) {
         song?.let {
@@ -105,30 +106,45 @@ object AudioPlayer {
 
     @JvmStatic
     fun pause() {
-        if (mMediaPlayer.isPlaying) {
+        if (mediaPlayer.isPlaying) {
             MyLogger.d("prepare() playerState = ${PlayerState.PAUSED}")
-            mMediaPlayer.pause()
+            mediaPlayer.pause()
             updatePlayerState(PlayerState.PAUSED)
         }
     }
 
     @JvmStatic
     fun resume() {
-        if (!mMediaPlayer.isPlaying) {
+        if (!mediaPlayer.isPlaying) {
             val result = requestAudioFocus()
             if (result == AUDIOFOCUS_REQUEST_GRANTED) {
-                mMediaPlayer.start()
+                mediaPlayer.start()
                 MyLogger.d("resume() playerState = ${PlayerState.RESUMED}")
                 updatePlayerState(PlayerState.RESUMED)
-                MyLogger.d("resume() playerState = ${PlayerState.PLAYING}")
-                updatePlayerState(PlayerState.PLAYING)
+            } else {
+                MyLogger.e("Error to resume playing: $result")
+                showToast("恢复播放失败")
             }
         }
     }
 
     @JvmStatic
+    fun stop() {
+        try {
+            if (curState != PlayerState.IDLE &&
+                curState != PlayerState.PREPARING
+            ) {
+                mediaPlayer.stop()
+                updatePlayerState(PlayerState.STOPPED)
+            }
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+        }
+    }
+
+    @JvmStatic
     fun seekTo(msec: Int) {
-        mMediaPlayer.seekTo(msec)
+        mediaPlayer.seekTo(msec)
     }
 
     @JvmStatic
@@ -140,19 +156,49 @@ object AudioPlayer {
 
     @JvmStatic
     fun next() {
-        if (curState != PlayerState.PREPARING) {
-            val success = play(curIndex + 1)
-            if (!success) {
-                updatePlayerState(PlayerState.FINISHED)
-            }
+        val success = play(curIndex + 1)
+        if (!success) {
+            updatePlayerState(PlayerState.FINISHED)
         }
+    }
+
+    @JvmStatic
+    fun getCurrentPlayerInfo(): CurrentPlayerInfo {
+        return CurrentPlayerInfo().also {
+            it.curSong = curSong
+            it.curPlayList = curPlayList
+            it.curSongIndex = curIndex
+            it.curPlayerState = curState
+            it.curPlaybackPosition = getCurrentPosition()
+        }
+    }
+
+    // endregion
+
+    private fun getDuration(): Long {
+        val duration = if (curState == PlayerState.IDLE || curState == PlayerState.PREPARING) {
+            0
+        } else {
+            mediaPlayer.duration
+        }
+        return duration.toLong()
+    }
+
+    private fun getCurrentPosition(): Long {
+        val currentPosition =
+            if (curState == PlayerState.IDLE || curState == PlayerState.PREPARING) {
+                0
+            } else {
+                mediaPlayer.currentPosition
+            }
+        return currentPosition.toLong()
     }
 
     private fun play(index: Int): Boolean {
         return if (index >= 0 && index < curPlayList.size) {
             this.curSong = curPlayList[index]
             this.curIndex = index
-            prepare(curSong.location.orEmpty())
+            prepare(curSong?.location.orEmpty())
             true
         } else {
             MyLogger.d("index = $index is out of range, playList's size = ${curPlayList.size}")
@@ -166,15 +212,16 @@ object AudioPlayer {
         val result = requestAudioFocus()
         if (result == AUDIOFOCUS_REQUEST_GRANTED) {
             try {
-                mMediaPlayer.reset()
+                mediaPlayer.reset()
                 if (audioFilePath.startsWith("file://")) {
-                    mMediaPlayer.setDataSource(audioFilePath)
+                    mediaPlayer.setDataSource(audioFilePath)
                 } else {
-                    mMediaPlayer.setDataSource(mHttpProxyCache.getProxyUrl(audioFilePath))
+                    mediaPlayer.setDataSource(mHttpProxyCache.getProxyUrl(audioFilePath))
                 }
-                mMediaPlayer.prepareAsync()
-            } catch (e: IOException) {
-                // do nothing
+                mediaPlayer.prepareAsync()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                MyLogger.e("Error to play: $e")
             }
         } else {
             MyLogger.e("Error to request playing: $result")
@@ -183,7 +230,6 @@ object AudioPlayer {
     }
 
     private fun onPrepared(player: MediaPlayer) {
-        curSong.duration = player.duration.toLong()
         player.start()
         updatePlayerState(PlayerState.PLAYING)
         MyLogger.d("onPrepared() playerState = ${PlayerState.PLAYING}")
@@ -194,46 +240,40 @@ object AudioPlayer {
     }
 
     private fun stopUpdateProgress() {
+        if (curState == PlayerState.COMPLETED) {
+            updateProgress()
+        }
         monitorProgressJob?.cancel()
     }
 
     private fun launchProgressMonitor() {
         monitorProgressJob?.cancel()
-        monitorProgressJob = mainScope.launch {
+        monitorProgressJob = mainScope.launch(SupervisorJob()) {
             //死循环会堵塞主线程，所以此处用IO线程
             withContext(Dispatchers.IO) {
                 while (true) {
-                    notifyPlayerProgress()
-                    delay(1000)
+                    updateProgress()
+                    delay(700)
                 }
             }
         }
     }
 
-    private fun cancelProgressMonitor() {
-        mainScope.cancel()
-    }
-
-    private fun notifyPlayerProgress() {
-        observers.forEach {
-            mMediaPlayer.let { player ->
-                it.onProgressUpdated(player.currentPosition, player.duration)
-            }
-        }
-    }
-
-    private fun onCompleted(mediaPlayer: MediaPlayer) {
-        MyLogger.d("onCompleted() playerState = ${PlayerState.COMPLETED}")
+    private fun onCompleted(mp: MediaPlayer) {
+        MyLogger.d("onCompleted() playerState = ${PlayerState.COMPLETED} isPlaying=${mp.isPlaying}")
         updatePlayerState(PlayerState.COMPLETED)
-        stopUpdateProgress()
+        next()
     }
 
+    /**
+     * @return true, consume the error, and won't invoke onCompletion()
+     */
     private fun onError(mediaPlayer: MediaPlayer, what: Int, extra: Int): Boolean {
-        MyLogger.d("onError() playerState = ${PlayerState.ERROR}")
+        MyLogger.d("onError() playerState = ${PlayerState.ERROR}, what = $what, extra = $extra")
+        this.errorMsg = "AudioPlayer: Error($what, $extra)"
         mediaPlayer.reset()
         updatePlayerState(PlayerState.ERROR)
-        stopUpdateProgress()
-        return false
+        return true
     }
 
     private fun transientPause() {
@@ -244,51 +284,31 @@ object AudioPlayer {
 
     @JvmStatic
     fun release() {
-        mMediaPlayer.release()
+        MyLogger.d("release()")
+        stopUpdateProgress()
         abandonAudioFocus()
-        mHttpProxyCache?.shutdown()
-        cancelProgressMonitor()
-        observers.clear()
+        stop()
+        mHttpProxyCache.shutdown()
+        resetCurPlayInfo()
+    }
+
+    private fun resetCurPlayInfo() {
+        curSong = null
+        curPlayList.clear()
+        curIndex = -1
+        curState = PlayerState.IDLE
     }
 
     private fun updatePlayerState(state: PlayerState) {
         this.curState = state
-        notifyLifecycleObserver(state)
         when (state) {
-            PlayerState.PLAYING -> startUpdateProgress()
+            PlayerState.PLAYING, PlayerState.RESUMED -> {
+                startUpdateProgress()
+                curSong?.duration = getDuration()
+            }
             else -> stopUpdateProgress()
         }
-    }
-
-    private fun notifyLifecycleObserver(state: PlayerState) {
-        var consumer: ((AudioLifecycleObserver) -> Unit)? = null
-        when (state) {
-            PlayerState.PREPARING -> consumer = {
-                it.onPrepare(curSong)
-            }
-            PlayerState.PLAYING -> consumer = {
-                it.onPlaying(curSong)
-            }
-            PlayerState.PAUSED -> consumer = {
-                it.onPause()
-            }
-            PlayerState.RESUMED -> consumer = {
-                it.onResume()
-            }
-            PlayerState.COMPLETED -> consumer = {
-                it.onCompleted()
-            }
-            PlayerState.FINISHED -> consumer = {
-                it.onFinished()
-            }
-            PlayerState.ERROR -> consumer = {
-                it.onError()
-            }
-            else -> {}
-        }
-        observers.forEach {
-            consumer?.invoke(it)
-        }
+        sendState()
     }
 
     private fun requestAudioFocus(): Int {
@@ -299,4 +319,41 @@ object AudioPlayer {
         return AudioManagerCompat.abandonAudioFocusRequest(audioManager, audioFocusRequest)
     }
 
+    private fun sendState() {
+        if (curState != PlayerState.STOPPED) {
+            sendMediaNotification(
+                getCurrentPlayerInfo(),
+                curState != PlayerState.IDLE
+                        && curState != PlayerState.ERROR
+                        && curState != PlayerState.PAUSED
+                        && curState != PlayerState.FINISHED
+            )
+        } else {
+            cancelNotification()
+        }
+        curSong?.let {
+            sendBroadcast(
+                Intent(MUSIC_INFO_ACTION).apply {
+                    //在Android 8.0 以上要求静态注册的BroadcastReceiver所接收的消息必须是显式的，
+                    // 我们通过设置包名的方式来告诉系统这个Intent是要发给哪个应用来接收。不设置的话就会接收不到消息
+                    setPackage(PACKAGE_ID)
+                    putExtra(KEY_PLAYER_STATE, curState.name)
+                    putExtra(KEY_CUR_SONG, it)
+                    if (curState == PlayerState.ERROR && errorMsg.isNotEmpty()) {
+                        putExtra(KEY_PLAYER_ERROR_MESSAGE, errorMsg)
+                    }
+                })
+        }
+    }
+
+    private fun updateProgress() {
+        sendBroadcast(
+            Intent(MUSIC_PROGRESS_ACTION).apply {
+                setPackage(PACKAGE_ID)
+                mediaPlayer.let {
+                    putExtra(KEY_SONG_PROGRESS, getCurrentPosition())
+                    putExtra(KEY_DURATION, getDuration())
+                }
+            })
+    }
 }

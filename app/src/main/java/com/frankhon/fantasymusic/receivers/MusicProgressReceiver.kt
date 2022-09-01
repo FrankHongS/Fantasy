@@ -3,6 +3,7 @@ package com.frankhon.fantasymusic.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.utils.KEY_DURATION
 import com.frankhon.fantasymusic.utils.KEY_SONG_PROGRESS
 import com.frankhon.fantasymusic.vo.SongProgressEvent
@@ -17,11 +18,9 @@ import org.greenrobot.eventbus.EventBus
 class MusicProgressReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         intent.let {
-            val progress = it.getIntExtra(KEY_SONG_PROGRESS, 0)
-            val duration = it.getIntExtra(KEY_DURATION, 0)
-            EventBus.getDefault().post(
-                SongProgressEvent(progress, duration)
-            )
+            val progress = it.getLongExtra(KEY_SONG_PROGRESS, 0L)
+            val duration = it.getLongExtra(KEY_DURATION, 0L)
+            AudioPlayerManager.publishPlayerProgress(progress, duration)
         }
     }
 }

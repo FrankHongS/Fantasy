@@ -1,6 +1,7 @@
 package com.frankhon.fantasymusic.utils
 
-import com.frankhon.fantasymusic.Fantasy
+import android.content.Intent
+import com.frankhon.fantasymusic.application.Fantasy
 import com.hon.mylogger.MyLogger
 import java.text.SimpleDateFormat
 import java.util.*
@@ -26,6 +27,13 @@ val Int.dp: Int
 inline fun <reified T> getSystemService(name: String): T {
     return Fantasy.getAppContext().getSystemService(name) as T
 }
+
+fun sendBroadcast(intent: Intent) {
+    Fantasy.getAppContext().sendBroadcast(intent)
+}
+
+val packageId: String
+    get() = Fantasy.getAppContext().packageName
 
 fun msToMMSS(millis: Long): String {
     try {

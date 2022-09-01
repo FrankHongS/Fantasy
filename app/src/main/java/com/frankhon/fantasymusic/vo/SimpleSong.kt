@@ -21,8 +21,7 @@ class SimpleSong(
         parcel.readString(),
         parcel.readString(),
         parcel.readLong()
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)

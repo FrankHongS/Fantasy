@@ -16,7 +16,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import com.frankhon.fantasymusic.Fantasy;
+import com.frankhon.fantasymusic.application.Fantasy;
 import com.frankhon.fantasymusic.R;
 import com.frankhon.fantasymusic.receivers.MusicInfoReceiver;
 import com.frankhon.fantasymusic.vo.SimpleSong;

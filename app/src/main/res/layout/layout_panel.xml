@@ -30,12 +30,11 @@
                 android:layout_marginTop="14dp"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@string/app_name"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@+id/include"
                 app:layout_constraintStart_toEndOf="@+id/iv_song_bottom_pic"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="TextViewTextViewTextViewTextViewTextViewTextViewTextView" />
+                tools:text="@string/app_name" />
 
         <TextView
                 android:id="@+id/tv_bottom_artist_name"
@@ -47,7 +46,7 @@
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="@+id/tv_bottom_song_name"
                 app:layout_constraintTop_toBottomOf="@+id/tv_bottom_song_name"
-                tools:text="TextView" />
+                tools:text="@string/welcome_text" />
 
         <include
                 android:id="@+id/include"

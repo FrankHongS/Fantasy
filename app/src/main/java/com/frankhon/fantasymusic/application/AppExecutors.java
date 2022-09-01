@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic;
+package com.frankhon.fantasymusic.application;
 
 import android.os.Handler;
 import android.os.Looper;

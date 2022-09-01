@@ -12,12 +12,11 @@ import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.fragments.BaseFragment
 import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.utils.FileUtil
-import com.frankhon.fantasymusic.vo.PlaySongEvent
 import com.frankhon.fantasymusic.vo.SimpleSong
+import com.frankhon.fantasymusic.vo.view.SongItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by Frank Hon on 2020-04-19 20:19.
@@ -51,17 +50,26 @@ class SongFragment : BaseFragment {
             }
             songs.clear()
             songs.addAll(newSongs)
-            songAdapter.notifyDataSetChanged()
+            songAdapter.setData(songs.transferToSongItems())
         }
     }
 
     private fun initView(view: View) {
         val songsList = view.findViewById<RecyclerView>(R.id.rv_songs)
         songsList.layoutManager = LinearLayoutManager(context)
-        songAdapter = SongAdapter(songs) { _, index ->
+        songAdapter = SongAdapter { _, index ->
             AudioPlayerManager.setPlayList(songs, index)
         }
         songsList.adapter = songAdapter
     }
 
+    private fun List<SimpleSong>.transferToSongItems(): List<SongItem> {
+        return map {
+            SongItem(
+                it.name,
+                it.artist,
+                it.songPic
+            )
+        }
+    }
 }

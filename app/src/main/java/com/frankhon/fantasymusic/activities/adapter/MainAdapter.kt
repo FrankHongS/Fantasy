@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.adapter
+package com.frankhon.fantasymusic.activities.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

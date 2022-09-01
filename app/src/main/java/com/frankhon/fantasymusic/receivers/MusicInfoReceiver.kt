@@ -3,8 +3,10 @@ package com.frankhon.fantasymusic.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.media.PlayerState
 import com.frankhon.fantasymusic.utils.KEY_CUR_SONG
+import com.frankhon.fantasymusic.utils.KEY_PLAYER_ERROR_MESSAGE
 import com.frankhon.fantasymusic.utils.KEY_PLAYER_STATE
 import com.frankhon.fantasymusic.vo.PlayingSongEvent
 import com.frankhon.fantasymusic.vo.SimpleSong
@@ -21,6 +23,7 @@ class MusicInfoReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         intent.let {
             val stateName = it.getStringExtra(KEY_PLAYER_STATE)
+            val errorMsg = it.getStringExtra(KEY_PLAYER_ERROR_MESSAGE).orEmpty()
             val song = it.getParcelableExtra<SimpleSong>(KEY_CUR_SONG)
             val state = if (stateName == null) {
                 null
@@ -28,7 +31,7 @@ class MusicInfoReceiver : BroadcastReceiver() {
                 PlayerState.valueOf(stateName)
             }
             if (state != null) {
-                EventBus.getDefault().post(PlayingSongEvent(song, state))
+                AudioPlayerManager.publishPlayerState(song, state, errorMsg)
             }
         }
     }

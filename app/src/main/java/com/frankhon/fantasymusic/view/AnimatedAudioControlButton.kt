@@ -73,21 +73,21 @@ class AnimatedAudioControlButton @JvmOverloads constructor(
     }
     //endregion
 
-    private var playState = PlayState.INITIAL
+    private var playState = ControlButtonState.INITIAL
     private val imageButton: ImageButton
 
-    private var onControlButtonClickListener: ((PlayState) -> Unit)? = null
+    private var onControlButtonClickListener: ((ControlButtonState) -> Unit)? = null
 
     init {
         View.inflate(context, R.layout.layout_song_control_button, this)
         imageButton = findViewById<ImageButton>(R.id.btn_song_control).apply {
             setOnClickListener {
                 when (playState) {
-                    PlayState.PLAYING -> {
-                        setPlayState(PlayState.PAUSED)
+                    ControlButtonState.PLAYING -> {
+                        setPlayState(ControlButtonState.PAUSED)
                     }
-                    PlayState.PAUSED -> {
-                        setPlayState(PlayState.PLAYING)
+                    ControlButtonState.PAUSED -> {
+                        setPlayState(ControlButtonState.PLAYING)
                     }
                     else -> {
                         return@setOnClickListener
@@ -109,7 +109,7 @@ class AnimatedAudioControlButton @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
-        if (playState == PlayState.PREPARING) {
+        if (playState == ControlButtonState.PREPARING) {
             drawLoading(canvas)
         }
     }
@@ -124,8 +124,9 @@ class AnimatedAudioControlButton @JvmOverloads constructor(
     override fun onRestoreInstanceState(state: Parcelable) {
         super.onRestoreInstanceState(state)
         (state as? SavedState)?.let {
-            this.playState = PlayState.valueOf(it.playState)
+            this.playState = ControlButtonState.valueOf(it.playState)
         }
+        switchState(false)
     }
 
     private fun drawLoading(canvas: Canvas) {
@@ -144,24 +145,24 @@ class AnimatedAudioControlButton @JvmOverloads constructor(
         )
     }
 
-    private fun switchState(shouldAnimate: Boolean = true) {
+    private fun switchState(shouldAnimate: Boolean) {
         imageButton.run {
             when (playState) {
-                PlayState.PLAYING -> {
+                ControlButtonState.PLAYING -> {
                     if (shouldAnimate) {
                         setImageResource(R.drawable.play_to_pause_vector_drawable)
                     } else {
                         setImageResource(R.drawable.ic_pause_song)
                     }
                 }
-                PlayState.PAUSED -> {
+                ControlButtonState.PAUSED -> {
                     if (shouldAnimate) {
                         setImageResource(R.drawable.pause_to_play_vector_drawable)
                     } else {
                         setImageResource(R.drawable.ic_play_song)
                     }
                 }
-                PlayState.PREPARING -> {
+                ControlButtonState.PREPARING -> {
                     imageButton.setImageResource(R.drawable.ic_pause_song)
                     loadingAnimator.start()
                     return
@@ -174,11 +175,17 @@ class AnimatedAudioControlButton @JvmOverloads constructor(
         }
     }
 
-    fun setPlayState(state: PlayState) {
-        if (playState == state) {
+    fun setPlayState(state: ControlButtonState) {
+        if (state == playState) {
             return
         }
-        if (state != PlayState.PREPARING && loadingAnimator.isRunning) {
+        // 初始状态
+        if (state == ControlButtonState.INITIAL) {
+            this.playState = state
+            imageButton.setImageResource(R.drawable.ic_play_song)
+            return
+        }
+        if (state != ControlButtonState.PREPARING && loadingAnimator.isRunning) {
             postDelayed(500) {
                 loadingAnimator.cancel()
                 innerSetPlayState(state, false)
@@ -188,16 +195,16 @@ class AnimatedAudioControlButton @JvmOverloads constructor(
         }
     }
 
-    private fun innerSetPlayState(state: PlayState, shouldAnimate: Boolean = true) {
+    private fun innerSetPlayState(state: ControlButtonState, shouldAnimate: Boolean = true) {
         this.playState = state
         switchState(shouldAnimate)
     }
 
-    fun setOnControlButtonClickListener(listener: (PlayState) -> Unit) {
+    fun setOnControlButtonClickListener(listener: (ControlButtonState) -> Unit) {
         this.onControlButtonClickListener = listener
     }
 
-    enum class PlayState {
+    enum class ControlButtonState {
         INITIAL,
         PLAYING,
         PAUSED,

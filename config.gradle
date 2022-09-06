@@ -2,6 +2,8 @@ ext.versions = [
         'minSdk'          : 21,
         'compileSdk'      : 31,
         'buildTools'      : '30.0.3',
+        'versionCode'     : 1,
+        'versionName'     : '1.0.0',
 
         'gradle_version'  : '7.2.0',
 
@@ -57,8 +59,8 @@ ext.deps = [
                 'preference'      : "androidx.preference:preference:${versions.preference}"
         ],
         'lifecycle'       : [
-                'runtime'   : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
-                'viewmodel' : "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}"
+                'runtime'  : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
+                'viewmodel': "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}"
         ],
         'test'            : [
                 'junit' : "junit:junit:${versions.junit}",

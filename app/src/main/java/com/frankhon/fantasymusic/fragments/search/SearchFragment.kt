@@ -10,10 +10,10 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.frankhon.fantasymusic.application.AppExecutors
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.data.MusicSource
+import com.frankhon.fantasymusic.data.source.remote.RemoteMusicDataSource
 import com.frankhon.fantasymusic.fragments.BaseFragment
 import com.frankhon.fantasymusic.media.AudioPlayerManager
-import com.frankhon.fantasymusic.vo.SongWrapper
+import com.frankhon.fantasymusic.vo.bean.DataSongInner
 import com.frankhon.simplesearchview.generator.DefaultSearchSuggestionGenerator
 import com.hon.mylogger.MyLogger
 import kotlinx.android.synthetic.main.fragment_search.*
@@ -29,7 +29,7 @@ class SearchFragment : BaseFragment() {
 
     private lateinit var searchResultAdapter: SearchResultAdapter
 
-    private var songWrapper: SongWrapper? = null
+    private var songWrapper: DataSongInner? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,10 +50,10 @@ class SearchFragment : BaseFragment() {
         svg_search_songs.setOnSearchListener {
             MyLogger.d("text: $it")
             lifecycleScope.launch {
-                val result = MusicSource.findSong(it)
+                val result = RemoteMusicDataSource.findSong(it)
                 if (result.isSuccess) {
                     result.data?.let { songWrapper ->
-                        updateSongList(songWrapper)
+                        updateSongList(songWrapper.data)
                     }
                 } else {
                     Log.e("frankhon", "onViewCreated: ${result.errorMessage}")
@@ -65,9 +65,9 @@ class SearchFragment : BaseFragment() {
         }
     }
 
-    private fun updateSongList(songWrapper: SongWrapper) {
+    private fun updateSongList(songWrapper: DataSongInner) {
         this.songWrapper = songWrapper
-        searchResultAdapter.submitList(listOf(songWrapper.data))
+        searchResultAdapter.submitList(songWrapper.songs)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

@@ -11,10 +11,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.frankhon.fantasymusic.application.AppExecutors
 import com.frankhon.fantasymusic.R
+import com.frankhon.fantasymusic.application.AppExecutors
 import com.frankhon.fantasymusic.vo.SimpleSong
-import com.frankhon.fantasymusic.vo.Song
+import com.frankhon.fantasymusic.vo.bean.DataSong
 
 /**
  * Created by Frank Hon on 2020-06-03 00:50.
@@ -24,19 +24,21 @@ class SearchResultAdapter(
     appExecutors: AppExecutors,
     private val onItemClickListener: (song: SimpleSong) -> Unit
 ) :
-    ListAdapter<Song, SearchResultAdapter.SearchResultViewHolder>(
+    ListAdapter<DataSong, SearchResultAdapter.SearchResultViewHolder>(
         AsyncDifferConfig.Builder(
-            object : DiffUtil.ItemCallback<Song>() {
-                override fun areContentsTheSame(oldItem: Song, newItem: Song): Boolean {
-                    if (oldItem.artists.size > 0 && newItem.artists.size > 0) {
-                        return oldItem.pic == newItem.pic && oldItem.artists[0].name == newItem.artists[0].name
+            object : DiffUtil.ItemCallback<DataSong>() {
+                override fun areContentsTheSame(oldItem: DataSong, newItem: DataSong): Boolean {
+                    val oldArtists = oldItem.artists ?: emptyList()
+                    val newArtists = newItem.artists ?: emptyList()
+                    if (oldArtists.isNotEmpty() && newArtists.isNotEmpty()) {
+                        return oldItem.pic == newItem.pic && oldArtists[0].name == newArtists[0].name
                     } else {
                         return oldItem.pic == newItem.pic
                     }
                 }
 
-                override fun areItemsTheSame(oldItem: Song, newItem: Song): Boolean {
-                    return oldItem.name == newItem.name
+                override fun areItemsTheSame(oldItem: DataSong, newItem: DataSong): Boolean {
+                    return oldItem.url == newItem.url
                 }
             }
         )
@@ -59,21 +61,19 @@ class SearchResultAdapter(
         private val songName = itemView.findViewById<TextView>(R.id.tv_song_name)
         private val artistName = itemView.findViewById<TextView>(R.id.tv_artist_name)
 
-        fun bindView(song: Song, onItemClickListener: (song: SimpleSong) -> Unit) {
-            if (song.album != null) {
-                Glide.with(itemView)
-                    .load(song.album.picUrl)
-                    .into(songPic)
-                songName.text = song.name
-                artistName.text = song.artists[0].name
-            }
+        fun bindView(song: DataSong, onItemClickListener: (song: SimpleSong) -> Unit) {
+            Glide.with(itemView)
+                .load(song.album?.picUrl)
+                .into(songPic)
+            songName.text = song.name
+            artistName.text = song.artists?.get(0)?.name.orEmpty()
             songItem.setOnClickListener {
                 onItemClickListener(
                     SimpleSong(
                         song.name,
-                        song.artists[0].name,
+                        song.artists?.get(0)?.name,
                         song.url,
-                        if (song.album != null) song.album.picUrl else ""
+                        song.album?.picUrl.orEmpty()
                     )
                 )
             }

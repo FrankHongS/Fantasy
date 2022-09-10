@@ -1,6 +1,12 @@
 package com.frankhon.fantasymusic.utils
 
 import android.content.Intent
+import android.os.Bundle
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.savedstate.SavedStateRegistryOwner
 import com.frankhon.fantasymusic.application.Fantasy
 import com.hon.mylogger.MyLogger
 import java.text.SimpleDateFormat
@@ -43,4 +49,9 @@ fun msToMMSS(millis: Long): String {
         MyLogger.e(e)
     }
     return ""
+}
+
+fun <T> MutableList<T>.setData(data: List<T>) {
+    clear()
+    addAll(data)
 }

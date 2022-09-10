@@ -1,7 +1,7 @@
 package com.frankhon.fantasymusic.utils
 
-import android.content.Context
 import android.net.Uri
+import com.frankhon.fantasymusic.application.Fantasy
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -14,7 +14,8 @@ import java.io.*
  */
 object FileUtil {
 
-    fun getSongsFromAssets(context: Context): List<SimpleSong> {
+    fun getSongsFromAssets(): List<SimpleSong> {
+        val context = Fantasy.getAppContext()
         val songs = arrayListOf<SimpleSong>()
         val config = context.assets.open("config.json")
         val reader = InputStreamReader(config, "utf-8")
@@ -41,7 +42,7 @@ object FileUtil {
         return songs
     }
 
-    fun writeToTargetFile(src: InputStream, target: File) {
+    private fun writeToTargetFile(src: InputStream, target: File) {
         var songOutput: OutputStream? = null
         try {
             songOutput = BufferedOutputStream(FileOutputStream(target))

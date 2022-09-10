@@ -1,5 +1,6 @@
 package com.frankhon.fantasymusic.fragments.song
 
+import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -7,10 +8,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
+import com.frankhon.fantasymusic.utils.setData
 import com.frankhon.fantasymusic.vo.view.SongItem
 
 /**
@@ -22,6 +25,7 @@ class SongAdapter(
 ) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     private val songs = mutableListOf<SongItem>()
+    private var curPlayingIndex = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         return SongViewHolder(
@@ -38,19 +42,40 @@ class SongAdapter(
         holder.bindView(song, position, onItemClickListener)
     }
 
-    fun setData(items: List<SongItem>) {
-        songs.clear()
-        songs.addAll(items)
+    fun setData(items: List<SongItem>, playingIndex: Int) {
+        if (items == songs) {
+            return
+        }
+        curPlayingIndex = playingIndex
+        songs.setData(items)
+        notifyDataChangedWithSelected(playingIndex)
+    }
+
+    fun select(playingIndex: Int) {
+        if (curPlayingIndex == playingIndex || playingIndex >= songs.size) {
+            return
+        }
+        curPlayingIndex = playingIndex
+        notifyDataChangedWithSelected(playingIndex)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun notifyDataChangedWithSelected(playingIndex: Int) {
+        songs.mapIndexed { index, songItem ->
+            songItem.also {
+                it.isPlaying = index == playingIndex
+            }
+        }
         notifyDataSetChanged()
     }
 
     class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val container = itemView.findViewById<View>(R.id.cl_song_item_container)
         private val songItem = itemView.findViewById<CardView>(R.id.cv_song)
         private val songPicView = itemView.findViewById<ImageView>(R.id.iv_song_pic)
         private val songName = itemView.findViewById<TextView>(R.id.tv_song_name)
         private val artistName = itemView.findViewById<TextView>(R.id.tv_artist_name)
+        private val nowPlayingImage = itemView.findViewById<View>(R.id.iv_song_now_playing)
 
         fun bindView(
             song: SongItem,
@@ -68,11 +93,7 @@ class SongAdapter(
                 }
                 songName.text = name
                 artistName.text = artist
-                if (isPlaying) {
-                    container.setBackgroundResource(R.color.colorAccent)
-                } else {
-                    container.background = null
-                }
+                nowPlayingImage.isVisible = isPlaying
                 songItem.setOnClickListener {
                     onItemClickListener(song, index)
                 }

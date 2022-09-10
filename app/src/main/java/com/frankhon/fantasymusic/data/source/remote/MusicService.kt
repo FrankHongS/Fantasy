@@ -1,11 +1,9 @@
-package com.frankhon.fantasymusic.api
+package com.frankhon.fantasymusic.data.source.remote
 
 import com.frankhon.fantasymusic.BuildConfig
-import com.frankhon.fantasymusic.vo.Song
-import com.frankhon.fantasymusic.vo.SongWrapper
+import com.frankhon.fantasymusic.vo.bean.DataSongWrapper
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -18,11 +16,11 @@ import retrofit2.http.Query
  */
 interface MusicService {
 
-    @GET("song/find")
-    suspend fun findSong(@Query("keyword") keyword: String): Response<SongWrapper>
+    @GET("search")
+    suspend fun findSong(@Query("keyword") keyword: String): Response<DataSongWrapper>
 
     companion object {
-        private const val BASE_URL = "http://192.168.124.2:3400/"
+        private const val BASE_URL = "http://192.168.124.3:3402/"
 
         fun create(): MusicService {
             val logger = HttpLoggingInterceptor().apply {

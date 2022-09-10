@@ -6,6 +6,7 @@ package com.frankhon.fantasymusic.utils
  * Created by Frank_Hon on 11/12/2020.
  * E-mail: v-shhong@microsoft.com
  */
+const val APP_NAME = "Fantasy"
 const val PACKAGE_ID = "com.frankhon.fantasymusic"
 
 const val PLAYER_CHANNEL_ID = "Player"

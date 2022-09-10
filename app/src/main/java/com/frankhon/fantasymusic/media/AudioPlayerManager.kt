@@ -11,19 +11,19 @@ import com.frankhon.fantasymusic.application.Fantasy
 import com.frankhon.fantasymusic.media.observer.AudioLifecycleObserver
 import com.frankhon.fantasymusic.media.observer.AudioProgressObserver
 import com.frankhon.fantasymusic.vo.SimpleSong
+import com.hon.mylogger.MyLogger
 
 /**
  * Created by Frank Hon on 2020/11/1 8:26 PM.
  * E-mail: frank_hon@foxmail.com
  */
 object AudioPlayerManager {
-    private lateinit var musicPlayer: IMusicPlayer
+    private var musicPlayer: IMusicPlayer? = null
     private var onServiceConnectedListener: ((AudioPlayerManager) -> Unit)? = null
     private var hasBoundService = false
     private val connection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             musicPlayer = IMusicPlayer.Stub.asInterface(service)
-            hasBoundService = true
             invokeOnServiceConnected()
         }
 
@@ -35,12 +35,16 @@ object AudioPlayerManager {
     private val lifecycleObservers = mutableListOf<AudioLifecycleObserver>()
     private val progressObservers = mutableListOf<AudioProgressObserver>()
 
+    /**
+     * @param listener 绑定服务之后的操作，不要在该监听器中做播放操作，因为此时不一定完成服务的绑定
+     */
     @JvmStatic
     fun connect(listener: ((AudioPlayerManager) -> Unit)? = null) {
-        this.onServiceConnectedListener = listener
         if (hasBoundService) {
-            invokeOnServiceConnected()
+            listener?.invoke(this)
         } else {
+            this.onServiceConnectedListener = listener
+            hasBoundService = true
             val intent = Intent(Fantasy.getAppContext(), AudioPlayerService::class.java)
             Fantasy.getAppContext().bindService(intent, connection, Context.BIND_AUTO_CREATE)
             Fantasy.getAppContext().startService(intent)
@@ -93,53 +97,41 @@ object AudioPlayerManager {
 
     @JvmStatic
     fun setPlayList(playList: List<SimpleSong>, index: Int) {
-        try {
-            musicPlayer.setPlayList(playList, index)
-        } catch (e: RemoteException) {
-            // do nothing
-        }
+        musicPlayer?.setPlayList(playList, index)
     }
 
     @JvmStatic
     fun play(song: SimpleSong?) {
-        musicPlayer.play(song)
+        musicPlayer?.play(song)
     }
 
     @JvmStatic
     fun pause() {
-        musicPlayer.pause()
+        musicPlayer?.pause()
     }
 
     @JvmStatic
     fun resume() {
-        try {
-            musicPlayer.resume()
-        } catch (e: RemoteException) {
-            // do nothing
-        }
+        musicPlayer?.resume()
     }
 
     @JvmStatic
     fun next() {
-        try {
-            musicPlayer.next()
-        } catch (e: RemoteException) {
-            // do nothing
-        }
+        musicPlayer?.next()
     }
 
     @JvmStatic
     fun previous() {
-        musicPlayer.previous()
+        musicPlayer?.previous()
     }
 
     @JvmStatic
     fun seekTo(msec: Int) {
-        musicPlayer.seekTo(msec)
+        musicPlayer?.seekTo(msec)
     }
 
     @JvmStatic
-    fun getCurrentPlayerInfo() = musicPlayer.currentPlayerInfo
+    fun getCurrentPlayerInfo() = musicPlayer?.currentPlayerInfo
 
     fun publishPlayerState(song: SimpleSong?, state: PlayerState, errorMsg: String) {
         notifyLifecycleObserver(song, state, errorMsg)
@@ -154,7 +146,7 @@ object AudioPlayerManager {
         when (state) {
             PlayerState.PREPARING -> consumer = {
                 val currentPlayerInfo = getCurrentPlayerInfo()
-                currentPlayerInfo.run {
+                currentPlayerInfo?.run {
                     it.onPrepare(
                         song!!,
                         curSongIndex,

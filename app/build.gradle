@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -14,6 +15,12 @@ android {
         versionCode versions.versionCode
         versionName versions.versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
     buildTypes {
         release {
@@ -33,22 +40,22 @@ dependencies {
     implementation deps.kotlin.core_ktx
     implementation deps.kotlin.kotlin_coroutine
 
+    // 包含Lifecycle, ViewModel
     implementation deps.support.appCompat
     implementation deps.support.material
     implementation deps.support.constraintlayout
 
     implementation "androidx.media:media:1.6.0"
 
-    // lifecycle
-    implementation deps.lifecycle.runtime
-    implementation deps.lifecycle.viewmodel
-
     // navigation
     implementation deps.navigation.navigation_fragment
     implementation deps.navigation.navigation_ui
     // room
-    implementation deps.room.runtime
-    annotationProcessor deps.room.compiler
+    implementation deps.room.room_ktx
+    // To use Kotlin annotation processing tool (kapt)
+    kapt deps.room.compiler
+    // To use Kotlin Symbol Processing (KSP)
+    // ksp deps.room.compiler
 
     implementation deps.retrofit.root
     implementation deps.retrofit.converter_gson

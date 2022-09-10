@@ -2,8 +2,8 @@ ext.versions = [
         'minSdk'          : 21,
         'compileSdk'      : 31,
         'buildTools'      : '30.0.3',
-        'versionCode'     : 1,
-        'versionName'     : '1.0.0',
+        'versionCode'     : 2,
+        'versionName'     : '2.0.0',
 
         'gradle_version'  : '7.2.0',
 
@@ -48,7 +48,7 @@ ext.deps = [
                 'navigation_ui'      : "androidx.navigation:navigation-ui:${versions.navigation}"
         ],
         'room'            : [
-                'runtime' : "androidx.room:room-runtime:${versions.room}",
+                'room_ktx' : "androidx.room:room-ktx:${versions.room}",
                 'compiler': "androidx.room:room-compiler:${versions.room}"
         ],
         'support'         : [

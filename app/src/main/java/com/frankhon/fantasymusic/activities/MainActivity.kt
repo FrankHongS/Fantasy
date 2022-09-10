@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.activities.viewmodel.MainViewModel
+import com.frankhon.fantasymusic.application.ServiceLocator
 import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.media.PlayerState
 import com.frankhon.fantasymusic.media.observer.AudioLifecycleObserver
@@ -24,13 +27,10 @@ import kotlinx.android.synthetic.main.layout_song_control.*
 
 class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressObserver {
 
-    private val model by viewModels<MainViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         MyLogger.d("onCreate: ")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         initView()
         connectAudioPlayer()
     }
@@ -50,14 +50,16 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
         super.onBackPressed()
     }
 
-    override fun onPlayerConnected(playerInfo: CurrentPlayerInfo) {
-        playerInfo.run {
+    override fun onPlayerConnected(playerInfo: CurrentPlayerInfo?) {
+        playerInfo?.run {
             curSong?.let {
                 updateSongPanel(it)
-                updateSongDuration(it)
                 updatePlayControlIcon(curPlayerState)
-                tv_current_time.text = msToMMSS(curPlaybackPosition)
                 updatePreviousNextButton(curSongIndex, curPlayList.size)
+                updateSongDuration(it)
+                // update progress
+                tv_current_time.text = msToMMSS(curPlaybackPosition)
+                sb_play_progress.progress = curPlaybackPosition.toInt()
             }
         }
     }
@@ -103,7 +105,9 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
 
     private fun updatePlayControlIcon(playerState: PlayerState) {
         when (playerState) {
-            PlayerState.PLAYING -> ib_pause_or_resume.setPlayState(ControlButtonState.PLAYING)
+            PlayerState.PLAYING, PlayerState.RESUMED -> ib_pause_or_resume.setPlayState(
+                ControlButtonState.PLAYING
+            )
             PlayerState.PREPARING -> ib_pause_or_resume.setPlayState(ControlButtonState.PREPARING)
             else -> ib_pause_or_resume.setPlayState(ControlButtonState.PAUSED)
         }
@@ -148,13 +152,13 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
             when (curState) {
                 ControlButtonState.PLAYING -> {
                     val currentPlayerInfo = AudioPlayerManager.getCurrentPlayerInfo()
-                    currentPlayerInfo.run {
+                    currentPlayerInfo?.run {
                         if (curPlayerState == PlayerState.ERROR) {
                             AudioPlayerManager.play(curSong)
                         } else {
                             AudioPlayerManager.resume()
                         }
-                    }
+                    } ?: kotlin.run { AudioPlayerManager.resume() }
                 }
                 ControlButtonState.PAUSED -> AudioPlayerManager.pause()
                 else -> {}

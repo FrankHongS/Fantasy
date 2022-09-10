@@ -10,5 +10,9 @@ data class SongItem(
     val name: String?,
     val artist: String?,
     val songPic: String? = "",
-    val isPlaying: Boolean = false
-)
+    var isPlaying: Boolean = false
+) {
+    fun clone(): SongItem {
+        return SongItem(name, artist, songPic, isPlaying)
+    }
+}

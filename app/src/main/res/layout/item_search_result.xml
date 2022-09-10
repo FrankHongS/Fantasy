@@ -13,8 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_song_item_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:background="@color/colorAccent">
+            android:layout_height="match_parent">
 
         <ImageView
                 android:id="@+id/iv_song_pic"
@@ -51,9 +50,22 @@
                 android:layout_marginBottom="8dp"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_song_now_playing"
                 app:layout_constraintStart_toStartOf="@id/tv_song_name"
                 app:layout_constraintTop_toBottomOf="@id/tv_song_name"
                 tools:text="artist nameartist nameartist nameartist nameartist name" />
+
+        <ImageView
+                android:id="@+id/iv_song_now_playing"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="16dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_now_playing"
+                tools:ignore="ContentDescription"
+                tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

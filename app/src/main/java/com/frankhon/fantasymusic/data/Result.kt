@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.api
+package com.frankhon.fantasymusic.data
 
 /**
  * Created by Frank Hon on 2022/2/13 8:52 下午.

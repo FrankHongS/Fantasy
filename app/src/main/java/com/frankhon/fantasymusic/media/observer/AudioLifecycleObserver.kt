@@ -14,7 +14,7 @@ interface AudioLifecycleObserver {
     /**
      * @param playerInfo current player info
      */
-    fun onPlayerConnected(playerInfo: CurrentPlayerInfo) {}
+    fun onPlayerConnected(playerInfo: CurrentPlayerInfo?) {}
 
     fun onPrepare(song: SimpleSong, curIndex: Int, totalSize: Int) {}
 

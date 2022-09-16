@@ -1,7 +1,8 @@
 package com.frankhon.fantasymusic.data.source.local
 
 import com.frankhon.fantasymusic.utils.FileUtil
-import com.frankhon.fantasymusic.utils.transformToSimpleSong
+import com.frankhon.fantasymusic.utils.transformToDBSongs
+import com.frankhon.fantasymusic.utils.transformToSimpleSongs
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.hon.mylogger.MyLogger
 import kotlinx.coroutines.Dispatchers
@@ -14,13 +15,13 @@ import kotlinx.coroutines.withContext
 class LocalMusicDataSource(private val musicDao: MusicDao) {
 
     suspend fun getSongs(): List<SimpleSong> {
-        var songs = musicDao.getSongs().map { it.transformToSimpleSong() }
+        var songs = musicDao.getSongs().transformToSimpleSongs()
         if (songs.isEmpty()) {
             MyLogger.d("From assets")
             songs = withContext(Dispatchers.IO) {
                 FileUtil.getSongsFromAssets()
             }
-            musicDao.insertSongs(songs.map { it.transformToSimpleSong() })
+            musicDao.insertSongs(songs.transformToDBSongs())
         } else {
             MyLogger.d("From db")
         }

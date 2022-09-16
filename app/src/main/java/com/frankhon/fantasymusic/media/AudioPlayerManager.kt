@@ -5,13 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import android.os.RemoteException
 import com.frankhon.fantasymusic.IMusicPlayer
 import com.frankhon.fantasymusic.application.Fantasy
-import com.frankhon.fantasymusic.media.observer.AudioLifecycleObserver
-import com.frankhon.fantasymusic.media.observer.AudioProgressObserver
+import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
+import com.frankhon.fantasymusic.media.observer.PlayerConfigurationObserver
+import com.frankhon.fantasymusic.utils.appContext
+import com.frankhon.fantasymusic.utils.bindService
+import com.frankhon.fantasymusic.utils.startService
 import com.frankhon.fantasymusic.vo.SimpleSong
-import com.hon.mylogger.MyLogger
 
 /**
  * Created by Frank Hon on 2020/11/1 8:26 PM.
@@ -32,8 +33,8 @@ object AudioPlayerManager {
         }
     }
 
-    private val lifecycleObservers = mutableListOf<AudioLifecycleObserver>()
-    private val progressObservers = mutableListOf<AudioProgressObserver>()
+    private val lifecycleObservers = mutableListOf<PlayerLifecycleObserver>()
+    private val configurationObservers = mutableListOf<PlayerConfigurationObserver>()
 
     /**
      * @param listener 绑定服务之后的操作，不要在该监听器中做播放操作，因为此时不一定完成服务的绑定
@@ -45,9 +46,9 @@ object AudioPlayerManager {
         } else {
             this.onServiceConnectedListener = listener
             hasBoundService = true
-            val intent = Intent(Fantasy.getAppContext(), AudioPlayerService::class.java)
-            Fantasy.getAppContext().bindService(intent, connection, Context.BIND_AUTO_CREATE)
-            Fantasy.getAppContext().startService(intent)
+            val intent = Intent(appContext, AudioPlayerService::class.java)
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+            startService(intent)
         }
     }
 
@@ -58,7 +59,7 @@ object AudioPlayerManager {
     }
 
     @JvmStatic
-    fun registerLifecycleObserver(observer: AudioLifecycleObserver) {
+    fun registerLifecycleObserver(observer: PlayerLifecycleObserver) {
         if (!lifecycleObservers.contains(observer)) {
             lifecycleObservers.add(observer)
             observer.onPlayerConnected(getCurrentPlayerInfo())
@@ -66,20 +67,20 @@ object AudioPlayerManager {
     }
 
     @JvmStatic
-    fun unregisterLifecycleObserver(observer: AudioLifecycleObserver) {
+    fun unregisterLifecycleObserver(observer: PlayerLifecycleObserver) {
         lifecycleObservers.remove(observer)
     }
 
     @JvmStatic
-    fun registerProgressObserver(observer: AudioProgressObserver) {
-        if (!progressObservers.contains(observer)) {
-            progressObservers.add(observer)
+    fun registerProgressObserver(observer: PlayerConfigurationObserver) {
+        if (!configurationObservers.contains(observer)) {
+            configurationObservers.add(observer)
         }
     }
 
     @JvmStatic
-    fun unregisterProgressObserver(observer: AudioProgressObserver) {
-        progressObservers.remove(observer)
+    fun unregisterProgressObserver(observer: PlayerConfigurationObserver) {
+        configurationObservers.remove(observer)
     }
 
     @JvmStatic
@@ -87,7 +88,7 @@ object AudioPlayerManager {
         Fantasy.getAppContext().unbindService(connection)
         hasBoundService = false
         lifecycleObservers.clear()
-        progressObservers.clear()
+        configurationObservers.clear()
     }
 
     @JvmStatic
@@ -103,6 +104,31 @@ object AudioPlayerManager {
     @JvmStatic
     fun play(song: SimpleSong?) {
         musicPlayer?.play(song)
+    }
+
+    @JvmStatic
+    fun play(index: Int) {
+        val currentPlayerInfo = getCurrentPlayerInfo()
+        currentPlayerInfo?.run {
+            if (index != curSongIndex && index >= 0 && index < curPlaylist.size) {
+                play(curPlaylist[index])
+            }
+        }
+    }
+
+    @JvmStatic
+    fun playAndAddIntoPlaylist(song: SimpleSong?) {
+        musicPlayer?.playAndAddIntoPlaylist(song)
+    }
+
+    @JvmStatic
+    fun addIntoPlaylist(song: SimpleSong) {
+        musicPlayer?.addIntoPlaylist(song)
+    }
+
+    @JvmStatic
+    fun removeSongFromPlayList(index: Int) {
+        musicPlayer?.removeSongFromPlayList(index)
     }
 
     @JvmStatic
@@ -131,6 +157,11 @@ object AudioPlayerManager {
     }
 
     @JvmStatic
+    fun setPlayMode(playMode: PlayMode) {
+        musicPlayer?.setPlayMode(playMode.name)
+    }
+
+    @JvmStatic
     fun getCurrentPlayerInfo() = musicPlayer?.currentPlayerInfo
 
     fun publishPlayerState(song: SimpleSong?, state: PlayerState, errorMsg: String) {
@@ -141,16 +172,25 @@ object AudioPlayerManager {
         notifyProgressObserver(curPosition, duration)
     }
 
+    fun publishPlayMode(playMode: String) {
+        notifyPlayModeObserver(PlayMode.valueOf(playMode))
+    }
+
+    fun publishPlaylistChanged() {
+        notifyPlaylistObserver()
+    }
+
     private fun notifyLifecycleObserver(song: SimpleSong?, state: PlayerState, errorMsg: String) {
-        var consumer: ((AudioLifecycleObserver) -> Unit)? = null
+        var consumer: ((PlayerLifecycleObserver) -> Unit)? = null
         when (state) {
             PlayerState.PREPARING -> consumer = {
                 val currentPlayerInfo = getCurrentPlayerInfo()
                 currentPlayerInfo?.run {
                     it.onPrepare(
                         song!!,
+                        curPlayMode,
                         curSongIndex,
-                        curPlayList.size
+                        curPlaylist.size
                     )
                 }
             }
@@ -180,8 +220,26 @@ object AudioPlayerManager {
     }
 
     private fun notifyProgressObserver(curPosition: Long, duration: Long) {
-        progressObservers.forEach {
+        configurationObservers.forEach {
             it.onProgressUpdated(curPosition, duration)
+        }
+    }
+
+    private fun notifyPlayModeObserver(playMode: PlayMode) {
+        val currentPlayerInfo = getCurrentPlayerInfo()
+        currentPlayerInfo?.run {
+            configurationObservers.forEach {
+                it.onPlayModeChanged(playMode, curSongIndex, curPlaylist.size)
+            }
+        }
+    }
+
+    private fun notifyPlaylistObserver() {
+        val currentPlayerInfo = getCurrentPlayerInfo()
+        currentPlayerInfo?.run {
+            configurationObservers.forEach {
+                it.onPlaylistChanged(curPlayMode, curPlaylist, curSongIndex)
+            }
         }
     }
 

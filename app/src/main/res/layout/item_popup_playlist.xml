@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        tools:ignore="UnusedAttribute">
+
+    <ImageView
+            android:id="@+id/iv_song_now_playing_playlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_now_playing_playlist"
+            android:visibility="gone"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible" />
+
+    <TextView
+            android:id="@+id/tv_song_name_playlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/iv_song_now_playing_playlist"
+            android:maxWidth="220dp"
+            android:singleLine="true"
+            android:textColor="@color/primaryText"
+            tools:text="七里香七里香七里香七里香七里香七里香七里香七里香七里香" />
+
+    <TextView
+            android:id="@+id/tv_artist_name_playlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="6dp"
+            android:layout_toStartOf="@id/ib_remove_song_playlist"
+            android:layout_toEndOf="@id/tv_song_name_playlist"
+            android:singleLine="true"
+            android:textColor="@color/primaryText"
+            android:textSize="12sp"
+            tools:text="- 周杰伦周杰伦周杰伦周杰伦周杰伦周杰伦周杰伦周杰伦" />
+
+    <ImageButton
+            android:id="@+id/ib_remove_song_playlist"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="4dp"
+            android:background="@null"
+            android:src="@drawable/ic_remove_song"
+            tools:ignore="ContentDescription" />
+
+</RelativeLayout>

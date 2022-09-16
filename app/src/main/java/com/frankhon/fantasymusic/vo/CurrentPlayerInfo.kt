@@ -2,6 +2,7 @@ package com.frankhon.fantasymusic.vo
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.frankhon.fantasymusic.media.PlayMode
 import com.frankhon.fantasymusic.media.PlayerState
 
 /**
@@ -14,7 +15,7 @@ class CurrentPlayerInfo() : Parcelable {
 
     var curSong: SimpleSong? = null
 
-    var curPlayList: List<SimpleSong> = emptyList()
+    var curPlaylist: List<SimpleSong> = emptyList()
 
     var curSongIndex: Int = -1
 
@@ -22,20 +23,24 @@ class CurrentPlayerInfo() : Parcelable {
 
     var curPlayerState = PlayerState.IDLE
 
+    var curPlayMode = PlayMode.LOOP_LIST
+
     constructor(parcel: Parcel) : this() {
         curSong = parcel.readParcelable(SimpleSong::class.java.classLoader)
-        curPlayList = parcel.createTypedArrayList(SimpleSong) ?: emptyList()
+        curPlaylist = parcel.createTypedArrayList(SimpleSong) ?: emptyList()
         curSongIndex = parcel.readInt()
         curPlaybackPosition = parcel.readLong()
         curPlayerState = PlayerState.valueOf(parcel.readString() ?: PlayerState.IDLE.name)
+        curPlayMode = PlayMode.valueOf(parcel.readString() ?: PlayMode.LOOP_LIST.name)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeParcelable(curSong, flags)
-        parcel.writeTypedList(curPlayList)
+        parcel.writeTypedList(curPlaylist)
         parcel.writeInt(curSongIndex)
         parcel.writeLong(curPlaybackPosition)
         parcel.writeString(curPlayerState.name)
+        parcel.writeString(curPlayMode.name)
     }
 
     override fun describeContents(): Int {

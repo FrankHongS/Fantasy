@@ -18,6 +18,7 @@ const val ACTION_STOP = "com.frankhon.fantasy.Stop"
 
 const val MUSIC_INFO_ACTION = "com.frankhon.fantasy.MUSIC_INFO"
 const val MUSIC_PROGRESS_ACTION = "com.frankhon.fantasy.MUSIC_PROGRESS"
+const val MUSIC_PLAY_MODE_ACTION = "com.frankhon.fantasy.MUSIC_PLAYER_CONFIGURATION"
 
 const val KEY_PLAYER_STATE = "PLAYER_STATE"
 const val KEY_PLAYER_ERROR_MESSAGE = "PLAYER_ERROR_MESSAGE"
@@ -25,5 +26,9 @@ const val KEY_CUR_SONG = "CUR_SONG"
 const val KEY_PIC_URL = "PIC_URL"
 const val KEY_SONG_NAME = "SONG_NAME"
 const val KEY_ARTIST_NAME = "ARTIST_NAME"
+
 const val KEY_DURATION = "SONG_DURATION"
 const val KEY_SONG_PROGRESS = "SONG_PROGRESS"
+
+const val KEY_PLAYER_CONFIG = "PLAYER_CONFIG"
+const val KEY_PLAY_MODE = "PLAY_MODE"

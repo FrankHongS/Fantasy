@@ -46,7 +46,7 @@ public class AudioPlayerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 //        MediaButtonReceiver.handleIntent(mediaSessionCompat, intent);
         String action = intent.getAction();
-        MyLogger.d("onStartCommand: "+action);
+        MyLogger.d("onStartCommand: " + action);
         if (action != null) {
             switch (action) {
                 case ACTION_PREVIOUS:
@@ -97,12 +97,30 @@ public class AudioPlayerService extends Service {
         @Override
         public void play(SimpleSong song) {
             AudioPlayer.play(song);
+        }
+
+        @Override
+        public void playAndAddIntoPlaylist(SimpleSong song) {
+            AudioPlayer.playAndAddIntoPlaylist(song);
             sendMediaNotification(AudioPlayerService.this, AudioPlayer.getCurrentPlayerInfo(), true);
         }
 
         @Override
+        public void addIntoPlaylist(SimpleSong song) {
+            boolean isPlaying = AudioPlayer.addIntoPlaylist(song);
+            if (isPlaying) {
+                sendMediaNotification(AudioPlayerService.this, AudioPlayer.getCurrentPlayerInfo(), true);
+            }
+        }
+
+        @Override
+        public void removeSongFromPlayList(int index) {
+            AudioPlayer.removeSongFromPlayList(index);
+        }
+
+        @Override
         public void setPlayList(List<SimpleSong> playList, int index) {
-            AudioPlayer.setPlayList(playList, index);
+            AudioPlayer.setPlaylist(playList, index);
             sendMediaNotification(AudioPlayerService.this, AudioPlayer.getCurrentPlayerInfo(), true);
         }
 
@@ -132,7 +150,12 @@ public class AudioPlayerService extends Service {
         }
 
         @Override
-        public CurrentPlayerInfo getCurrentPlayerInfo()  {
+        public void setPlayMode(String playMode) {
+            AudioPlayer.setPlayMode(playMode);
+        }
+
+        @Override
+        public CurrentPlayerInfo getCurrentPlayerInfo() {
             return AudioPlayer.getCurrentPlayerInfo();
         }
     }

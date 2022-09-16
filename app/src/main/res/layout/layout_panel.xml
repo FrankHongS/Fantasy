@@ -59,14 +59,30 @@
 
         <com.frankhon.fantasymusic.view.PlayModeImageButton
                 android:id="@+id/ib_play_mode"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="16dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="25dp"
                 android:layout_marginTop="30dp"
-                android:background="@drawable/shuffle"
+                android:background="@null"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="5dp"
+                android:src="@drawable/ic_loop_list"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/iv_song_bottom_pic"
-                tools:ignore="ContentDescription,TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+                tools:ignore="ContentDescription,SpeakableTextPresentCheck,TouchTargetSizeCheck,UnusedAttribute" />
+
+        <ImageButton
+                android:id="@+id/ib_playlist"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@null"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:src="@drawable/ic_playlist"
+                app:layout_constraintBottom_toBottomOf="@id/ib_play_mode"
+                app:layout_constraintStart_toEndOf="@id/ib_play_mode"
+                app:layout_constraintTop_toTopOf="@id/ib_play_mode"
+                tools:ignore="ContentDescription,UnusedAttribute" />
 
         <TextView
                 android:id="@+id/tv_current_time"

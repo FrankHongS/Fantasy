@@ -21,4 +21,18 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/item_search_result" />
 
+    <Button
+            android:id="@+id/btn_test"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="36dp"
+            android:layout_marginBottom="320dp"
+            android:text="Test"
+            android:textAllCaps="false"
+            android:textSize="20sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="gone" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

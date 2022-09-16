@@ -16,10 +16,11 @@ import androidx.core.app.NotificationManagerCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.frankhon.fantasymusic.application.Fantasy
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.activities.MainActivity
+import com.frankhon.fantasymusic.application.Fantasy
 import com.frankhon.fantasymusic.media.AudioPlayerService
+import com.frankhon.fantasymusic.media.PlayMode
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 
@@ -42,18 +43,18 @@ fun sendMediaNotification(
         .placeholder(R.drawable.song_pic)
         .into(object : CustomTarget<Bitmap?>() {
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                val notificationManager = NotificationManagerCompat.from(context)
-                val size = currentPlayerInfo.curPlayList.size
-                val curIndex = currentPlayerInfo.curSongIndex
-                val notification = buildNotification(
-                    context,
-                    song,
-                    resource,
-                    isPlaying,
-                    curIndex != 0,
-                    curIndex < size - 1
-                )
-                notificationManager.notify(MUSIC_NOTIFICATION_ID, notification)
+                currentPlayerInfo.run {
+                    val notificationManager = NotificationManagerCompat.from(context)
+                    val notification = buildNotification(
+                        context,
+                        song,
+                        resource,
+                        isPlaying,
+                        if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex != 0 else true,
+                        if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex < curPlaylist.size - 1 else true
+                    )
+                    notificationManager.notify(MUSIC_NOTIFICATION_ID, notification)
+                }
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
@@ -75,17 +76,17 @@ fun sendMediaNotification(
         .placeholder(R.drawable.song_pic)
         .into(object : CustomTarget<Bitmap?>() {
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                val size = currentPlayerInfo.curPlayList.size
-                val curIndex = currentPlayerInfo.curSongIndex
-                val notification = buildNotification(
-                    context,
-                    song,
-                    resource,
-                    isPlaying,
-                    curIndex != 0,
-                    curIndex < size - 1
-                )
-                service.startForeground(MUSIC_NOTIFICATION_ID, notification)
+                currentPlayerInfo.run {
+                    val notification = buildNotification(
+                        context,
+                        song,
+                        resource,
+                        isPlaying,
+                        if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex != 0 else true,
+                        if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex < curPlaylist.size - 1 else true
+                    )
+                    service.startForeground(MUSIC_NOTIFICATION_ID, notification)
+                }
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {

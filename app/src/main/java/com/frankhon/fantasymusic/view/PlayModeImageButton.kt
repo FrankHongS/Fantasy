@@ -1,7 +1,9 @@
 package com.frankhon.fantasymusic.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
+import android.widget.ImageButton
 import androidx.appcompat.widget.AppCompatImageButton
 import com.frankhon.fantasymusic.R
 
@@ -14,31 +16,35 @@ class PlayModeImageButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : AppCompatImageButton(context, attrs, defStyleAttr) {
 
-    enum class PlayMode {
+    enum class State {
         SHUFFLE,
         LOOP_LIST,
         LOOP_SINGLE
     }
 
-    var playMode = PlayMode.LOOP_LIST
+    var playMode = State.LOOP_LIST
+        set(value) {
+            val pos = getPositionByMode(value);
+            setImageResource(icons[pos])
+            field = value
+        }
 
+    // 选中播放模式的位置
     private var position = 0
-    private val size = PlayMode.values().size
+    private val size = State.values().size
     private var icons = listOf(
         R.drawable.ic_loop_list,
-        R.drawable.shuffle,
+        R.drawable.ic_shuffle,
         R.drawable.ic_loop_single
     )
-    private var observer: ((PlayMode) -> Unit)? = null
+    private var listener: ((State) -> Unit)? = null
 
     init {
-        setBackgroundResource(icons[position])
         setOnClickListener {
             position++
             position %= size
             playMode = getModeByPosition(position)
-            setBackgroundResource(icons[position])
-            observer?.invoke(playMode)
+            listener?.invoke(playMode)
         }
     }
 
@@ -49,16 +55,24 @@ class PlayModeImageButton @JvmOverloads constructor(
         this.icons = icons
     }
 
-    fun setObserver(observer: ((PlayMode) -> Unit)?) {
-        this.observer = observer
+    fun setPlayModeListener(listener: ((State) -> Unit)?) {
+        this.listener = listener
     }
 
-    private fun getModeByPosition(position: Int): PlayMode {
+    private fun getModeByPosition(position: Int): State {
         return when (position) {
-            0 -> PlayMode.LOOP_LIST
-            1 -> PlayMode.SHUFFLE
-            2 -> PlayMode.LOOP_SINGLE
-            else -> PlayMode.LOOP_LIST
+            0 -> State.LOOP_LIST
+            1 -> State.SHUFFLE
+            2 -> State.LOOP_SINGLE
+            else -> State.LOOP_LIST
+        }
+    }
+
+    private fun getPositionByMode(playMode: State): Int {
+        return when (playMode) {
+            State.LOOP_LIST -> 0
+            State.SHUFFLE -> 1
+            State.LOOP_SINGLE -> 2
         }
     }
 }

@@ -1,13 +1,15 @@
 package com.frankhon.fantasymusic.utils
 
+import android.app.Service
+import android.content.Context
 import android.content.Intent
-import android.os.Bundle
-import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.savedstate.SavedStateRegistryOwner
+import android.content.ServiceConnection
+import android.view.View
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import com.frankhon.fantasymusic.application.Fantasy
+import com.frankhon.fantasymusic.media.AudioPlayerService
 import com.hon.mylogger.MyLogger
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,6 +36,8 @@ inline fun <reified T> getSystemService(name: String): T {
     return Fantasy.getAppContext().getSystemService(name) as T
 }
 
+val appContext = Fantasy.getAppContext() as Context
+
 fun sendBroadcast(intent: Intent) {
     Fantasy.getAppContext().sendBroadcast(intent)
 }
@@ -54,4 +58,31 @@ fun msToMMSS(millis: Long): String {
 fun <T> MutableList<T>.setData(data: List<T>) {
     clear()
     addAll(data)
+}
+
+fun bindService(
+    service: Intent,
+    conn: ServiceConnection,
+    flags: Int
+) {
+    appContext.bindService(service, conn, flags)
+}
+
+fun startService(intent: Intent) {
+    appContext.startService(intent)
+}
+
+fun Context.drawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(this, resId)
+
+fun View.drawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(context, resId)
+
+fun getString(@StringRes resId: Int) = Fantasy.getAppContext().getString(resId)
+
+fun stopAudio() {
+    startService(
+        Intent(appContext, AudioPlayerService::class.java)
+            .apply {
+                setAction(ACTION_STOP)
+            }
+    )
 }

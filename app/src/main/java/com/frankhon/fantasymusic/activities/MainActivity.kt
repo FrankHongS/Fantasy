@@ -2,30 +2,26 @@ package com.frankhon.fantasymusic.activities
 
 import android.os.Bundle
 import android.widget.SeekBar
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.activities.viewmodel.MainViewModel
-import com.frankhon.fantasymusic.application.ServiceLocator
 import com.frankhon.fantasymusic.media.AudioPlayerManager
+import com.frankhon.fantasymusic.media.PlayMode
 import com.frankhon.fantasymusic.media.PlayerState
-import com.frankhon.fantasymusic.media.observer.AudioLifecycleObserver
-import com.frankhon.fantasymusic.media.observer.AudioProgressObserver
-import com.frankhon.fantasymusic.utils.ToastUtil
-import com.frankhon.fantasymusic.utils.msToMMSS
+import com.frankhon.fantasymusic.media.observer.PlayerConfigurationObserver
+import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
+import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.view.AnimatedAudioControlButton.ControlButtonState
 import com.frankhon.fantasymusic.view.PlayModeImageButton
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.hon.mylogger.MyLogger
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_panel.*
 import kotlinx.android.synthetic.main.layout_song_control.*
 
-class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressObserver {
+class MainActivity : AppCompatActivity(), PlayerLifecycleObserver, PlayerConfigurationObserver {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         MyLogger.d("onCreate: ")
@@ -47,6 +43,10 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
      */
     override fun onBackPressed() {
         MyLogger.d("onBackPressed: ")
+        //返回之前先收起控制栏
+        if (collapsePanel()) {
+            return
+        }
         super.onBackPressed()
     }
 
@@ -55,7 +55,8 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
             curSong?.let {
                 updateSongPanel(it)
                 updatePlayControlIcon(curPlayerState)
-                updatePreviousNextButton(curSongIndex, curPlayList.size)
+                updatePreviousNextButton(curPlayMode, curSongIndex, curPlaylist.size)
+                ib_play_mode.playMode = PlayModeImageButton.State.valueOf(curPlayMode.name)
                 updateSongDuration(it)
                 // update progress
                 tv_current_time.text = msToMMSS(curPlaybackPosition)
@@ -64,10 +65,12 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
         }
     }
 
-    override fun onPrepare(song: SimpleSong, curIndex: Int, totalSize: Int) {
+    override fun onPrepare(song: SimpleSong, playMode: PlayMode, curIndex: Int, totalSize: Int) {
         updateSongPanel(song)
         ib_pause_or_resume.setPlayState(ControlButtonState.PREPARING)
-        updatePreviousNextButton(curIndex, totalSize)
+        updatePreviousNextButton(playMode, curIndex, totalSize)
+        //更新播放列表中当前播放歌曲
+        updatePlaylistPopup(ib_playlist, index = curIndex)
     }
 
     override fun onPlaying(song: SimpleSong) {
@@ -103,6 +106,18 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
         }
     }
 
+    override fun onPlayModeChanged(playMode: PlayMode, curIndex: Int, totalSize: Int) {
+        updatePreviousNextButton(playMode, curIndex, totalSize)
+    }
+
+    override fun onPlaylistChanged(playMode: PlayMode, playlist: List<SimpleSong>, curIndex: Int) {
+        updatePlaylistPopup(
+            ib_playlist,
+            newPlaylist = playlist.transferToSongItems(curIndex)
+        )
+        updatePreviousNextButton(playMode, curIndex, playlist.size)
+    }
+
     private fun updatePlayControlIcon(playerState: PlayerState) {
         when (playerState) {
             PlayerState.PLAYING, PlayerState.RESUMED -> ib_pause_or_resume.setPlayState(
@@ -123,12 +138,23 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
                 .into(iv_song_bottom_pic)
             tv_bottom_song_name.text = name
             tv_bottom_artist_name.text = artist
+            supl_main.setAllowDragging(true)
         }
     }
 
-    private fun updatePreviousNextButton(curIndex: Int, totalSize: Int) {
-        ib_previous_song.isEnabled = curIndex != 0
-        ib_next_song.isEnabled = curIndex != totalSize - 1
+    private fun updatePreviousNextButton(curPlayMode: PlayMode, curIndex: Int, totalSize: Int) {
+        if (totalSize == 1) {
+            ib_previous_song.isEnabled = false
+            ib_next_song.isEnabled = false
+            return
+        }
+        if (curPlayMode == PlayMode.LOOP_SINGLE) {
+            ib_previous_song.isEnabled = curIndex != 0
+            ib_next_song.isEnabled = curIndex != totalSize - 1
+        } else {
+            ib_previous_song.isEnabled = true
+            ib_next_song.isEnabled = true
+        }
     }
 
     private fun updateSongDuration(song: SimpleSong) {
@@ -170,14 +196,22 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
         ib_previous_song.setOnClickListener {
             AudioPlayerManager.previous()
         }
-        ib_play_mode.setObserver {
-            ToastUtil.showToast(
-                when (it) {
-                    PlayModeImageButton.PlayMode.SHUFFLE -> "Shuffle"
-                    PlayModeImageButton.PlayMode.LOOP_SINGLE -> "Single loop"
-                    PlayModeImageButton.PlayMode.LOOP_LIST -> "List loop"
+        ib_play_mode.setPlayModeListener {
+            val toastText = when (it) {
+                PlayModeImageButton.State.SHUFFLE -> {
+                    AudioPlayerManager.setPlayMode(PlayMode.SHUFFLE)
+                    getString(R.string.play_mode_shuffle)
                 }
-            )
+                PlayModeImageButton.State.LOOP_SINGLE -> {
+                    AudioPlayerManager.setPlayMode(PlayMode.LOOP_SINGLE)
+                    getString(R.string.play_mode_single_loop)
+                }
+                PlayModeImageButton.State.LOOP_LIST -> {
+                    AudioPlayerManager.setPlayMode(PlayMode.LOOP_LIST)
+                    getString(R.string.play_mode_list_loop)
+                }
+            }
+            ToastUtil.showToast(toastText)
         }
         sb_play_progress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -192,6 +226,16 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
                 AudioPlayerManager.seekTo(seekBar.progress)
             }
         })
+        ib_playlist.setOnClickListener {
+            val currentPlayerInfo = AudioPlayerManager.getCurrentPlayerInfo()
+            currentPlayerInfo?.run {
+                showPlaylistPopup(it, curPlaylist.transferToSongItems(curSongIndex), {
+                    AudioPlayerManager.removeSongFromPlayList(it)
+                }) {
+                    AudioPlayerManager.play(it)
+                }
+            }
+        }
         setDefaultPanel()
     }
 
@@ -205,6 +249,8 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
         ib_previous_song.isEnabled = false
         ib_next_song.isEnabled = false
         sb_play_progress.progress = 0
+        supl_main.setAllowDragging(false)
+        collapsePanel()
     }
 
     private fun setDefaultImageToPanel() {
@@ -213,4 +259,6 @@ class MainActivity : AppCompatActivity(), AudioLifecycleObserver, AudioProgressO
             .apply(RequestOptions.circleCropTransform())
             .into(iv_song_bottom_pic)
     }
+
+    private fun collapsePanel() = supl_main.collapse()
 }

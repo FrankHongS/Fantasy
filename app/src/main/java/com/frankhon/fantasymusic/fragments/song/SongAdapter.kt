@@ -52,7 +52,7 @@ class SongAdapter(
     }
 
     fun select(playingIndex: Int) {
-        if (curPlayingIndex == playingIndex || playingIndex >= songs.size) {
+        if (curPlayingIndex == playingIndex || playingIndex < 0 || playingIndex >= songs.size) {
             return
         }
         curPlayingIndex = playingIndex

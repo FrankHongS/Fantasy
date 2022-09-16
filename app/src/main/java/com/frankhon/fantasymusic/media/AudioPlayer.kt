@@ -77,8 +77,14 @@ object AudioPlayer {
     private var curSong: SimpleSong? = null
     private var curIndex = -1
     private var curState = PlayerState.IDLE
-    private val curPlayList by lazy { mutableListOf<SimpleSong>() }
+    private val curPlaylist by lazy { mutableListOf<SimpleSong>() }
+    private var curPlayMode = PlayMode.LOOP_LIST
     private var errorMsg = ""
+
+    /**
+     * 原始播放列表，即顺序播放列表，[PlayMode.LOOP_LIST]和[PlayMode.LOOP_SINGLE]都需使用该序列
+     */
+    private val originPlaylist by lazy { mutableListOf<SimpleSong>() }
 
     private val mainScope by lazy { MainScope() }
     private var monitorProgressJob: Job? = null
@@ -87,21 +93,78 @@ object AudioPlayer {
     @JvmStatic
     fun play(song: SimpleSong?) {
         song?.let {
-            if (curIndex == -1) {
-                curPlayList.add(it)
-                play(0)
-            } else {
-                curPlayList.add(curIndex + 1, it)
-                play(curIndex + 1)
+            val index = curPlaylist.indexOf(song)
+            if (index != -1) {
+                play(index)
             }
         }
     }
 
     @JvmStatic
-    fun setPlayList(playList: List<SimpleSong>, index: Int) {
-        curPlayList.clear()
-        curPlayList.addAll(playList)
-        play(index)
+    fun playAndAddIntoPlaylist(song: SimpleSong?) {
+        song?.let {
+            val index = curPlaylist.indexOf(it)
+            if (index == -1) {
+                originPlaylist.add(0, it)
+                curPlaylist.add(curIndex + 1, it)
+                play(curIndex + 1)
+            } else {
+                play(index)
+            }
+        }
+    }
+
+    @JvmStatic
+    fun addIntoPlaylist(song: SimpleSong): Boolean {
+        song.let {
+            if (!curPlaylist.contains(it)) {
+                if (curPlaylist.isEmpty()) {
+                    playAndAddIntoPlaylist(it)
+                    return true
+                } else {
+                    originPlaylist.add(0, it)
+                    curPlaylist.add(curIndex + 1, it)
+                }
+            }
+        }
+        return false
+    }
+
+    @JvmStatic
+    fun removeSongFromPlayList(index: Int) {
+        originPlaylist.remove(curPlaylist[index])
+        if (index == curIndex) {
+            if (curPlaylist.size > 1) {
+                next()
+            }
+            curPlaylist.removeAt(index)
+        } else {
+            curPlaylist.removeAt(index)
+        }
+        curIndex = curPlaylist.indexOf(curSong)
+        updatePlayerConfig(PlayerConfiguration.PLAYLIST)
+    }
+
+    @JvmStatic
+    fun setPlaylist(playlist: List<SimpleSong>, index: Int) {
+        if (index >= playlist.size) {
+            MyLogger.e("setPlayList: index = $index is out of range, playlist's size = ${playlist.size}")
+            return
+        }
+        originPlaylist.setData(playlist)
+        when (curPlayMode) {
+            PlayMode.LOOP_LIST, PlayMode.LOOP_SINGLE -> {
+                curPlaylist.setData(playlist)
+                play(index)
+            }
+            PlayMode.SHUFFLE -> {
+                val song = playlist[index]
+                curPlaylist.setData(playlist.shuffled())
+                val newIndex = curPlaylist.indexOf(song)
+                play(newIndex)
+            }
+        }
+        MyLogger.d("setPlaylist: playMode = $curPlayMode, playlist = $curPlaylist")
     }
 
     @JvmStatic
@@ -163,13 +226,28 @@ object AudioPlayer {
     }
 
     @JvmStatic
+    fun setPlayMode(playMode: String) {
+        curPlayMode = PlayMode.valueOf(playMode)
+        mediaPlayer.isLooping = curPlayMode == PlayMode.LOOP_SINGLE
+        if (curPlayMode == PlayMode.SHUFFLE) {
+            curPlaylist.shuffle()
+        } else {
+            curPlaylist.setData(originPlaylist)
+        }
+        curIndex = curPlaylist.indexOf(curSong)
+        updatePlayerConfig(PlayerConfiguration.PLAY_MODE)
+        MyLogger.d("setPlayMode: playMode = $curPlayMode, playlist = $curPlaylist")
+    }
+
+    @JvmStatic
     fun getCurrentPlayerInfo(): CurrentPlayerInfo {
         return CurrentPlayerInfo().also {
             it.curSong = curSong
-            it.curPlayList = curPlayList
+            it.curPlaylist = curPlaylist
             it.curSongIndex = curIndex
             it.curPlayerState = curState
             it.curPlaybackPosition = getCurrentPosition()
+            it.curPlayMode = curPlayMode
         }
     }
 
@@ -195,15 +273,25 @@ object AudioPlayer {
     }
 
     private fun play(index: Int): Boolean {
-        return if (index >= 0 && index < curPlayList.size) {
-            this.curSong = curPlayList[index]
-            this.curIndex = index
-            prepare(curSong?.location.orEmpty())
+        return if (index >= 0 && index < curPlaylist.size) {
+            innerPlay(index)
+            true
+        } else if (index == curPlaylist.size) {
+            innerPlay(index % curPlaylist.size)
+            true
+        } else if (index == -1) {
+            innerPlay(curPlaylist.size - 1)
             true
         } else {
-            MyLogger.d("index = $index is out of range, playList's size = ${curPlayList.size}")
+            MyLogger.d("index = $index is out of range, playList's size = ${curPlaylist.size}")
             false
         }
+    }
+
+    private fun innerPlay(index: Int) {
+        curIndex = index
+        curSong = curPlaylist[curIndex]
+        prepare(curSong?.location.orEmpty())
     }
 
     private fun prepare(audioFilePath: String) {
@@ -218,6 +306,7 @@ object AudioPlayer {
                 } else {
                     mediaPlayer.setDataSource(mHttpProxyCache.getProxyUrl(audioFilePath))
                 }
+                mediaPlayer.isLooping = curPlayMode == PlayMode.LOOP_SINGLE
                 mediaPlayer.prepareAsync()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -232,7 +321,7 @@ object AudioPlayer {
     private fun onPrepared(player: MediaPlayer) {
         player.start()
         updatePlayerState(PlayerState.PLAYING)
-        MyLogger.d("onPrepared() playerState = ${PlayerState.PLAYING}")
+        MyLogger.d("onPrepared() playerState = ${PlayerState.PLAYING}, curSong = $curSong")
     }
 
     private fun startUpdateProgress() {
@@ -262,7 +351,9 @@ object AudioPlayer {
     private fun onCompleted(mp: MediaPlayer) {
         MyLogger.d("onCompleted() playerState = ${PlayerState.COMPLETED} isPlaying=${mp.isPlaying}")
         updatePlayerState(PlayerState.COMPLETED)
-        next()
+        if (curPlayMode != PlayMode.LOOP_SINGLE) {
+            next()
+        }
     }
 
     /**
@@ -294,9 +385,11 @@ object AudioPlayer {
 
     private fun resetCurPlayInfo() {
         curSong = null
-        curPlayList.clear()
+        curPlaylist.clear()
+        originPlaylist.clear()
         curIndex = -1
         curState = PlayerState.IDLE
+        curPlayMode = PlayMode.LOOP_LIST
     }
 
     private fun updatePlayerState(state: PlayerState) {
@@ -350,10 +443,19 @@ object AudioPlayer {
         sendBroadcast(
             Intent(MUSIC_PROGRESS_ACTION).apply {
                 setPackage(PACKAGE_ID)
-                mediaPlayer.let {
-                    putExtra(KEY_SONG_PROGRESS, getCurrentPosition())
-                    putExtra(KEY_DURATION, getDuration())
+                putExtra(KEY_SONG_PROGRESS, getCurrentPosition())
+                putExtra(KEY_DURATION, getDuration())
+            })
+    }
+
+    private fun updatePlayerConfig(configType: PlayerConfiguration) {
+        sendBroadcast(
+            Intent(MUSIC_PLAY_MODE_ACTION).apply {
+                setPackage(PACKAGE_ID)
+                if (configType == PlayerConfiguration.PLAY_MODE) {
+                    putExtra(KEY_PLAY_MODE, curPlayMode.name)
                 }
+                putExtra(KEY_PLAYER_CONFIG, configType.name)
             })
     }
 }

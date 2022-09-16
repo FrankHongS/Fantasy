@@ -27,10 +27,11 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
         private const val PANEL_HEIGHT = 68
     }
 
-    private var bottomView: View? = null
+    private lateinit var bottomView: View
     private val touchPoint = Array(2) { 0f }
 
     private var isCollapsed = true
+    private var allowDragging = true
 
     private val viewDragHelperCallback by lazy {
         object : ViewDragHelper.Callback() {
@@ -46,6 +47,10 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
                 dy: Int
             ) {
                 isCollapsed = top == height - PANEL_HEIGHT.dp
+            }
+
+            override fun onViewDragStateChanged(state: Int) {
+
             }
 
             override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
@@ -81,6 +86,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
         ViewDragHelper.create(this, 1.0f, viewDragHelperCallback)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
         if (childCount > 0 && heightMode != MeasureSpec.UNSPECIFIED) {
@@ -137,6 +143,9 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        if (!allowDragging) {
+            return false
+        }
         if (ev.actionMasked == MotionEvent.ACTION_CANCEL || ev.actionMasked == MotionEvent.ACTION_UP) {
             viewDragHelper.cancel()
             return false
@@ -171,5 +180,31 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
         if (viewDragHelper.continueSettling(true)) {
             ViewCompat.postInvalidateOnAnimation(this)
         }
+    }
+
+    fun expand(): Boolean {
+        if (!isCollapsed) {
+            return false
+        }
+        if (viewDragHelper.smoothSlideViewTo(bottomView, 0, height - bottomView.height)) {
+            ViewCompat.postInvalidateOnAnimation(this)
+            return true
+        }
+        return false
+    }
+
+    fun collapse(): Boolean {
+        if (isCollapsed) {
+            return false
+        }
+        if (viewDragHelper.smoothSlideViewTo(bottomView, 0, height - PANEL_HEIGHT.dp)) {
+            ViewCompat.postInvalidateOnAnimation(this)
+            return true
+        }
+        return false
+    }
+
+    fun setAllowDragging(allowDragging: Boolean) {
+        this.allowDragging = allowDragging
     }
 }

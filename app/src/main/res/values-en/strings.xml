@@ -12,6 +12,11 @@
     <string name="now_playing">Now playing</string>
     <string name="settings">Settings</string>
     <string name="about">About</string>
-    <!--Search songs page-->
+    <!-- Search songs page-->
     <string name="search_hint">Input songs or artists</string>
+
+    <!-- Play mode-->
+    <string name="play_mode_shuffle">Shuffle</string>
+    <string name="play_mode_single_loop">Single loop</string>
+    <string name="play_mode_list_loop">List loop</string>
 </resources>

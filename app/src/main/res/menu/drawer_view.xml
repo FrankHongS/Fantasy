@@ -1,38 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group
-            android:id="@+id/group_1"
-            android:checkableBehavior="single">
-        <item
-                android:id="@+id/nav_library"
-                android:title="@string/library"/>
-        <item
-                android:id="@+id/nav_playlist"
-                android:title="@string/playlist"/>
-        <item
-                android:id="@+id/nav_folder"
-                android:title="@string/folder"/>
-        <item
-                android:id="@+id/nav_queue"
-                android:title="@string/playing_queue"/>
-        <item
-                android:id="@+id/nav_now_playing"
-                android:checkable="false"
-                android:title="@string/now_playing"/>
-    </group>
-
-    <group
-            android:id="@+id/group_2"
-            android:checkableBehavior="none">
+    <group android:checkableBehavior="single">
         <item
                 android:id="@+id/nav_settings"
-                android:title="@string/settings"/>
+                android:icon="@drawable/ic_settings"
+                android:title="@string/settings" />
 
         <item
                 android:id="@+id/nav_about"
-                android:title="@string/about"/>
+                android:icon="@drawable/ic_about"
+                android:title="@string/about" />
     </group>
 
 </menu>

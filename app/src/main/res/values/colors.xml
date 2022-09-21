@@ -5,9 +5,12 @@
     <color name="colorPrimaryDark">#795548</color>
     <color name="colorAccent">#9E9E9E</color>
 
+    <color name="colorActionBar">#FFFFFF</color>
     <color name="primaryText">#212121</color>
+    <color name="colorIcon">#212121</color>
     <color name="colorTitle">#ffffff</color>
     <color name="secondText">#e0e0e0</color>
 
     <color name="navigationBarColor">#F2F2F2</color>
+    <color name="progressColor">#009688</color>
 </resources>

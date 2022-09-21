@@ -11,12 +11,14 @@
             android:layout_height="match_parent"
             android:background="@color/navigationBarColor">
 
-        <ImageView
+        <com.frankhon.fantasymusic.view.AnimatedAudioCircleImageView
                 android:id="@+id/iv_song_bottom_pic"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                app:borderColor="@color/progressColor"
+                app:borderWidth="3dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription"

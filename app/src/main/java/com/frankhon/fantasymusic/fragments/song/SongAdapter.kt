@@ -29,7 +29,7 @@ class SongAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         return SongViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.item_search_result, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.item_song_list, parent, false)
         )
     }
 

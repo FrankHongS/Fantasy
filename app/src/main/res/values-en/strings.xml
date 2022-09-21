@@ -19,4 +19,6 @@
     <string name="play_mode_shuffle">Shuffle</string>
     <string name="play_mode_single_loop">Single loop</string>
     <string name="play_mode_list_loop">List loop</string>
+
+    <string name="app_version">Version: %s</string>
 </resources>

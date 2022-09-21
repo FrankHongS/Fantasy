@@ -44,8 +44,9 @@ dependencies {
     implementation deps.support.appCompat
     implementation deps.support.material
     implementation deps.support.constraintlayout
+    implementation deps.support.preference
 
-    implementation "androidx.media:media:1.6.0"
+    implementation deps.media
 
     // navigation
     implementation deps.navigation.navigation_fragment

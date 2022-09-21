@@ -1,0 +1,14 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+            android:key="@string/about_me_key"
+            android:title="@string/about_me_title"
+            app:iconSpaceReserved="false" />
+
+    <Preference
+            android:key="@string/about_me_desc_key"
+            app:allowDividerAbove="true"
+            app:iconSpaceReserved="false" />
+
+</PreferenceScreen>

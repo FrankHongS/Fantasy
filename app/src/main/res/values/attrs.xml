@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="PanelLayout">
-        <attr name="panelHeight" format="dimension"/>
+        <attr name="panelHeight" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="AnimatedAudioCircleImageView">
+        <attr name="borderWidth" format="dimension" />
+        <attr name="borderColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundRectImageView">
+        <attr name="radius" format="dimension" />
+    </declare-styleable>
 </resources>

@@ -19,4 +19,16 @@
     <string name="play_mode_shuffle">随机播放</string>
     <string name="play_mode_single_loop">单曲循环</string>
     <string name="play_mode_list_loop">列表循环</string>
+
+    <string name="app_version">版本号：%s</string>
+
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+
+    <string name="about_me_key" translatable="false">about_me</string>
+    <string name="about_me_title" translatable="false">About me</string>
+    <string name="about_me_desc_key" translatable="false">about_me_desc</string>
+    <string name="about_me_desc_summary" translatable="false">I\'m Frank Hon, an android developer
+        to be a computer scientist. Fantasy is a cool music player, available for all kinds of songs.
+    \n\nGithub: https://github.com/FrankHongS/Fantasy</string>
 </resources>

@@ -14,7 +14,7 @@
             android:src="@drawable/selector_previous_song_btn"
             tools:ignore="ContentDescription" />
 
-    <com.frankhon.fantasymusic.view.AnimatedAudioControlButton
+    <com.frankhon.fantasymusic.view.AnimatedAudioToggleButton
             android:id="@+id/ib_pause_or_resume"
             android:layout_width="48dp"
             android:layout_height="match_parent" />

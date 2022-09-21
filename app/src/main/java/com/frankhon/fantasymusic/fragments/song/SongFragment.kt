@@ -23,7 +23,7 @@ import com.hon.mylogger.MyLogger
  * Created by Frank Hon on 2020-04-19 20:19.
  * E-mail: frank_hon@foxmail.com
  */
-class SongFragment : BaseFragment, PlayerLifecycleObserver {
+class SongFragment : BaseFragment(), PlayerLifecycleObserver {
 
     /**
      * Activity之间共享ViewModel
@@ -35,27 +35,25 @@ class SongFragment : BaseFragment, PlayerLifecycleObserver {
     private var songs = arrayListOf<SimpleSong>()
     private lateinit var songAdapter: SongAdapter
 
-    constructor() : super()
-
-    constructor(name: String) : super(name)
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        MyLogger.d("onCreateView: ")
         val view = inflater.inflate(R.layout.fragment_song, container, false)
         initView(view)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        MyLogger.d("onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
-        MyLogger.d("AudioPlayerManager: onViewCreated")
         AudioPlayerManager.connect {
             it.registerLifecycleObserver(this)
         }
         model.songs.observe(viewLifecycleOwner) {
+            MyLogger.d("setData: $it")
             songs.run {
                 setData(it)
                 songAdapter.setData(
@@ -68,6 +66,7 @@ class SongFragment : BaseFragment, PlayerLifecycleObserver {
     }
 
     override fun onDestroyView() {
+        MyLogger.d("onDestroyView: ")
         super.onDestroyView()
         AudioPlayerManager.unregisterLifecycleObserver(this)
     }

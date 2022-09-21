@@ -5,6 +5,7 @@ import static com.frankhon.fantasymusic.utils.Constants.ACTION_PAUSE;
 import static com.frankhon.fantasymusic.utils.Constants.ACTION_PREVIOUS;
 import static com.frankhon.fantasymusic.utils.Constants.ACTION_RESUME;
 import static com.frankhon.fantasymusic.utils.Constants.ACTION_STOP;
+import static com.frankhon.fantasymusic.utils.Notification.releaseMediaSession;
 import static com.frankhon.fantasymusic.utils.Notification.sendMediaNotification;
 
 import android.app.Service;
@@ -63,6 +64,7 @@ public class AudioPlayerService extends Service {
                     break;
                 case ACTION_STOP:
                     stopForeground(false);
+                    releaseMediaSession();
                     AudioPlayer.release();
                     break;
                 default:

@@ -24,9 +24,9 @@ import com.frankhon.fantasymusic.utils.dp
  * Created by Frank Hon on 2022/8/14 12:21 下午.
  * E-mail: frank_hon@foxmail.com
  */
-class AnimatedAudioControlButton @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null
-) : FrameLayout(context, attrs) {
+class AnimatedAudioToggleButton @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     //region draw loadingBar
     private val loadingBarPadding = 4.dp.toFloat()

@@ -20,6 +20,7 @@ ext.versions = [
         'material'        : '1.1.0',
         'constraintlayout': '2.1.4',
         'preference'      : '1.2.0',
+        'media'           : '1.6.0',
         'retrofit'        : '2.9.0',
         'okhttp'          : '3.14.9',
         'rxJava'          : '2.2.8',
@@ -48,7 +49,7 @@ ext.deps = [
                 'navigation_ui'      : "androidx.navigation:navigation-ui:${versions.navigation}"
         ],
         'room'            : [
-                'room_ktx' : "androidx.room:room-ktx:${versions.room}",
+                'room_ktx': "androidx.room:room-ktx:${versions.room}",
                 'compiler': "androidx.room:room-compiler:${versions.room}"
         ],
         'support'         : [
@@ -62,6 +63,7 @@ ext.deps = [
                 'runtime'  : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
                 'viewmodel': "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}"
         ],
+        'media'           : "androidx.media:media:${versions.media}",
         'test'            : [
                 'junit' : "junit:junit:${versions.junit}",
                 'runner': "androidx.test:runner:${versions.test}",

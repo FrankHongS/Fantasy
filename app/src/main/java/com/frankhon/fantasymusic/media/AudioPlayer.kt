@@ -273,6 +273,9 @@ object AudioPlayer {
     }
 
     private fun play(index: Int): Boolean {
+        if (curPlaylist.isEmpty()) {
+            return false
+        }
         return if (index >= 0 && index < curPlaylist.size) {
             innerPlay(index)
             true

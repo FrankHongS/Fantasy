@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.frankhon.fantasymusic.application.AppExecutors
 import com.frankhon.fantasymusic.R
+import com.frankhon.fantasymusic.application.AppExecutors
 import com.frankhon.fantasymusic.data.source.remote.RemoteMusicDataSource
 import com.frankhon.fantasymusic.fragments.BaseFragment
 import com.frankhon.fantasymusic.media.AudioPlayerManager

@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <ImageView
+        <com.frankhon.fantasymusic.view.RoundRectImageView
                 android:id="@+id/iv_song_pic"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
@@ -26,6 +26,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:radius="4dp"
                 tools:ignore="ContentDescription"
                 tools:srcCompat="@tools:sample/avatars" />
 

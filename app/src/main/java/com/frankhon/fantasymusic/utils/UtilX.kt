@@ -1,10 +1,11 @@
 package com.frankhon.fantasymusic.utils
 
-import android.app.Service
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.view.View
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -74,15 +75,21 @@ fun startService(intent: Intent) {
 
 fun Context.drawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(this, resId)
 
+fun Context.color(@ColorRes resId: Int) = ContextCompat.getColor(this, resId)
+
 fun View.drawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(context, resId)
 
 fun getString(@StringRes resId: Int) = Fantasy.getAppContext().getString(resId)
+
+inline fun <reified T : Activity> Context.navigate() {
+    startActivity(Intent(this, T::class.java))
+}
 
 fun stopAudio() {
     startService(
         Intent(appContext, AudioPlayerService::class.java)
             .apply {
-                setAction(ACTION_STOP)
+                action = ACTION_STOP
             }
     )
 }

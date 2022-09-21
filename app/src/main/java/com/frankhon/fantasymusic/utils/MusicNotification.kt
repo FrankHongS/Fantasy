@@ -95,6 +95,16 @@ fun sendMediaNotification(
         })
 }
 
+/**
+ * There is an internal Android MediaSessions limit SESSION_CREATION_LIMIT_PER_UID = 100;
+ * You should release MediaSession instances that you don't need anymore.
+ *
+ * Exception:
+ * java.lang.NullPointerException: Attempt to invoke interface method
+ * 'android.media.session.ISessionController android.media.session.ISession.getController()'
+ */
+private var lastMediaSession: MediaSessionCompat? = null
+
 private fun buildNotification(
     context: Context,
     song: SimpleSong,
@@ -104,6 +114,7 @@ private fun buildNotification(
     isNextEnable: Boolean
 ): Notification {
     // build a mediaSession
+    lastMediaSession?.release()
     val mediaSession = MediaSessionCompat(context, "MediaNotification").apply {
         setMetadata(
             MediaMetadataCompat.Builder()
@@ -112,6 +123,7 @@ private fun buildNotification(
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, song.duration)
                 .build()
         )
+        lastMediaSession = this
     }
     val contentIntent = PendingIntent.getActivity(
         context,
@@ -168,6 +180,12 @@ private fun buildNotification(
 fun cancelNotification() {
     val notificationManager = NotificationManagerCompat.from(Fantasy.getAppContext())
     notificationManager.cancel(MUSIC_NOTIFICATION_ID)
+    releaseMediaSession()
+}
+
+fun releaseMediaSession() {
+    lastMediaSession?.release()
+    lastMediaSession = null
 }
 
 fun createNotificationChannel() {

@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.fragments.song
+package com.frankhon.fantasymusic.ui.fragments.song
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,10 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.activities.viewmodel.MainViewModel
+import com.frankhon.fantasymusic.ui.fragments.main.MainViewModel
 import com.frankhon.fantasymusic.application.ServiceLocator
-import com.frankhon.fantasymusic.fragments.BaseFragment
+import com.frankhon.fantasymusic.ui.fragments.BaseFragment
 import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.media.PlayMode
 import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
@@ -34,6 +35,7 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
 
     private var songs = arrayListOf<SimpleSong>()
     private lateinit var songAdapter: SongAdapter
+    private lateinit var refreshLayout: SwipeRefreshLayout
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,12 +50,12 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         MyLogger.d("onViewCreated: ")
-        super.onViewCreated(view, savedInstanceState)
         AudioPlayerManager.connect {
             it.registerLifecycleObserver(this)
         }
         model.songs.observe(viewLifecycleOwner) {
             MyLogger.d("setData: $it")
+            refreshLayout.isRefreshing = false
             songs.run {
                 setData(it)
                 songAdapter.setData(
@@ -71,12 +73,25 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         AudioPlayerManager.unregisterLifecycleObserver(this)
     }
 
+    override fun onDestroy() {
+        MyLogger.d("onDestroy: ")
+        super.onDestroy()
+    }
+
     override fun onPrepare(song: SimpleSong, playMode: PlayMode, curIndex: Int, totalSize: Int) {
         model.select(songs.indexOf(song))
     }
 
     private fun initView(view: View) {
+        refreshLayout = view.findViewById(R.id.srl_songs)
         val songsList = view.findViewById<RecyclerView>(R.id.rv_songs)
+
+        refreshLayout.run {
+            isRefreshing = true
+            setOnRefreshListener {
+                model.getSongs()
+            }
+        }
         songsList.run {
             layoutManager = LinearLayoutManager(context)
             songAdapter = SongAdapter { _, index ->
@@ -85,7 +100,7 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
             adapter = songAdapter
         }
         model.selected.observe(viewLifecycleOwner) {
-            MyLogger.d("select: $it")
+            MyLogger.d("select: $it $songAdapter")
             songAdapter.select(it)
         }
     }

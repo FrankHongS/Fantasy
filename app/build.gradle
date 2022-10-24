@@ -45,6 +45,7 @@ dependencies {
     implementation deps.support.material
     implementation deps.support.constraintlayout
     implementation deps.support.preference
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     implementation deps.media
 

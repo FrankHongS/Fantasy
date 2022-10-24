@@ -19,7 +19,7 @@
             tools:ignore="AllowBackup,GoogleAppIndexingWarning"
             tools:targetApi="n">
         <activity
-                android:name=".activities.MainActivity"
+                android:name=".ui.activities.MainActivity"
                 android:exported="true"
                 android:launchMode="singleTask">
             <intent-filter>
@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".activities.about.AboutActivity"
+                android:name=".ui.activities.about.AboutActivity"
                 android:theme="@style/CustomActionBar" />
 
         <service

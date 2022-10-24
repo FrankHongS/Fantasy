@@ -1,13 +1,11 @@
-package com.frankhon.fantasymusic.activities
+package com.frankhon.fantasymusic.ui.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.fragments.MainFragment
+import com.frankhon.fantasymusic.ui.fragments.main.MainFragment
 import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.hon.mylogger.MyLogger
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,11 +15,15 @@ class MainActivity : AppCompatActivity() {
         MyLogger.d("onCreate: ")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initView()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragment_container, MainFragment())
+                .commit()
+        }
     }
 
     /**
-     * 有前台服务时，直接杀掉金城武，会执行该回调
+     * 有前台服务时，直接杀掉进程，会执行该回调
      */
     override fun onDestroy() {
         MyLogger.d("onDestroy: ")
@@ -35,13 +37,10 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onBackPressed() {
         MyLogger.d("onBackPressed: ")
+        fragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? MainFragment
         //返回之前先收起控制栏
-        fragment?.takeIf { it.closeDrawer() || it.collapsePanel() }?.let { return }
+        fragment?.takeIf { it.isVisible && (it.closeDrawer() || it.collapsePanel()) }
+            ?.let { return }
         super.onBackPressed()
-    }
-
-    private fun initView() {
-        val hostFragment = fragment_container.getFragment<NavHostFragment>()
-        fragment = hostFragment.childFragmentManager.primaryNavigationFragment as? MainFragment
     }
 }

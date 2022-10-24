@@ -7,10 +7,9 @@ import com.frankhon.fantasymusic.vo.bean.DataSongWrapper
  * Created by Frank Hon on 2022/2/12 7:37 下午.
  * E-mail: frank_hon@foxmail.com
  */
-object RemoteMusicDataSource {
+class RemoteMusicDataSource {
 
     suspend fun findSong(keyword: String): Result<DataSongWrapper> {
-
         return try {
             val response = MusicService.create().findSong(keyword)
             if (response.isSuccessful) {

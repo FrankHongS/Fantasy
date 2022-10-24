@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.data.source
+package com.frankhon.fantasymusic.data.repository
 
 import androidx.lifecycle.LiveData
 import com.frankhon.fantasymusic.data.source.local.LocalMusicDataSource

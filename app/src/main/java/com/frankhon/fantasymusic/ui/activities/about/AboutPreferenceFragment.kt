@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.activities.about
+package com.frankhon.fantasymusic.ui.activities.about
 
 import android.os.Bundle
 import android.view.LayoutInflater

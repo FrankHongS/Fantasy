@@ -13,6 +13,8 @@
     <string name="about">关于</string>
     <!--Search songs page-->
     <string name="search_hint">输入歌曲名或艺术家名字</string>
+    <string name="downloading">下载中</string>
+    <string name="download_complete">下载完成</string>
 
     <string name="playlist_artist_name" translatable="false">- %s</string>
 

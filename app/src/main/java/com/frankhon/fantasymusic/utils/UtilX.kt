@@ -9,6 +9,8 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import com.frankhon.fantasymusic.application.Fantasy
 import com.frankhon.fantasymusic.media.AudioPlayerService
 import com.hon.mylogger.MyLogger
@@ -92,4 +94,11 @@ fun stopAudio() {
                 action = ACTION_STOP
             }
     )
+}
+
+/**
+ * 获取当前栈顶的Fragment
+ */
+inline fun <reified T : Fragment> NavHostFragment.getSpecifiedFragment(): T? {
+    return childFragmentManager.fragments.first() as? T
 }

@@ -21,7 +21,7 @@ interface PlayerLifecycleObserver {
 
     fun onAudioPause() {}
 
-    fun onAudioResume() {}
+    fun onAudioResume(song: SimpleSong) {}
 
     fun onAudioStop() {}
 

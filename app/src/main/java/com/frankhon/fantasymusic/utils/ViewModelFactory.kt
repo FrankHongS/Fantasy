@@ -11,7 +11,7 @@ import androidx.savedstate.SavedStateRegistryOwner
  * E-mail: frank_hon@foxmail.com
  */
 
-fun <T : ViewModel, A> singleArgViewModelFactory(constructor: (A, SavedStateHandle) -> T)
+fun <T : ViewModel, A> singleArgSavedStateViewModelFactory(constructor: (A, SavedStateHandle) -> T)
         : (A, SavedStateRegistryOwner, Bundle?) -> AbstractSavedStateViewModelFactory {
     return { arg: A, owner: SavedStateRegistryOwner,
              defaultArgs: Bundle? ->

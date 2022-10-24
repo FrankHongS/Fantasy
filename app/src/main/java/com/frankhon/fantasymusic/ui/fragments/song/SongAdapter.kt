@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.fragments.song
+package com.frankhon.fantasymusic.ui.fragments.song
 
 import android.annotation.SuppressLint
 import android.text.TextUtils
@@ -15,6 +15,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.utils.setData
 import com.frankhon.fantasymusic.vo.view.SongItem
+import com.hon.mylogger.MyLogger
 
 /**
  * Created by Frank_Hon on 11/12/2020.
@@ -27,6 +28,11 @@ class SongAdapter(
     private val songs = mutableListOf<SongItem>()
     private var curPlayingIndex = -1
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        MyLogger.d("onAttachedToRecyclerView: $recyclerView")
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         return SongViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_song_list, parent, false)
@@ -38,6 +44,7 @@ class SongAdapter(
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
+        MyLogger.d("onBindViewHolder: position = $position")
         val song = songs[position]
         holder.bindView(song, position, onItemClickListener)
     }

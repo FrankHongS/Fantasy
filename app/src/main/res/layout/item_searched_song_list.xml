@@ -2,21 +2,21 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/cv_song"
+        android:id="@+id/cv_searched_song"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:layout_marginVertical="@dimen/default_card_margin"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_song_item_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
         <com.frankhon.fantasymusic.view.RoundRectImageView
-                android:id="@+id/iv_song_pic"
+                android:id="@+id/iv_searched_song_pic"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:layout_marginStart="8dp"
@@ -31,7 +31,7 @@
                 tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
-                android:id="@+id/tv_song_name"
+                android:id="@+id/tv_searched_song_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -39,34 +39,33 @@
                 android:layout_marginEnd="8dp"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iv_song_pic"
+                app:layout_constraintStart_toEndOf="@id/iv_searched_song_pic"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Song nameSong nameSong nameSong nameSong name" />
 
         <TextView
-                android:id="@+id/tv_artist_name"
+                android:id="@+id/tv_searched_artist_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/iv_song_now_playing"
-                app:layout_constraintStart_toStartOf="@id/tv_song_name"
-                app:layout_constraintTop_toBottomOf="@id/tv_song_name"
+                app:layout_constraintEnd_toStartOf="@id/iv_download_song"
+                app:layout_constraintStart_toStartOf="@id/tv_searched_song_name"
+                app:layout_constraintTop_toBottomOf="@id/tv_searched_song_name"
                 tools:text="artist nameartist nameartist nameartist nameartist name" />
 
-        <ImageView
-                android:id="@+id/iv_song_now_playing"
+        <ImageButton
+                android:id="@+id/iv_download_song"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
-                android:visibility="gone"
+                android:background="@null"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_now_playing"
                 tools:ignore="ContentDescription"
-                tools:visibility="visible" />
+                tools:srcCompat="@drawable/ic_download_song" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -17,7 +17,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.activities.MainActivity
+import com.frankhon.fantasymusic.ui.activities.MainActivity
 import com.frankhon.fantasymusic.application.Fantasy
 import com.frankhon.fantasymusic.media.AudioPlayerService
 import com.frankhon.fantasymusic.media.PlayMode

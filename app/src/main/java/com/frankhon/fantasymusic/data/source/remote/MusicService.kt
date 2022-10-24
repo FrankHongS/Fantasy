@@ -20,7 +20,7 @@ interface MusicService {
     suspend fun findSong(@Query("keyword") keyword: String): Response<DataSongWrapper>
 
     companion object {
-        private const val BASE_URL = "http://192.168.124.3:3402/"
+        private const val BASE_URL = "http://192.168.124.6:3402/"
 
         fun create(): MusicService {
             val logger = HttpLoggingInterceptor().apply {

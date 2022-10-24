@@ -2,7 +2,10 @@ package com.frankhon.fantasymusic.view
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
+import android.view.AbsSavedState
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +33,8 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
     private lateinit var bottomView: View
     private val touchPoint = Array(2) { 0f }
 
-    private var isCollapsed = true
+    // 0 collapsed; 1 expanded; 2 dragging;
+    private var panelState = 0
     private var allowDragging = true
 
     private val viewDragHelperCallback by lazy {
@@ -46,7 +50,11 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
                 dx: Int,
                 dy: Int
             ) {
-                isCollapsed = top == height - PANEL_HEIGHT.dp
+                panelState = when (top) {
+                    height - PANEL_HEIGHT.dp -> 0
+                    height - changedView.height -> 1
+                    else -> 2
+                }
             }
 
             override fun onViewDragStateChanged(state: Int) {
@@ -124,20 +132,42 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        if (isCollapsed) {
-            var tempPaddingTop = paddingTop
-            children.forEach {
-                it.layout(
-                    paddingLeft,
-                    tempPaddingTop,
-                    paddingLeft + it.measuredWidth,
-                    tempPaddingTop + it.measuredHeight
-                )
-                tempPaddingTop += it.measuredHeight
+        when (panelState) {
+            0 -> {
+                var tempPaddingTop = paddingTop
+                children.forEach {
+                    it.layout(
+                        paddingLeft,
+                        tempPaddingTop,
+                        paddingLeft + it.measuredWidth,
+                        tempPaddingTop + it.measuredHeight
+                    )
+                    tempPaddingTop += it.measuredHeight
+                }
             }
-        } else {
-            children.forEach {
-                it.layout(it.left, it.top, it.right, it.bottom)
+            1 -> {
+                children.forEachIndexed { index, child ->
+                    if (index == 0) {
+                        child.layout(
+                            paddingLeft,
+                            paddingTop,
+                            paddingLeft + child.measuredWidth,
+                            paddingTop + child.measuredHeight
+                        )
+                    } else if (index == 1) {
+                        child.layout(
+                            paddingLeft,
+                            measuredHeight - child.measuredHeight,
+                            paddingLeft + child.measuredWidth,
+                            measuredHeight
+                        )
+                    }
+                }
+            }
+            2 -> {
+                children.forEach {
+                    it.layout(it.left, it.top, it.right, it.bottom)
+                }
             }
         }
     }
@@ -182,8 +212,22 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
         }
     }
 
+    override fun onSaveInstanceState(): Parcelable {
+        val superState = super.onSaveInstanceState()
+        val state = SavedState(superState)
+        state.panelState = panelState
+        return state
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        super.onRestoreInstanceState(state)
+        (state as? SavedState)?.let {
+            panelState = it.panelState
+        }
+    }
+
     fun expand(): Boolean {
-        if (!isCollapsed) {
+        if (panelState != 0) {
             return false
         }
         if (viewDragHelper.smoothSlideViewTo(bottomView, 0, height - bottomView.height)) {
@@ -194,10 +238,15 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
     }
 
     fun collapse(): Boolean {
-        if (isCollapsed) {
+        if (panelState == 0) {
             return false
         }
-        if (viewDragHelper.smoothSlideViewTo(bottomView, 0, height - PANEL_HEIGHT.dp)) {
+        if (::bottomView.isInitialized && viewDragHelper.smoothSlideViewTo(
+                bottomView,
+                0,
+                height - PANEL_HEIGHT.dp
+            )
+        ) {
             ViewCompat.postInvalidateOnAnimation(this)
             return true
         }
@@ -206,5 +255,34 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
 
     fun setAllowDragging(allowDragging: Boolean) {
         this.allowDragging = allowDragging
+    }
+
+    private class SavedState : AbsSavedState {
+        var panelState = 0
+
+        constructor(source: Parcelable?) : super(source)
+
+        constructor(parcel: Parcel) : super(parcel) {
+            panelState = parcel.readInt()
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            super.writeToParcel(parcel, flags)
+            parcel.writeInt(panelState)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(parcel: Parcel): SavedState {
+                return SavedState(parcel)
+            }
+
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
+            }
+        }
     }
 }

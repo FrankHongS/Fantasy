@@ -1,9 +1,11 @@
 package com.frankhon.fantasymusic.data.source.local
 
 import com.frankhon.fantasymusic.utils.FileUtil
+import com.frankhon.fantasymusic.utils.transformToDBSong
 import com.frankhon.fantasymusic.utils.transformToDBSongs
 import com.frankhon.fantasymusic.utils.transformToSimpleSongs
 import com.frankhon.fantasymusic.vo.SimpleSong
+import com.frankhon.fantasymusic.vo.bean.DataSong
 import com.hon.mylogger.MyLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -28,4 +30,7 @@ class LocalMusicDataSource(private val musicDao: MusicDao) {
         return songs
     }
 
+    suspend fun insertSong(song: DataSong) {
+        musicDao.insertSong(song.transformToDBSong())
+    }
 }

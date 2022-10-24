@@ -19,3 +19,5 @@ enum class PlayerState() {
     FINISHED,
     ERROR;
 }
+
+fun PlayerState.isPlaying() = this == PlayerState.PLAYING || this == PlayerState.RESUMED

@@ -1,6 +1,7 @@
 package com.frankhon.fantasymusic.utils
 
 import com.frankhon.fantasymusic.vo.SimpleSong
+import com.frankhon.fantasymusic.vo.bean.DataSong
 import com.frankhon.fantasymusic.vo.db.DBSong
 import com.frankhon.fantasymusic.vo.view.SongItem
 
@@ -40,4 +41,13 @@ fun List<SimpleSong>.transferToSongItems(playingIndex: Int = -1): List<SongItem>
             isPlaying = index == playingIndex
         )
     }
+}
+
+fun DataSong.transformToDBSong(): DBSong {
+    return DBSong(
+        name = name.orEmpty(),
+        artist = artists?.first()?.name.orEmpty(),
+        songUri = url.orEmpty(),
+        picUrl = album?.picUrl.orEmpty()
+    )
 }

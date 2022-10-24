@@ -10,7 +10,6 @@ import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
 import com.frankhon.fantasymusic.utils.*
-import com.frankhon.fantasymusic.utils.ToastUtil.showToast
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.hon.mylogger.MyLogger

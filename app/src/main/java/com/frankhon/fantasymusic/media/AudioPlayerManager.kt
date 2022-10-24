@@ -85,8 +85,10 @@ object AudioPlayerManager {
 
     @JvmStatic
     fun release() {
-        Fantasy.getAppContext().unbindService(connection)
-        hasBoundService = false
+        if (hasBoundService) {
+            Fantasy.getAppContext().unbindService(connection)
+            hasBoundService = false
+        }
         lifecycleObservers.clear()
         configurationObservers.clear()
     }
@@ -194,8 +196,11 @@ object AudioPlayerManager {
                     )
                 }
             }
-            PlayerState.PLAYING, PlayerState.RESUMED -> consumer = {
+            PlayerState.PLAYING -> consumer = {
                 it.onPlaying(song!!)
+            }
+            PlayerState.RESUMED -> consumer = {
+                it.onAudioResume(song!!)
             }
             PlayerState.PAUSED -> consumer = {
                 it.onAudioPause()

@@ -7,10 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.AnimatedVectorDrawable
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.AttributeSet
-import android.view.AbsSavedState
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
@@ -114,21 +111,6 @@ class AnimatedAudioToggleButton @JvmOverloads constructor(
         }
     }
 
-    override fun onSaveInstanceState(): Parcelable {
-        val superState = super.onSaveInstanceState()
-        val state = SavedState(superState)
-        state.playState = playState.name
-        return state
-    }
-
-    override fun onRestoreInstanceState(state: Parcelable) {
-        super.onRestoreInstanceState(state)
-        (state as? SavedState)?.let {
-            this.playState = ControlButtonState.valueOf(it.playState)
-        }
-        switchState(false)
-    }
-
     private fun drawLoading(canvas: Canvas) {
         val centerX = width / 2
         val centerY = height / 2
@@ -175,7 +157,7 @@ class AnimatedAudioToggleButton @JvmOverloads constructor(
         }
     }
 
-    fun setPlayState(state: ControlButtonState) {
+    fun setPlayState(state: ControlButtonState, shouldAnimate: Boolean = true) {
         if (state == playState) {
             return
         }
@@ -191,7 +173,7 @@ class AnimatedAudioToggleButton @JvmOverloads constructor(
                 innerSetPlayState(state, false)
             }
         } else {
-            innerSetPlayState(state)
+            innerSetPlayState(state, shouldAnimate)
         }
     }
 
@@ -209,35 +191,6 @@ class AnimatedAudioToggleButton @JvmOverloads constructor(
         PLAYING,
         PAUSED,
         PREPARING;
-    }
-
-    private class SavedState : AbsSavedState {
-        var playState = ""
-
-        constructor(source: Parcelable?) : super(source)
-
-        constructor(parcel: Parcel) : super(parcel) {
-            playState = parcel.readString().orEmpty()
-        }
-
-        override fun writeToParcel(parcel: Parcel, flags: Int) {
-            super.writeToParcel(parcel, flags)
-            parcel.writeString(playState)
-        }
-
-        override fun describeContents(): Int {
-            return 0
-        }
-
-        companion object CREATOR : Parcelable.Creator<SavedState> {
-            override fun createFromParcel(parcel: Parcel): SavedState {
-                return SavedState(parcel)
-            }
-
-            override fun newArray(size: Int): Array<SavedState?> {
-                return arrayOfNulls(size)
-            }
-        }
     }
 
 }

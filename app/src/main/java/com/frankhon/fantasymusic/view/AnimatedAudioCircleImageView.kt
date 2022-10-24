@@ -41,6 +41,7 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
     private var mBitmap: Bitmap? = null
     private var mDrawableRadius = 0f
     private var progressRotatedDegree = 0f
+    private var imageRotatedDegree = 0f
 
     private lateinit var arcRect: RectF
     private lateinit var drawableRect: RectF
@@ -93,7 +94,7 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
             repeatCount = ValueAnimator.INFINITE
             repeatMode = ValueAnimator.RESTART
             addUpdateListener { animation: ValueAnimator ->
-                val imageRotatedDegree = animation.animatedValue as Float
+                imageRotatedDegree = animation.animatedValue as Float
                 updateBitmapShaderMatrix(imageRotatedDegree)
                 invalidate()
             }
@@ -157,7 +158,7 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
         super.setImageDrawable(drawable)
         drawable?.let {
             mBitmap = getBitmapFromDrawable(it)
-            resetDegreeAndBitmap()
+            resetBitmap()
         }
     }
 
@@ -174,9 +175,8 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
     /**
      * drawable发生改变时，将数据重置
      */
-    private fun resetDegreeAndBitmap() {
-        progressRotatedDegree = 0f
-        updateBitmapShaderMatrix(0f)
+    private fun resetBitmap() {
+        updateBitmapShaderMatrix(imageRotatedDegree)
     }
 
     private fun setBorderPaintColor(@ColorInt color: Int) {
@@ -195,15 +195,24 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
     }
 
     fun startRotateAnimator() {
-        if (imageAnimator.isRunning) {
-            cancelRotateAnimator()
-        }
         imageAnimator.start()
     }
 
     fun cancelRotateAnimator() {
         if (imageAnimator.isRunning) {
             imageAnimator.cancel()
+        }
+    }
+
+    fun pauseRotateAnimator() {
+        imageAnimator.pause()
+    }
+
+    fun resumeRotateAnimator() {
+        if (imageAnimator.isPaused) {
+            imageAnimator.resume()
+        } else {
+            startRotateAnimator()
         }
     }
 

@@ -2,9 +2,11 @@ package com.frankhon.fantasymusic.application
 
 import androidx.room.Room
 import com.frankhon.fantasymusic.utils.APP_NAME
-import com.frankhon.fantasymusic.data.source.MusicRepository
+import com.frankhon.fantasymusic.data.repository.MusicRepository
+import com.frankhon.fantasymusic.data.repository.SearchRepository
 import com.frankhon.fantasymusic.data.source.local.LocalMusicDataSource
 import com.frankhon.fantasymusic.data.source.local.MusicDatabase
+import com.frankhon.fantasymusic.data.source.remote.RemoteMusicDataSource
 
 /**
  * Created by Frank Hon on 2022/9/7 10:10 下午.
@@ -21,7 +23,14 @@ object ServiceLocator {
         .build()
 
     fun provideMusicRepository(): MusicRepository {
-        return MusicRepository(LocalMusicDataSource(musicDatabase.musicDao))
+        return MusicRepository(provideLocalDataSource())
     }
 
+    fun provideSearchRepository(): SearchRepository {
+        return SearchRepository(RemoteMusicDataSource(), provideLocalDataSource())
+    }
+
+    fun provideLocalDataSource(): LocalMusicDataSource {
+        return LocalMusicDataSource(musicDatabase.musicDao)
+    }
 }

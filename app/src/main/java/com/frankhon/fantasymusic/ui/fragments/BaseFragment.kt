@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.fragments
+package com.frankhon.fantasymusic.ui.fragments
 
 import androidx.fragment.app.Fragment
 

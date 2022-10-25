@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.utils
+package com.frankhon.fantasymusic.utils.popup
 
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.view.isVisible
 import com.frankhon.fantasymusic.R
+import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.vo.view.SongItem
 
 /**
@@ -20,21 +21,32 @@ import com.frankhon.fantasymusic.vo.view.SongItem
 
 /**
  * 显示播放列表
+ *
+ * @receiver anchorView
  */
-fun showPlaylistPopup(
-    view: View,
+fun View.showPlaylistPopup(
     playlist: List<SongItem>,
+    hOffset: Int,
     removeListener: (Int) -> Unit,
     onItemClickListener: (Int) -> Unit
 ) {
     showPlaylistPopup(
-        view,
+        this,
         PopupAdapter(
             playlist.toMutableList(),
             removeListener,
             onItemClickListener
-        )
+        ),
+        hOffset
     )
+}
+
+/**
+ * @receiver anchorView
+ */
+fun View.dismissPlaylistPopup() {
+    val popupWindow = getTag(R.id.key_playlist_popup_window) as? ListPopupWindow
+    popupWindow?.dismiss()
 }
 
 /**
@@ -42,8 +54,8 @@ fun showPlaylistPopup(
  * @param index 当前正在播放歌曲位置
  * @param newPlaylist 当前播放列表
  */
-fun updatePlaylistPopup(view: View, index: Int = -1, newPlaylist: List<SongItem>? = null) {
-    val adapter = view.getTag(R.id.key_playlist_popup_window_adapter) as? PopupAdapter
+fun View.updatePlaylistPopup(index: Int = -1, newPlaylist: List<SongItem>? = null) {
+    val adapter = getTag(R.id.key_playlist_popup_window_adapter) as? PopupAdapter
     adapter?.run {
         if (index != -1) {
             for (i in 0 until count) {
@@ -55,8 +67,7 @@ fun updatePlaylistPopup(view: View, index: Int = -1, newPlaylist: List<SongItem>
                 playlist.setData(it)
                 notifyDataSetChanged()
             } ?: kotlin.run {
-                val popupWindow = view.getTag(R.id.key_playlist_popup_window) as? ListPopupWindow
-                popupWindow?.dismiss()
+                dismissPlaylistPopup()
                 stopAudio()
             }
         }
@@ -65,7 +76,8 @@ fun updatePlaylistPopup(view: View, index: Int = -1, newPlaylist: List<SongItem>
 
 private fun showPlaylistPopup(
     view: View,
-    adapter: BaseAdapter
+    adapter: BaseAdapter,
+    hOffset: Int
 ) {
     ListPopupWindow(view.context)
         .run {
@@ -74,9 +86,8 @@ private fun showPlaylistPopup(
             view.setTag(R.id.key_playlist_popup_window_adapter, adapter)
             setAdapter(adapter)
             setDropDownGravity(Gravity.START)
-            width = 300.dp
-            horizontalOffset = view.width / 2
-            verticalOffset = -view.height / 2
+            width = 280.dp
+            horizontalOffset = hOffset
             isModal = true
             setBackgroundDrawable(view.drawable(R.drawable.bg_playlist))
             setOnDismissListener {
@@ -103,15 +114,15 @@ private class PopupAdapter(
             ?: LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_popup_playlist, parent, false)
         if (view.tag == null) {
-            view.tag = ViewHolder(view, removeListener, onItemClickListener)
+            view.tag = PlaylistPopupViewHolder(view, removeListener, onItemClickListener)
         }
-        val viewHolder = view.tag as ViewHolder
+        val viewHolder = view.tag as PlaylistPopupViewHolder
         viewHolder.bindView(getItem(position), position)
         return view
     }
 }
 
-private class ViewHolder(
+private class PlaylistPopupViewHolder(
     private val itemView: View,
     private val removeListener: (Int) -> Unit,
     private val onItemClickListener: (Int) -> Unit

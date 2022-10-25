@@ -14,10 +14,12 @@ import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.application.ServiceLocator
 import com.frankhon.fantasymusic.utils.getSystemService
 import com.frankhon.fantasymusic.utils.showToast
-import com.frankhon.fantasymusic.vo.bean.DataSong
+import com.frankhon.fantasymusic.vo.SimpleSong
+import com.frankhon.fantasymusic.vo.event.DownloadCompleteEvent
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by Frank Hon on 2022/10/23 8:51 下午.
@@ -29,7 +31,7 @@ class SongDownloader(private val context: Context) : DefaultLifecycleObserver {
         getSystemService<DownloadManager>(Context.DOWNLOAD_SERVICE)
     }
 
-    private var song: DataSong? = null
+    private var song: SimpleSong? = null
     private var downloadId = 0L
     private val mainScope by lazy { MainScope() }
     private val localMusicDataSource by lazy {
@@ -47,8 +49,11 @@ class SongDownloader(private val context: Context) : DefaultLifecycleObserver {
                     val storedUri =
                         cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
                     song?.let {
+                        SongDownloadManager.removeSong(it)
                         mainScope.launch {
-                            it.url = storedUri
+                            it.songUri = storedUri
+                            EventBus.getDefault()
+                                .post(DownloadCompleteEvent(it))
                             localMusicDataSource.insertSong(it)
                         }
                     }
@@ -69,22 +74,29 @@ class SongDownloader(private val context: Context) : DefaultLifecycleObserver {
         mainScope.cancel()
     }
 
-    fun startDownload(song: DataSong) {
-        this.song = song
-        song.run {
-            if (!url.isNullOrEmpty()) {
-                val request = DownloadManager.Request(Uri.parse(url))
-                    .setTitle(name)
-                    .setDescription(context.getString(R.string.downloading))
-                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                    .setAllowedOverMetered(true)
-                    .setAllowedOverRoaming(true)
-                    .setDestinationInExternalFilesDir(
-                        context,
-                        Environment.DIRECTORY_MUSIC,
-                        "$name.mp3"
-                    )
-                downloadId = downloadManager.enqueue(request)
+    fun startDownload(song: SimpleSong) {
+        SongDownloadManager.run {
+            if (contains(song)) {
+                return
+            } else {
+                addSong(song)
+                song.run {
+                    if (!songUri.isNullOrEmpty()) {
+                        this@SongDownloader.song = song
+                        val request = DownloadManager.Request(Uri.parse(songUri))
+                            .setTitle(name)
+                            .setDescription(context.getString(R.string.downloading))
+                            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                            .setAllowedOverMetered(true)
+                            .setAllowedOverRoaming(true)
+                            .setDestinationInExternalFilesDir(
+                                context,
+                                Environment.DIRECTORY_MUSIC,
+                                "$name.mp3"
+                            )
+                        downloadId = downloadManager.enqueue(request)
+                    }
+                }
             }
         }
     }

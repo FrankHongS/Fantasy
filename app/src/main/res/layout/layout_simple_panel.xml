@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <com.frankhon.fantasymusic.view.AnimatedAudioCircleImageView
+            android:id="@+id/iv_song_bottom_pic"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            app:borderColor="@color/progressColor"
+            app:borderWidth="3dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+            android:id="@+id/tv_bottom_song_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="14dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/include"
+            app:layout_constraintStart_toEndOf="@+id/iv_song_bottom_pic"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/app_name" />
+
+    <TextView
+            android:id="@+id/tv_bottom_artist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_bottom_song_name"
+            app:layout_constraintTop_toBottomOf="@+id/tv_bottom_song_name"
+            tools:text="@string/welcome_text" />
+
+    <include
+            android:id="@+id/include"
+            layout="@layout/layout_simple_song_control"
+            android:layout_width="wrap_content"
+            android:layout_height="68dp"
+            android:layout_marginEnd="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_bottom_song_name"
+            app:layout_constraintTop_toTopOf="parent" />
+
+</merge>

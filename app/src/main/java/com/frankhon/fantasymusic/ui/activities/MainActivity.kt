@@ -1,10 +1,11 @@
 package com.frankhon.fantasymusic.ui.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.ui.fragments.main.MainFragment
 import com.frankhon.fantasymusic.media.AudioPlayerManager
+import com.frankhon.fantasymusic.ui.fragments.main.MainFragment
 import com.hon.mylogger.MyLogger
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +21,12 @@ class MainActivity : AppCompatActivity() {
                 .add(R.id.fragment_container, MainFragment())
                 .commit()
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        // 点击下载完成的通知，data中包含的数据为content://com.android.providers.downloads.documents/document/1082
+        MyLogger.d("onNewIntent: ${intent?.action}, ${intent?.data}")
     }
 
     /**

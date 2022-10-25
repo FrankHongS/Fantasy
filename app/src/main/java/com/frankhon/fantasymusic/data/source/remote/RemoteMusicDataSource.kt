@@ -10,6 +10,9 @@ import com.frankhon.fantasymusic.vo.bean.DataSongWrapper
 class RemoteMusicDataSource {
 
     suspend fun findSong(keyword: String): Result<DataSongWrapper> {
+        if (keyword.isEmpty()) {
+            return Result.failure("搜索内容不能为空...")
+        }
         return try {
             val response = MusicService.create().findSong(keyword)
             if (response.isSuccessful) {

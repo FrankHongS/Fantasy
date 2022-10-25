@@ -5,16 +5,30 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+    <com.frankhon.fantasymusic.view.GridTextView
+            android:id="@+id/gtv_search_suggestions"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="64dp"
+            app:itemLayout="@layout/item_song_search_suggestion"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:marginHorizontal="12dp"
+            app:marginVertical="10dp"
+            app:spanCount="4"
+            tools:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search_result"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="64dp"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/sbcp_control_panel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/gtv_search_suggestions"
+            app:layout_goneMarginTop="64dp"
             tools:listitem="@layout/item_searched_song_list" />
 
     <com.frankhon.simplesearchview.SearchViewGroup
@@ -36,10 +50,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/sbcp_control_panel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/svg_search_songs"
             tools:visibility="visible" />
+
+    <com.frankhon.fantasymusic.view.SimpleBottomControlPanel
+            android:id="@+id/sbcp_control_panel"
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

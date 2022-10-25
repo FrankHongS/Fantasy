@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.view.View
+import androidx.annotation.ArrayRes
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -82,6 +83,8 @@ fun Context.color(@ColorRes resId: Int) = ContextCompat.getColor(this, resId)
 fun View.drawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(context, resId)
 
 fun getString(@StringRes resId: Int) = Fantasy.getAppContext().getString(resId)
+
+fun getStringArray(@ArrayRes resId: Int): Array<String> = Fantasy.getAppContext().resources.getStringArray(resId)
 
 inline fun <reified T : Activity> Context.navigate() {
     startActivity(Intent(this, T::class.java))

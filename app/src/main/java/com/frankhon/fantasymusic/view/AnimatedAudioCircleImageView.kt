@@ -41,7 +41,6 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
     private var mBitmap: Bitmap? = null
     private var mDrawableRadius = 0f
     private var progressRotatedDegree = 0f
-    private var imageRotatedDegree = 0f
 
     private lateinit var arcRect: RectF
     private lateinit var drawableRect: RectF
@@ -94,7 +93,7 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
             repeatCount = ValueAnimator.INFINITE
             repeatMode = ValueAnimator.RESTART
             addUpdateListener { animation: ValueAnimator ->
-                imageRotatedDegree = animation.animatedValue as Float
+                val imageRotatedDegree = animation.animatedValue as Float
                 updateBitmapShaderMatrix(imageRotatedDegree)
                 invalidate()
             }
@@ -176,7 +175,7 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
      * drawable发生改变时，将数据重置
      */
     private fun resetBitmap() {
-        updateBitmapShaderMatrix(imageRotatedDegree)
+        updateBitmapShaderMatrix(0f)
     }
 
     private fun setBorderPaintColor(@ColorInt color: Int) {
@@ -192,6 +191,11 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
             progressRotatedDegree = progress * 360f / total
             invalidate()
         }
+    }
+
+    fun resetProgress() {
+        progressRotatedDegree = 0f
+        invalidate()
     }
 
     fun startRotateAnimator() {

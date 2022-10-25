@@ -15,6 +15,8 @@
     <string name="search_hint">输入歌曲名或艺术家名字</string>
     <string name="downloading">下载中</string>
     <string name="download_complete">下载完成</string>
+    <string name="song_downloaded">已存在于本地歌曲库</string>
+    <string name="song_url_error">歌曲地址异常</string>
 
     <string name="playlist_artist_name" translatable="false">- %s</string>
 
@@ -23,6 +25,13 @@
     <string name="play_mode_list_loop">列表循环</string>
 
     <string name="app_version">版本号：%s</string>
+
+    <string name="play_error">播放异常</string>
+
+    <string-array name="action_song_more">
+        <item>删除歌曲</item>
+    </string-array>
+    <string name="unable_to_delete">内置歌曲，不支持删除</string>
 
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>

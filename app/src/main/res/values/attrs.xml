@@ -12,4 +12,11 @@
     <declare-styleable name="RoundRectImageView">
         <attr name="radius" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="GridTextView">
+        <attr name="itemLayout" format="reference" />
+        <attr name="marginHorizontal" format="dimension" />
+        <attr name="marginVertical" format="dimension" />
+        <attr name="spanCount" format="integer" />
+    </declare-styleable>
 </resources>

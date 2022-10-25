@@ -39,7 +39,7 @@ fun sendMediaNotification(
     val context = Fantasy.getAppContext()
     Glide.with(context)
         .asBitmap()
-        .load(song.songPic)
+        .load(song.picUrl)
         .placeholder(R.drawable.song_pic)
         .into(object : CustomTarget<Bitmap?>() {
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
@@ -72,7 +72,7 @@ fun sendMediaNotification(
     val context = Fantasy.getAppContext()
     Glide.with(context)
         .asBitmap()
-        .load(song.songPic)
+        .load(song.picUrl)
         .placeholder(R.drawable.song_pic)
         .into(object : CustomTarget<Bitmap?>() {
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {

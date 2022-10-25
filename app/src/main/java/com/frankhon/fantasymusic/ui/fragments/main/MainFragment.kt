@@ -8,8 +8,10 @@ import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
@@ -26,6 +28,9 @@ import com.frankhon.fantasymusic.ui.activities.adapter.MainAdapter
 import com.frankhon.fantasymusic.ui.fragments.BaseFragment
 import com.frankhon.fantasymusic.ui.fragments.search.SearchFragment
 import com.frankhon.fantasymusic.utils.*
+import com.frankhon.fantasymusic.utils.popup.dismissPlaylistPopup
+import com.frankhon.fantasymusic.utils.popup.showPlaylistPopup
+import com.frankhon.fantasymusic.utils.popup.updatePlaylistPopup
 import com.frankhon.fantasymusic.view.AnimatedAudioCircleImageView
 import com.frankhon.fantasymusic.view.AnimatedAudioToggleButton
 import com.frankhon.fantasymusic.view.PlayModeImageButton
@@ -75,6 +80,7 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         MyLogger.d("onViewCreated: ")
+        super.onViewCreated(view, savedInstanceState)
         parentActivity = activity as? MainActivity
         initView(view)
         connectAudioPlayer()
@@ -96,6 +102,7 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
         MyLogger.d("onDestroyView: ")
         super.onDestroyView()
         disconnectAudioPlayer()
+        playlistButton.dismissPlaylistPopup()
     }
 
     //region Audio lifecycle
@@ -123,12 +130,12 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
     }
 
     override fun onPrepare(song: SimpleSong, playMode: PlayMode, curIndex: Int, totalSize: Int) {
-        albumImage.cancelRotateAnimator()
+        albumImage.pauseRotateAnimator()
         updateSongPanel(song)
         updatePlayControlIcon(PlayerState.PREPARING)
         updatePreviousNextButton(playMode, curIndex, totalSize)
         //更新播放列表中当前播放歌曲
-        updatePlaylistPopup(playlistButton, index = curIndex)
+        playlistButton.updatePlaylistPopup(index = curIndex)
     }
 
     override fun onPlaying(song: SimpleSong) {
@@ -179,8 +186,7 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
     }
 
     override fun onPlaylistChanged(playMode: PlayMode, playlist: List<SimpleSong>, curIndex: Int) {
-        updatePlaylistPopup(
-            playlistButton,
+        playlistButton.updatePlaylistPopup(
             newPlaylist = playlist.transferToSongItems(curIndex)
         )
         updatePreviousNextButton(playMode, curIndex, playlist.size)
@@ -208,9 +214,16 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
         durationText = view.findViewById(R.id.tv_duration)
 
         toolbar.setOnMenuItemClickListener {
+            val actionView = (toolbar.getChildAt(1) as ActionMenuView)[0]
             when (it.itemId) {
                 R.id.action_search -> parentFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, SearchFragment())
+                    .addSharedElement(
+                        actionView.apply {
+                            transitionName = FRAGMENT_MAIN_TO_SEARCH_TRANSITION_NAME
+                        },
+                        FRAGMENT_MAIN_TO_SEARCH_TRANSITION_NAME
+                    )
                     .addToBackStack(null)
                     .commit()
             }
@@ -302,9 +315,10 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
         playlistButton.setOnClickListener {
             val currentPlayerInfo = AudioPlayerManager.getCurrentPlayerInfo()
             currentPlayerInfo?.run {
-                showPlaylistPopup(it, curPlaylist.transferToSongItems(curSongIndex), {
-                    AudioPlayerManager.removeSongFromPlayList(it)
-                }) {
+                it.showPlaylistPopup(curPlaylist.transferToSongItems(curSongIndex),
+                    hOffset = it.width / 2, {
+                        AudioPlayerManager.removeSongFromPlayList(it)
+                    }) {
                     AudioPlayerManager.play(it)
                 }
             }
@@ -316,6 +330,7 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
         albumImage.run {
             setImageResource(R.mipmap.ic_launcher)
             cancelRotateAnimator()
+            resetProgress()
         }
         currentTime.text = msToMMSS(0)
         durationText.text = ""
@@ -350,7 +365,7 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
             parentActivity?.takeIf { !it.isDestroyed && !it.isFinishing }?.let {
                 // Glide可以感知Activity的生命周期，onStop停止加载，onStart恢复加载
                 Glide.with(it)
-                    .load(songPic)
+                    .load(picUrl)
                     .placeholder(R.mipmap.ic_launcher)
                     .error(R.mipmap.ic_launcher)
                     .into(albumImage)
@@ -388,14 +403,14 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
     private fun connectAudioPlayer() {
         AudioPlayerManager.connect {
             it.registerLifecycleObserver(this)
-            it.registerProgressObserver(this)
+            it.registerConfigurationObserver(this)
         }
     }
 
     private fun disconnectAudioPlayer() {
         AudioPlayerManager.run {
             unregisterLifecycleObserver(this@MainFragment)
-            unregisterProgressObserver(this@MainFragment)
+            unregisterConfigurationObserver(this@MainFragment)
         }
     }
 

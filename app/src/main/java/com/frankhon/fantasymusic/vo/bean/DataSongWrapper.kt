@@ -37,7 +37,7 @@ data class DataSongWrapper(val result: Int, val data: DataSongInner) : Parcelabl
 
 data class DataSongInner(
     @SerializedName("list")
-    val songs: List<DataSong>
+    var songs: List<DataSong>
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.createTypedArrayList(DataSong) ?: emptyList()

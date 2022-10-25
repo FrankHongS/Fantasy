@@ -1,9 +1,6 @@
 package com.frankhon.fantasymusic.data.source.local
 
-import com.frankhon.fantasymusic.utils.FileUtil
-import com.frankhon.fantasymusic.utils.transformToDBSong
-import com.frankhon.fantasymusic.utils.transformToDBSongs
-import com.frankhon.fantasymusic.utils.transformToSimpleSongs
+import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.bean.DataSong
 import com.hon.mylogger.MyLogger
@@ -21,7 +18,9 @@ class LocalMusicDataSource(private val musicDao: MusicDao) {
         if (songs.isEmpty()) {
             MyLogger.d("From assets")
             songs = withContext(Dispatchers.IO) {
-                FileUtil.getSongsFromAssets()
+                getSongsFromAssets().onEach {
+                    it.canDelete = false
+                }
             }
             musicDao.insertSongs(songs.transformToDBSongs())
         } else {
@@ -30,7 +29,14 @@ class LocalMusicDataSource(private val musicDao: MusicDao) {
         return songs
     }
 
-    suspend fun insertSong(song: DataSong) {
+    suspend fun insertSong(song: SimpleSong) {
         musicDao.insertSong(song.transformToDBSong())
+    }
+
+    suspend fun deleteSong(song: SimpleSong) {
+        //将本地歌曲文件删除
+        deleteFile(song)
+        //将歌曲从数据库中删除
+        musicDao.deleteSong(song.transformToDBSong())
     }
 }

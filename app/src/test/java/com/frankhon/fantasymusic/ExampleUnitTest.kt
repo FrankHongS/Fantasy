@@ -16,4 +16,10 @@ class ExampleUnitTest {
         val b = String(StringBuffer("hello world"))
         assert(a == b)//true
     }
+
+    @Test
+    fun string_regex() {
+        val result = "file://www.baidu.com".matches(Regex("^(https?://|file://).*"))
+        assert(result)
+    }
 }

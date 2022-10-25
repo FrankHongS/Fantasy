@@ -14,8 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.application.AppExecutors
+import com.frankhon.fantasymusic.utils.showToast
+import com.frankhon.fantasymusic.utils.transformToSimpleSong
 import com.frankhon.fantasymusic.vo.SimpleSong
-import com.frankhon.fantasymusic.vo.bean.DataSong
+import com.frankhon.fantasymusic.vo.view.SearchSongItem
 
 /**
  * Created by Frank Hon on 2020-06-03 00:50.
@@ -26,21 +28,21 @@ class SearchResultAdapter(
     private val downloader: SongDownloader,
     private val onItemClickListener: (song: SimpleSong) -> Unit
 ) :
-    ListAdapter<DataSong, SearchResultAdapter.SearchResultViewHolder>(
+    ListAdapter<SearchSongItem, SearchResultAdapter.SearchResultViewHolder>(
         AsyncDifferConfig.Builder(
-            object : DiffUtil.ItemCallback<DataSong>() {
-                override fun areContentsTheSame(oldItem: DataSong, newItem: DataSong): Boolean {
-                    val oldArtists = oldItem.artists ?: emptyList()
-                    val newArtists = newItem.artists ?: emptyList()
-                    if (oldArtists.isNotEmpty() && newArtists.isNotEmpty()) {
-                        return oldItem.name == newItem.name && oldArtists[0].name == newArtists[0].name
-                    } else {
-                        return oldItem.name == newItem.name
-                    }
+            object : DiffUtil.ItemCallback<SearchSongItem>() {
+                override fun areContentsTheSame(
+                    oldItem: SearchSongItem,
+                    newItem: SearchSongItem
+                ): Boolean {
+                    return oldItem.songUri == newItem.songUri
                 }
 
-                override fun areItemsTheSame(oldItem: DataSong, newItem: DataSong): Boolean {
-                    return oldItem.url == newItem.url
+                override fun areItemsTheSame(
+                    oldItem: SearchSongItem,
+                    newItem: SearchSongItem
+                ): Boolean {
+                    return oldItem.name == newItem.name && oldItem.artist == newItem.artist
                 }
             }
         )
@@ -67,32 +69,50 @@ class SearchResultAdapter(
         private val downloadButton = itemView.findViewById<ImageButton>(R.id.iv_download_song)
 
         fun bindView(
-            song: DataSong,
+            song: SearchSongItem,
             downloader: SongDownloader,
             onItemClickListener: (song: SimpleSong) -> Unit
         ) {
-            Glide.with(itemView)
-                .load(song.album?.picUrl)
-                .into(songPic)
-            songName.text = song.name
-            artistName.text = song.artists?.get(0)?.name.orEmpty()
-            songItem.setOnClickListener {
-                onItemClickListener(
-                    SimpleSong(
-                        song.name,
-                        song.artists?.get(0)?.name,
-                        song.url,
-                        song.album?.picUrl.orEmpty()
+            song.run {
+                Glide.with(itemView)
+                    .load(albumPicUrl)
+                    .into(songPic)
+                songName.text = name
+                artistName.text = artist
+                songItem.setOnClickListener {
+                    onItemClickListener(
+                        transformToSimpleSong()
                     )
-                )
-            }
-            if (song.url?.startsWith("file://") == true) {
-                downloadButton.setImageResource(R.drawable.ic_download_complete)
-            } else {
-                downloadButton.setImageResource(R.drawable.ic_download_song)
-            }
-            downloadButton.setOnClickListener {
-                downloader.startDownload(song)
+                }
+                when (downloadState) {
+                    0 -> {
+                        downloadButton.isEnabled = true
+                        downloadButton.setImageResource(R.drawable.ic_download_song)
+                    }
+                    1 -> {
+                        downloadButton.isEnabled = false
+                        downloadButton.setImageResource(R.drawable.ic_download_song_disable)
+                    }
+                    2 -> {
+                        downloadButton.isEnabled = true
+                        downloadButton.setImageResource(R.drawable.ic_download_complete)
+                    }
+                }
+                downloadButton.setOnClickListener {
+                    when (downloadState) {
+                        0 -> {
+                            if (songUri.isNullOrEmpty()) {
+                                showToast(R.string.song_url_error)
+                            } else {
+                                showToast(R.string.downloading)
+                                downloader.startDownload(song.transformToSimpleSong())
+                                downloadButton.setImageResource(R.drawable.ic_download_song_disable)
+                                downloadState = 1
+                            }
+                        }
+                        2 -> showToast(R.string.song_downloaded)
+                    }
+                }
             }
         }
     }

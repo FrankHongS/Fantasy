@@ -5,6 +5,7 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -15,23 +16,18 @@ import com.bumptech.glide.request.RequestOptions
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.utils.setData
 import com.frankhon.fantasymusic.vo.view.SongItem
-import com.hon.mylogger.MyLogger
 
 /**
  * Created by Frank_Hon on 11/12/2020.
  * E-mail: v-shhong@microsoft.com
  */
 class SongAdapter(
+    private val onMoreClickListener: (View, Int) -> Unit,
     private val onItemClickListener: (song: SongItem, index: Int) -> Unit
 ) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     private val songs = mutableListOf<SongItem>()
     private var curPlayingIndex = -1
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-        MyLogger.d("onAttachedToRecyclerView: $recyclerView")
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         return SongViewHolder(
@@ -44,9 +40,8 @@ class SongAdapter(
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
-        MyLogger.d("onBindViewHolder: position = $position")
         val song = songs[position]
-        holder.bindView(song, position, onItemClickListener)
+        holder.bindView(song, position, onMoreClickListener, onItemClickListener)
     }
 
     fun setData(items: List<SongItem>, playingIndex: Int) {
@@ -67,6 +62,12 @@ class SongAdapter(
     }
 
     @SuppressLint("NotifyDataSetChanged")
+    fun deleteItem(index: Int) {
+        songs.removeAt(index)
+        notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     private fun notifyDataChangedWithSelected(playingIndex: Int) {
         songs.mapIndexed { index, songItem ->
             songItem.also {
@@ -83,11 +84,15 @@ class SongAdapter(
         private val songName = itemView.findViewById<TextView>(R.id.tv_song_name)
         private val artistName = itemView.findViewById<TextView>(R.id.tv_artist_name)
         private val nowPlayingImage = itemView.findViewById<View>(R.id.iv_song_now_playing)
+        private val songIndex = itemView.findViewById<TextView>(R.id.tv_song_index)
+        private val moreButton = itemView.findViewById<ImageButton>(R.id.ib_song_list_more)
 
+        @SuppressLint("SetTextI18n")
         fun bindView(
             song: SongItem,
             index: Int,
-            onItemClickListener: (song: SongItem, index: Int) -> Unit
+            onMoreClickListener: (View, Int) -> Unit,
+            onItemClickListener: (SongItem, Int) -> Unit
         ) {
             song.run {
                 if (TextUtils.isEmpty(songPic)) {
@@ -100,9 +105,19 @@ class SongAdapter(
                 }
                 songName.text = name
                 artistName.text = artist
-                nowPlayingImage.isVisible = isPlaying
+                if (isPlaying) {
+                    nowPlayingImage.isVisible = true
+                    songIndex.isVisible = false
+                } else {
+                    nowPlayingImage.isVisible = false
+                    songIndex.isVisible = true
+                    songIndex.text = "${index + 1}"
+                }
                 songItem.setOnClickListener {
                     onItemClickListener(song, index)
+                }
+                moreButton.setOnClickListener {
+                    onMoreClickListener(it, index)
                 }
             }
         }

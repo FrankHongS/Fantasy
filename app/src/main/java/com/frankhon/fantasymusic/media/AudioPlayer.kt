@@ -293,7 +293,7 @@ object AudioPlayer {
     private fun innerPlay(index: Int) {
         curIndex = index
         curSong = curPlaylist[curIndex]
-        prepare(curSong?.location.orEmpty())
+        prepare(curSong?.songUri.orEmpty())
     }
 
     private fun prepare(audioFilePath: String) {

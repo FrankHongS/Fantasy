@@ -6,11 +6,13 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import com.frankhon.fantasymusic.IMusicPlayer
+import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.application.Fantasy
 import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
 import com.frankhon.fantasymusic.media.observer.PlayerConfigurationObserver
 import com.frankhon.fantasymusic.utils.appContext
 import com.frankhon.fantasymusic.utils.bindService
+import com.frankhon.fantasymusic.utils.showToast
 import com.frankhon.fantasymusic.utils.startService
 import com.frankhon.fantasymusic.vo.SimpleSong
 
@@ -30,6 +32,7 @@ object AudioPlayerManager {
 
         override fun onServiceDisconnected(name: ComponentName) {
             hasBoundService = false
+            musicPlayer = null
         }
     }
 
@@ -72,14 +75,14 @@ object AudioPlayerManager {
     }
 
     @JvmStatic
-    fun registerProgressObserver(observer: PlayerConfigurationObserver) {
+    fun registerConfigurationObserver(observer: PlayerConfigurationObserver) {
         if (!configurationObservers.contains(observer)) {
             configurationObservers.add(observer)
         }
     }
 
     @JvmStatic
-    fun unregisterProgressObserver(observer: PlayerConfigurationObserver) {
+    fun unregisterConfigurationObserver(observer: PlayerConfigurationObserver) {
         configurationObservers.remove(observer)
     }
 
@@ -105,6 +108,10 @@ object AudioPlayerManager {
 
     @JvmStatic
     fun play(song: SimpleSong?) {
+        if (song?.songUri.isNullOrEmpty()) {
+            showToast(R.string.play_error)
+            return
+        }
         musicPlayer?.play(song)
     }
 
@@ -118,14 +125,37 @@ object AudioPlayerManager {
         }
     }
 
+    /**
+     * 播放当前歌曲，并添加到播放列表；如果播放列表已经存在，则直接播放
+     * @param song
+     */
     @JvmStatic
     fun playAndAddIntoPlaylist(song: SimpleSong?) {
+        if (song?.songUri.isNullOrEmpty()) {
+            showToast(R.string.play_error)
+            return
+        }
         musicPlayer?.playAndAddIntoPlaylist(song)
     }
 
+    /**
+     * 将当前歌曲添加到播放列表
+     * @param song
+     */
     @JvmStatic
     fun addIntoPlaylist(song: SimpleSong) {
         musicPlayer?.addIntoPlaylist(song)
+    }
+
+    @JvmStatic
+    fun removeSongFromPlayList(song: SimpleSong) {
+        val currentPlayerInfo = getCurrentPlayerInfo()
+        currentPlayerInfo?.run {
+            val index = curPlaylist.indexOf(song)
+            if (index != -1) {
+                musicPlayer?.removeSongFromPlayList(index)
+            }
+        }
     }
 
     @JvmStatic

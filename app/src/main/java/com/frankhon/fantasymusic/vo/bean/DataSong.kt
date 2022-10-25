@@ -17,6 +17,20 @@ class DataSong() : Parcelable {
     var pic: String? = null
     var bgPic: String? = null
 
+    val artist: String
+        get() {
+            return if (artists.isNullOrEmpty()) {
+                ""
+            } else {
+                artists?.first()?.name.orEmpty()
+            }
+        }
+
+    val albumPicUrl: String
+        get() {
+            return album?.picUrl.orEmpty()
+        }
+
     constructor(parcel: Parcel) : this() {
         name = parcel.readString()
         url = parcel.readString()

@@ -18,6 +18,9 @@ data class DBSong(
     @ColumnInfo(name = "song_uri")
     val songUri: String,
     @ColumnInfo(name = "pic_url")
-    val picUrl: String
+    val picUrl: String,
+    //是否可以删除，内置歌曲不支持删除
+    @ColumnInfo(name="able_to_delete")
+    val canDelete: Boolean = true
 )
 

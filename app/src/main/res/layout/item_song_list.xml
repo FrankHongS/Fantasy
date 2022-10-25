@@ -15,11 +15,34 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+        <TextView
+                android:id="@+id/tv_song_index"
+                android:layout_width="36dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="1" />
+
+        <ImageView
+                android:id="@+id/iv_song_now_playing"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginHorizontal="12dp"
+                android:src="@drawable/ic_now_playing"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
+
         <com.frankhon.fantasymusic.view.RoundRectImageView
                 android:id="@+id/iv_song_pic"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginStart="8dp"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="40dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:scaleType="centerCrop"
@@ -37,8 +60,9 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="14dp"
                 android:layout_marginEnd="8dp"
+                android:singleLine="true"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/ib_song_list_more"
                 app:layout_constraintStart_toEndOf="@id/iv_song_pic"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Song nameSong nameSong nameSong nameSong name" />
@@ -49,24 +73,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
+                android:singleLine="true"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/iv_song_now_playing"
+                app:layout_constraintEnd_toStartOf="@id/ib_song_list_more"
                 app:layout_constraintStart_toStartOf="@id/tv_song_name"
                 app:layout_constraintTop_toBottomOf="@id/tv_song_name"
                 tools:text="artist nameartist nameartist nameartist nameartist name" />
 
-        <ImageView
-                android:id="@+id/iv_song_now_playing"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
-                android:visibility="gone"
+        <ImageButton
+                android:id="@+id/ib_song_list_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@null"
+                android:padding="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_now_playing"
-                tools:ignore="ContentDescription"
-                tools:visibility="visible" />
+                app:srcCompat="@drawable/ic_song_list_item_more"
+                tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

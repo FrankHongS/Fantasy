@@ -10,17 +10,19 @@ import android.os.Parcelable
 class SimpleSong(
     var name: String?,
     var artist: String?,
-    var location: String?,
-    var songPic: String? = "",
+    var songUri: String? = "",
+    var picUrl: String? = "",
     // unit, ms
-    var duration: Long = 0L
+    var duration: Long = 0L,
+    var canDelete: Boolean = true
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readLong()
+        parcel.readLong(),
+        parcel.readInt() == 1
     )
 
     companion object CREATOR : Parcelable.Creator<SimpleSong> {
@@ -36,9 +38,10 @@ class SimpleSong(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
         parcel.writeString(artist)
-        parcel.writeString(location)
-        parcel.writeString(songPic)
+        parcel.writeString(songUri)
+        parcel.writeString(picUrl)
         parcel.writeLong(duration)
+        parcel.writeInt(if (canDelete) 1 else 0)
     }
 
     override fun describeContents(): Int {
@@ -46,7 +49,7 @@ class SimpleSong(
     }
 
     override fun toString(): String {
-        return "SimpleSong(name=$name)"
+        return "SimpleSong(name=$name, canDelete=$canDelete)"
     }
 
     /**

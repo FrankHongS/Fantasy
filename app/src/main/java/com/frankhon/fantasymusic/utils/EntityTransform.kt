@@ -1,8 +1,10 @@
 package com.frankhon.fantasymusic.utils
 
+import com.frankhon.fantasymusic.ui.fragments.search.SongDownloadManager
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.bean.DataSong
 import com.frankhon.fantasymusic.vo.db.DBSong
+import com.frankhon.fantasymusic.vo.view.SearchSongItem
 import com.frankhon.fantasymusic.vo.view.SongItem
 
 /**
@@ -15,8 +17,9 @@ fun List<DBSong>.transformToSimpleSongs(): List<SimpleSong> {
         SimpleSong(
             name = it.name,
             artist = it.artist,
-            location = it.songUri,
-            songPic = it.picUrl
+            songUri = it.songUri,
+            picUrl = it.picUrl,
+            canDelete = it.canDelete
         )
     }
 }
@@ -26,8 +29,9 @@ fun List<SimpleSong>.transformToDBSongs(): List<DBSong> {
         DBSong(
             name = it.name.orEmpty(),
             artist = it.artist.orEmpty(),
-            songUri = it.location.orEmpty(),
-            picUrl = it.songPic.orEmpty()
+            songUri = it.songUri.orEmpty(),
+            picUrl = it.picUrl.orEmpty(),
+            canDelete = it.canDelete
         )
     }
 }
@@ -37,17 +41,61 @@ fun List<SimpleSong>.transferToSongItems(playingIndex: Int = -1): List<SongItem>
         SongItem(
             name = item.name,
             artist = item.artist,
-            songPic = item.songPic,
+            songPic = item.picUrl,
             isPlaying = index == playingIndex
         )
     }
 }
 
-fun DataSong.transformToDBSong(): DBSong {
+fun List<DataSong>.transferToSearchSongItems(): List<SearchSongItem> {
+    return map {
+        SearchSongItem(
+            name = it.name,
+            artist = it.artist,
+            albumPicUrl = it.albumPicUrl,
+            songUri = it.url,
+            downloadState = if (it.url?.startsWith("file://") == true) {
+                2
+            } else if (SongDownloadManager.contains(it.name, it.artist)) {
+                1
+            } else {
+                0
+            }
+        )
+    }
+}
+
+/**
+ * 只需要name和artist，用作数据库查询
+ */
+fun SongItem.transformToSimpleSong(): SimpleSong {
+    return SimpleSong(
+        name = name,
+        artist = artist
+    )
+}
+
+fun SimpleSong.transformToDBSong(): DBSong {
     return DBSong(
+        name = name.orEmpty(),
+        artist = artist.orEmpty(),
+        songUri = songUri.orEmpty(),
+        picUrl = picUrl.orEmpty()
+    )
+}
+
+fun DataSong.transformToSimpleSong(): SimpleSong {
+    return SimpleSong(
         name = name.orEmpty(),
         artist = artists?.first()?.name.orEmpty(),
         songUri = url.orEmpty(),
         picUrl = album?.picUrl.orEmpty()
     )
 }
+
+fun SearchSongItem.transformToSimpleSong() = SimpleSong(
+    name = name.orEmpty(),
+    artist = artist.orEmpty(),
+    songUri = songUri.orEmpty(),
+    picUrl = albumPicUrl.orEmpty()
+)

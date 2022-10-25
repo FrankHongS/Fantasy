@@ -15,7 +15,9 @@
     <!-- Search songs page-->
     <string name="search_hint">Input songs or artists</string>
     <string name="downloading">Downloading</string>
-    <string name="download_complete">download successfully</string>
+    <string name="download_complete">Download successfully</string>
+    <string name="song_downloaded">This song exists in local library</string>
+    <string name="song_url_error">Song\'s url is wrong</string>
 
     <!-- Play mode-->
     <string name="play_mode_shuffle">Shuffle</string>
@@ -23,4 +25,11 @@
     <string name="play_mode_list_loop">List loop</string>
 
     <string name="app_version">Version: %s</string>
+
+    <string name="play_error">Error when playing music</string>
+
+    <string-array name="action_song_more">
+        <item>delete</item>
+    </string-array>
+    <string name="unable_to_delete">Songs from App not support to delete</string>
 </resources>

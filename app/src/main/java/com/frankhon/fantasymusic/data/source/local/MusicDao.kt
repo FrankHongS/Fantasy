@@ -1,9 +1,6 @@
 package com.frankhon.fantasymusic.data.source.local
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.frankhon.fantasymusic.vo.db.DBSong
 
 /**
@@ -23,4 +20,6 @@ interface MusicDao {
     @Query("select * from songs")
     suspend fun getSongs(): List<DBSong>
 
+    @Delete
+    suspend fun deleteSong(song: DBSong)
 }

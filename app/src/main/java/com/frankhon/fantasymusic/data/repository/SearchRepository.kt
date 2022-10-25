@@ -21,23 +21,21 @@ class SearchRepository(
                 data?.data?.let {
                     val localSongs = localDataSource.getSongs()
                     //替换网络获取的列表中的本地歌曲
-                    it.songs.forEach { song ->
+                    val newData = it.songs.map { song ->
                         localSongs.forEach { localSong ->
-                            if (!song.artists.isNullOrEmpty()) {
-                                if (song.name == localSong.name &&
-                                    song.artists?.first()?.name == localSong.artist
-                                ) {
-                                    song.url = localSong.location
-                                }
-                            } else {
-                                if (song.name == localSong.name &&
-                                    localSong.artist.isNullOrEmpty()
-                                ) {
-                                    song.url = localSong.location
-                                }
+                            if (song.name == localSong.name &&
+                                song.artist == localSong.artist
+                            ) {
+                                song.url = localSong.songUri
                             }
                         }
+                        song
                     }
+                        .filter { song ->
+                            //过滤掉非法Url(?表示匹配前面字符0或1次)
+                            song.url?.matches(Regex("^(https?://|file://).*")) == true
+                        }
+                    it.songs = newData
                 }
             }
         }

@@ -30,6 +30,7 @@ import com.frankhon.fantasymusic.ui.fragments.search.SearchFragment
 import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.utils.popup.dismissPlaylistPopup
 import com.frankhon.fantasymusic.utils.popup.showPlaylistPopup
+import com.frankhon.fantasymusic.utils.popup.showSchedulePopup
 import com.frankhon.fantasymusic.utils.popup.updatePlaylistPopup
 import com.frankhon.fantasymusic.view.AnimatedAudioCircleImageView
 import com.frankhon.fantasymusic.view.AnimatedAudioToggleButton
@@ -62,6 +63,7 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
     private lateinit var prevButton: ImageButton
     private lateinit var playModeButton: PlayModeImageButton
     private lateinit var playlistButton: ImageButton
+    private lateinit var scheduleButton: ImageButton
     private lateinit var albumImage: AnimatedAudioCircleImageView
     private lateinit var songName: TextView
     private lateinit var artistName: TextView
@@ -206,6 +208,7 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
         prevButton = view.findViewById(R.id.ib_previous_song)
         playModeButton = view.findViewById(R.id.ib_play_mode)
         playlistButton = view.findViewById(R.id.ib_playlist)
+        scheduleButton = view.findViewById(R.id.ib_schedule_pause)
         albumImage = view.findViewById(R.id.iv_song_bottom_pic)
         songName = view.findViewById(R.id.tv_bottom_song_name)
         artistName = view.findViewById(R.id.tv_bottom_artist_name)
@@ -322,6 +325,9 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver, PlayerConfiguratio
                     AudioPlayerManager.play(it)
                 }
             }
+        }
+        scheduleButton.setOnClickListener {
+            it.showSchedulePopup()
         }
         setDefaultPanel()
     }

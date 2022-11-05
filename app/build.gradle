@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId "com.frankhon.fantasymusic"
         minSdkVersion versions.minSdk
-        targetSdkVersion versions.compileSdk
+        targetSdkVersion versions.targetSdk
         versionCode versions.versionCode
         versionName versions.versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

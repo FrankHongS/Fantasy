@@ -17,7 +17,7 @@ import kotlinx.coroutines.*
 
 /**
  * Note:
- * 1. MediaPlayerNative: error (-38, 0)
+ * 1. MediaPlayerNative: error (-38, 0), E/MediaPlayer-JNI: enable device callback failed: -38
  * 当`MediaPlayer`处于uninitialized和preparing(该状态即：还在准备当中，未完成准备)状态时,调用
  * `getDuration()`或者`getCurrentPosition()`，native将报错 error (-38, 0)
  *
@@ -169,7 +169,7 @@ object AudioPlayer {
     @JvmStatic
     fun pause() {
         if (mediaPlayer.isPlaying) {
-            MyLogger.d("prepare() playerState = ${PlayerState.PAUSED}")
+            MyLogger.d("pause() playerState = ${PlayerState.PAUSED}")
             mediaPlayer.pause()
             updatePlayerState(PlayerState.PAUSED)
         }
@@ -206,6 +206,7 @@ object AudioPlayer {
 
     @JvmStatic
     fun seekTo(msec: Int) {
+        MyLogger.d("seekTo: msec = $msec")
         mediaPlayer.seekTo(msec)
     }
 
@@ -351,7 +352,10 @@ object AudioPlayer {
     }
 
     private fun onCompleted(mp: MediaPlayer) {
-        MyLogger.d("onCompleted() playerState = ${PlayerState.COMPLETED} isPlaying=${mp.isPlaying}")
+        MyLogger.d(
+            "onCompleted() playerState = ${PlayerState.COMPLETED}, isPlaying=${mp.isPlaying}, " +
+                    "currentTrackPosition = ${mp.currentPosition}, duration = ${mp.duration}"
+        )
         updatePlayerState(PlayerState.COMPLETED)
         if (curPlayMode != PlayMode.LOOP_SINGLE) {
             next()

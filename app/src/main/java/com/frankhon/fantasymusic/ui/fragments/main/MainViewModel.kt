@@ -39,6 +39,15 @@ class MainViewModel(private val repository: MusicRepository, private val state: 
         }
     }
 
+    fun deleteSong(index: Int) {
+        val origin = _songs.value
+        origin?.let {
+            if (index < it.size) {
+                _songs.value = origin.toMutableList().apply { removeAt(index) }
+            }
+        }
+    }
+
     fun select(index: Int) {
         state.set(KEY_NOW_PLAYING, index)
     }

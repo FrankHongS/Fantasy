@@ -24,7 +24,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="12dp"
             android:layout_toEndOf="@id/iv_song_now_playing_playlist"
-            android:maxWidth="140dp"
+            android:maxWidth="120dp"
             android:singleLine="true"
             android:textColor="@color/primaryText"
             tools:text="七里香七里香七里香七里香七里香七里香七里香七里香七里香" />
@@ -37,6 +37,7 @@
             android:layout_marginStart="6dp"
             android:layout_toStartOf="@id/ib_remove_song_playlist"
             android:layout_toEndOf="@id/tv_song_name_playlist"
+            android:minWidth="40dp"
             android:singleLine="true"
             android:textColor="@color/primaryText"
             android:textSize="12sp"

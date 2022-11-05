@@ -21,5 +21,5 @@ interface MusicDao {
     suspend fun getSongs(): List<DBSong>
 
     @Delete
-    suspend fun deleteSong(song: DBSong)
+    suspend fun deleteSong(song: DBSong): Int
 }

@@ -59,6 +59,16 @@ fun msToMMSS(millis: Long): String {
     return ""
 }
 
+fun formatTime(millis: Long): String {
+    try {
+        val sdf = SimpleDateFormat("MM-dd HH:mm:ss", Locale.CHINA)
+        return sdf.format(millis)
+    } catch (e: IllegalArgumentException) {
+        MyLogger.e(e)
+    }
+    return ""
+}
+
 fun <T> MutableList<T>.setData(data: List<T>) {
     clear()
     addAll(data)
@@ -82,9 +92,15 @@ fun Context.color(@ColorRes resId: Int) = ContextCompat.getColor(this, resId)
 
 fun View.drawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(context, resId)
 
+fun View.color(@ColorRes resId: Int) = ContextCompat.getColor(context, resId)
+
 fun getString(@StringRes resId: Int) = Fantasy.getAppContext().getString(resId)
 
-fun getStringArray(@ArrayRes resId: Int): Array<String> = Fantasy.getAppContext().resources.getStringArray(resId)
+fun getStringArray(@ArrayRes resId: Int): Array<String> =
+    appContext.resources.getStringArray(resId)
+
+fun getIntegerArray(@ArrayRes resId: Int): IntArray =
+    appContext.resources.getIntArray(resId)
 
 inline fun <reified T : Activity> Context.navigate() {
     startActivity(Intent(this, T::class.java))

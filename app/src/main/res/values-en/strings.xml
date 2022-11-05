@@ -18,18 +18,19 @@
     <string name="download_complete">Download successfully</string>
     <string name="song_downloaded">This song exists in local library</string>
     <string name="song_url_error">Song\'s url is wrong</string>
+    <string name="search_input_empty">Search input is empty</string>
+    <string name="search_result_empty">Sorry, result is empty, and try other songs or artists please</string>
 
     <!-- Play mode-->
     <string name="play_mode_shuffle">Shuffle</string>
     <string name="play_mode_single_loop">Single loop</string>
     <string name="play_mode_list_loop">List loop</string>
+    <string name="schedule_start">Music will be paused in %d minutes</string>
+    <string name="schedule_cancel">Timer is canceled</string>
 
     <string name="app_version">Version: %s</string>
 
     <string name="play_error">Error when playing music</string>
 
-    <string-array name="action_song_more">
-        <item>delete</item>
-    </string-array>
     <string name="unable_to_delete">Songs from App not support to delete</string>
 </resources>

@@ -17,7 +17,7 @@
             app:marginHorizontal="12dp"
             app:marginVertical="10dp"
             app:spanCount="4"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search_result"

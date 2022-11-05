@@ -8,10 +8,16 @@ import android.widget.TextView
 import androidx.core.view.get
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.utils.dp
-import kotlin.math.max
+import com.hon.mylogger.MyLogger
 
 /**
  * 密集排列的标签View
+ *
+ * note: 单个标签的宽度不能超过父View的宽度
+ *
+ * requestLayout() 会回调onMeasure() 以及 onLayout()
+ * invalidate() 会回调onDraw()
+ *
  * Created by shuaihua on 2021/11/4 3:21 下午
  * Email: shuaihua@staff.sina.com.cn
  */
@@ -24,6 +30,10 @@ class GridTextView @JvmOverloads constructor(
     private var marginHorizontal = 10.dp
     private var marginVertical = 10.dp
     private var layoutId = 0
+
+    /**
+     * 每行中元素的最大个数
+     */
     private var spanCount = 4
 
     init {
@@ -38,29 +48,33 @@ class GridTextView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        measureChildren(widthMeasureSpec, heightMeasureSpec)
-        var maxWidth = 0
-        var maxHeight = 0
-        var tempWidth = 0
-        for (i in 0 until childCount) {
-            val child = get(i)
-            if (i % spanCount == 0) {
-                maxWidth = max(maxWidth, tempWidth)
-                tempWidth = 0
-                maxHeight += child.measuredHeight + marginVertical
-            }
-            tempWidth += child.measuredWidth + marginHorizontal
-        }
-        maxWidth = max(maxWidth, tempWidth)
-        setMeasuredDimension(
-            maxWidth + marginHorizontal,
-            maxHeight + marginVertical
+        val width = MeasureSpec.getSize(widthMeasureSpec)
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        MyLogger.d(
+            "onMeasure: width = $width widthMode = ${
+                when (widthMode) {
+                    MeasureSpec.EXACTLY -> "EXACTLY"
+                    MeasureSpec.AT_MOST -> "AT_MOST"
+                    MeasureSpec.UNSPECIFIED -> "UNSPECIFIED"
+                    else -> ""
+                }
+            }"
         )
+        measureChildren(widthMeasureSpec, heightMeasureSpec)
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        MyLogger.d("onSizeChanged: ")
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        MyLogger.d("onLayout: $changed")
+        val itemCountList = getItemCountList()
         var tempPaddingLeft = paddingLeft
         var tempPaddingTop = paddingTop
+        var rowCount = 0
+        var start = -1
         for (i in 0 until childCount) {
             val view = get(i)
             view.layout(
@@ -69,13 +83,44 @@ class GridTextView @JvmOverloads constructor(
                 tempPaddingLeft + view.measuredWidth + marginHorizontal,
                 tempPaddingTop + view.measuredHeight + marginVertical
             )
-            if (i % spanCount != spanCount - 1) {
+            if (i - start != itemCountList[rowCount]) {
                 tempPaddingLeft += view.measuredWidth + marginHorizontal
             } else {
+                rowCount++
+                start = i
                 tempPaddingLeft = paddingLeft
                 tempPaddingTop += view.measuredHeight + marginVertical
             }
         }
+    }
+
+    /**
+     * @return itemCountList, 每个索引表示相应的行，值为对应行中元素的个数
+     */
+    private fun getItemCountList(): List<Int> {
+        val itemCountList = mutableListOf<Int>()
+        var tempWidth = 0
+        var start = -1
+        for (i in 0 until childCount) {
+            val child = get(i)
+            tempWidth += child.measuredWidth + marginHorizontal
+            if (i - start <= spanCount) {
+                if (tempWidth > measuredWidth) {
+                    itemCountList.add(i - start - 1)
+                    start = i - 1
+                    tempWidth = child.measuredWidth + marginHorizontal
+                } else if (i - start == spanCount) {
+                    itemCountList.add(spanCount)
+                    start = i
+                    tempWidth = 0
+                }
+            }
+        }
+        val itemCount = itemCountList.fold(0) { acc, ele -> acc + ele }
+        if (itemCount < childCount) {
+            itemCountList.add(childCount - itemCount)
+        }
+        return itemCountList
     }
 
     fun setData(strList: List<String>, listener: ((String) -> Unit)? = null) {
@@ -91,6 +136,5 @@ class GridTextView @JvmOverloads constructor(
                 })
             }
         }
-        requestLayout()
     }
 }

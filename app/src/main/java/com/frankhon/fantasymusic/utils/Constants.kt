@@ -34,3 +34,5 @@ const val KEY_PLAYER_CONFIG = "PLAYER_CONFIG"
 const val KEY_PLAY_MODE = "PLAY_MODE"
 
 const val FRAGMENT_MAIN_TO_SEARCH_TRANSITION_NAME = "main_to_search"
+
+const val ACTION_SCHEDULE_PAUSE_MUSIC="com.frankhon.fantasy.SCHEDULE_PAUSE_MUSIC"

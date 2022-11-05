@@ -94,8 +94,7 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
     fun onSongDelete(event: SongDeleteEvent) {
         val index = songs.indexOf(event.song)
         if (index != -1) {
-            songs.removeAt(index)
-            songAdapter.deleteItem(index)
+            model.deleteSong(index)
         }
     }
 
@@ -116,7 +115,7 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         songsList.run {
             layoutManager = LinearLayoutManager(context)
             songAdapter = SongAdapter({ view, index ->
-                showMorePopup(view, songs[index], lifecycleScope)
+                view.showMorePopup(songs[index], lifecycleScope)
             }) { _, index ->
                 AudioPlayerManager.setPlayList(songs, index)
             }

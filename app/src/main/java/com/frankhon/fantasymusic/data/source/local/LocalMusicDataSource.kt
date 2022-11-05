@@ -34,9 +34,11 @@ class LocalMusicDataSource(private val musicDao: MusicDao) {
     }
 
     suspend fun deleteSong(song: SimpleSong) {
-        //将本地歌曲文件删除
-        deleteFile(song)
         //将歌曲从数据库中删除
-        musicDao.deleteSong(song.transformToDBSong())
+        val result = musicDao.deleteSong(song.transformToDBSong())
+        if (result > 0) {
+            //数据库中删除成功之后，将本地歌曲文件删除
+            deleteFile(song)
+        }
     }
 }

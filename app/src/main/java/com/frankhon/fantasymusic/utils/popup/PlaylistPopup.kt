@@ -86,7 +86,8 @@ private fun showPlaylistPopup(
             view.setTag(R.id.key_playlist_popup_window_adapter, adapter)
             setAdapter(adapter)
             setDropDownGravity(Gravity.START)
-            width = 280.dp
+            width = 260.dp
+            height = 400.dp
             horizontalOffset = hOffset
             isModal = true
             setBackgroundDrawable(view.drawable(R.drawable.bg_playlist))

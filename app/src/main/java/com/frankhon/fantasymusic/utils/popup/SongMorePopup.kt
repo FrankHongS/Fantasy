@@ -25,9 +25,13 @@ import org.greenrobot.eventbus.EventBus
  * E-mail: frank_hon@foxmail.com
  */
 
-fun showMorePopup(view: View, song: SimpleSong, scope: LifecycleCoroutineScope) {
-    ListPopupWindow(view.context)
+/**
+ * @receiver anchorView
+ */
+fun View.showMorePopup(song: SimpleSong, scope: LifecycleCoroutineScope) {
+    ListPopupWindow(context)
         .run {
+            val view = this@showMorePopup
             anchorView = view
             setAdapter(MorePopupAdapter(this, song, scope))
             setDropDownGravity(Gravity.START)
@@ -35,7 +39,7 @@ fun showMorePopup(view: View, song: SimpleSong, scope: LifecycleCoroutineScope) 
             isModal = true
             verticalOffset = -view.height / 2
             horizontalOffset = (-100).dp
-            setBackgroundDrawable(view.drawable(R.drawable.bg_song_popup))
+            setBackgroundDrawable(drawable(R.drawable.bg_common_popup))
             show()
         }
 }

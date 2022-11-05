@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="action_song_more">
+        <item>删除歌曲</item>
+    </string-array>
+    <string-array name="item_schedule_time_content">
+        <item>10 分钟</item>
+        <item>20 分钟</item>
+        <item>30 分钟</item>
+        <item>60 分钟</item>
+        <item>取消定时</item>
+    </string-array>
+    <integer-array name="item_schedule_time">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>60</item>
+    </integer-array>
+</resources>

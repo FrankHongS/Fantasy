@@ -1,7 +1,10 @@
 package com.frankhon.fantasymusic.media
 
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.IBinder
 import com.frankhon.fantasymusic.IMusicPlayer
 import com.frankhon.fantasymusic.media.AudioPlayer.next
@@ -22,22 +25,23 @@ import com.hon.mylogger.MyLogger
 class AudioPlayerService : Service() {
 
     private val musicPlayer = ServiceStub()
-    //private MediaSessionCompat mediaSessionCompat;
+
+    private val pauseMusicReceiver by lazy {
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent?) {
+                MyLogger.d("schedulePause receiver: ${formatTime(System.currentTimeMillis())}")
+                pause()
+            }
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
+        registerReceiver(pauseMusicReceiver, IntentFilter(ACTION_SCHEDULE_PAUSE_MUSIC))
         MyLogger.d("onCreate")
-        //        mediaSessionCompat = new MediaSessionCompat(this, "MediaService");
-//        mediaSessionCompat.setCallback(new MediaSessionCompat.Callback() {
-//            @Override
-//            public void onStop() {
-//                stopForeground(true);
-//            }
-//        });
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-//        MediaButtonReceiver.handleIntent(mediaSessionCompat, intent);
         val action = intent.action
         MyLogger.d("onStartCommand: $action")
         if (action != null) {
@@ -46,11 +50,7 @@ class AudioPlayerService : Service() {
                 ACTION_NEXT -> next()
                 ACTION_RESUME -> resume()
                 ACTION_PAUSE -> pause()
-                ACTION_STOP -> {
-                    stopForeground(false)
-                    releaseMediaSession()
-                    release()
-                }
+                ACTION_STOP -> stopMusic()
                 else -> {}
             }
         }
@@ -71,6 +71,13 @@ class AudioPlayerService : Service() {
     override fun onDestroy() {
         MyLogger.d("onDestroy")
         super.onDestroy()
+        unregisterReceiver(pauseMusicReceiver)
+    }
+
+    private fun stopMusic() {
+        stopForeground(false)
+        releaseMediaSession()
+        release()
     }
 
     private inner class ServiceStub : IMusicPlayer.Stub() {

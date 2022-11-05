@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable
 import android.media.MediaMetadata
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -17,10 +18,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.ui.activities.MainActivity
 import com.frankhon.fantasymusic.application.Fantasy
 import com.frankhon.fantasymusic.media.AudioPlayerService
 import com.frankhon.fantasymusic.media.PlayMode
+import com.frankhon.fantasymusic.ui.activities.MainActivity
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 
@@ -51,7 +52,8 @@ fun sendMediaNotification(
                         resource,
                         isPlaying,
                         if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex != 0 else true,
-                        if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex < curPlaylist.size - 1 else true
+                        if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex < curPlaylist.size - 1 else true,
+                        curPlaybackPosition
                     )
                     notificationManager.notify(MUSIC_NOTIFICATION_ID, notification)
                 }
@@ -83,7 +85,8 @@ fun sendMediaNotification(
                         resource,
                         isPlaying,
                         if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex != 0 else true,
-                        if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex < curPlaylist.size - 1 else true
+                        if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex < curPlaylist.size - 1 else true,
+                        curPlaybackPosition
                     )
                     service.startForeground(MUSIC_NOTIFICATION_ID, notification)
                 }
@@ -111,7 +114,8 @@ private fun buildNotification(
     resource: Bitmap,
     isPlaying: Boolean,
     isPreviousEnable: Boolean,
-    isNextEnable: Boolean
+    isNextEnable: Boolean,
+    curPlaybackPosition: Long
 ): Notification {
     // build a mediaSession
     lastMediaSession?.release()
@@ -121,6 +125,15 @@ private fun buildNotification(
                 .putString(MediaMetadata.METADATA_KEY_TITLE, song.name)
                 .putString(MediaMetadata.METADATA_KEY_ARTIST, song.artist)
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, song.duration)
+                .build()
+        )
+        setPlaybackState(
+            PlaybackStateCompat.Builder()
+                .setState(
+                    if (isPlaying) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED,
+                    curPlaybackPosition,
+                    1f
+                )
                 .build()
         )
         lastMediaSession = this
@@ -160,10 +173,10 @@ private fun buildNotification(
         )
         .addAction(
             R.drawable.ic_stop_song_notification, "Stop",
-//                            MediaButtonReceiver.buildMediaButtonPendingIntent(
-//                                context,
-//                                PlaybackStateCompat.ACTION_STOP
-//                            )
+//            MediaButtonReceiver.buildMediaButtonPendingIntent(
+//                context,
+//                PlaybackStateCompat.ACTION_STOP
+//            )
             context.getButtonPendingIntent(ACTION_STOP)
         )
         .addAction(R.drawable.ic_favorite_song_notification, "Favorite", null)

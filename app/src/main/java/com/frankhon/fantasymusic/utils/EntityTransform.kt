@@ -15,9 +15,11 @@ import com.frankhon.fantasymusic.vo.view.SongItem
 fun List<DBSong>.transformToSimpleSongs(): List<SimpleSong> {
     return map {
         SimpleSong(
+            cid = it.cid,
             name = it.name,
             artist = it.artist,
             songUri = it.songUri,
+            lyricsUri = it.lyricsUri,
             picUrl = it.picUrl,
             canDelete = it.canDelete
         )
@@ -27,6 +29,7 @@ fun List<DBSong>.transformToSimpleSongs(): List<SimpleSong> {
 fun List<SimpleSong>.transformToDBSongs(): List<DBSong> {
     return map {
         DBSong(
+            cid = it.cid.orEmpty(),
             name = it.name.orEmpty(),
             artist = it.artist.orEmpty(),
             songUri = it.songUri.orEmpty(),
@@ -50,6 +53,7 @@ fun List<SimpleSong>.transferToSongItems(playingIndex: Int = -1): List<SongItem>
 fun List<DataSong>.transferToSearchSongItems(): List<SearchSongItem> {
     return map {
         SearchSongItem(
+            cid = it.cid,
             name = it.name,
             artist = it.artist,
             albumPicUrl = it.albumPicUrl,
@@ -65,27 +69,20 @@ fun List<DataSong>.transferToSearchSongItems(): List<SearchSongItem> {
     }
 }
 
-/**
- * 只需要name和artist，用作数据库查询
- */
-fun SongItem.transformToSimpleSong(): SimpleSong {
-    return SimpleSong(
-        name = name,
-        artist = artist
-    )
-}
-
 fun SimpleSong.transformToDBSong(): DBSong {
     return DBSong(
+        cid = cid.orEmpty(),
         name = name.orEmpty(),
         artist = artist.orEmpty(),
         songUri = songUri.orEmpty(),
+        lyricsUri = lyricsUri.orEmpty(),
         picUrl = picUrl.orEmpty()
     )
 }
 
 fun DataSong.transformToSimpleSong(): SimpleSong {
     return SimpleSong(
+        cid = cid,
         name = name.orEmpty(),
         artist = artists?.first()?.name.orEmpty(),
         songUri = url.orEmpty(),
@@ -94,6 +91,7 @@ fun DataSong.transformToSimpleSong(): SimpleSong {
 }
 
 fun SearchSongItem.transformToSimpleSong() = SimpleSong(
+    cid = cid,
     name = name.orEmpty(),
     artist = artist.orEmpty(),
     songUri = songUri.orEmpty(),

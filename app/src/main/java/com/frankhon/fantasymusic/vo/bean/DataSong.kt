@@ -10,6 +10,7 @@ import java.io.Serializable
  * E-mail: frank_hon@foxmail.com
  */
 class DataSong() : Parcelable {
+    var cid: String? = ""
     var name: String? = null
     var url: String? = null
     var album: Album? = null
@@ -32,6 +33,7 @@ class DataSong() : Parcelable {
         }
 
     constructor(parcel: Parcel) : this() {
+        cid = parcel.readString()
         name = parcel.readString()
         url = parcel.readString()
         album = parcel.readParcelable(Album::class.java.classLoader)
@@ -121,6 +123,7 @@ class DataSong() : Parcelable {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(cid)
         parcel.writeString(name)
         parcel.writeString(url)
         parcel.writeParcelable(album, flags)

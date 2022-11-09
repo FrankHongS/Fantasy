@@ -16,7 +16,7 @@ import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.ui.fragments.BaseFragment
 import com.frankhon.fantasymusic.utils.FRAGMENT_MAIN_TO_SEARCH_TRANSITION_NAME
 import com.frankhon.fantasymusic.utils.showToast
-import com.frankhon.fantasymusic.view.GridTextView
+import com.frankhon.fantasymusic.ui.view.GridTextView
 import com.frankhon.fantasymusic.vo.event.DownloadCompleteEvent
 import com.frankhon.fantasymusic.vo.view.SearchSongItem
 import com.frankhon.simplesearchview.generator.DefaultSearchSuggestionGenerator
@@ -69,6 +69,7 @@ class SearchFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycle.addObserver(downloader)
         svg_search_songs.run {
+            setHistoryCount(10)
             setSuggestionGenerator(DefaultSearchSuggestionGenerator(context))
             setOnSearchListener {
                 doSearch(it)

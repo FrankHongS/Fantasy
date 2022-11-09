@@ -38,7 +38,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription" />
 
-        <com.frankhon.fantasymusic.view.RoundRectImageView
+        <com.frankhon.fantasymusic.ui.view.RoundRectImageView
                 android:id="@+id/iv_song_pic"
                 android:layout_width="52dp"
                 android:layout_height="52dp"

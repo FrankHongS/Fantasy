@@ -6,7 +6,7 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-    <com.frankhon.fantasymusic.view.AnimatedAudioToggleButton
+    <com.frankhon.fantasymusic.ui.view.AnimatedAudioToggleButton
             android:id="@+id/ib_player_toggle"
             android:layout_width="40dp"
             android:layout_height="match_parent" />

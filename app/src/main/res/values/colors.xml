@@ -7,6 +7,7 @@
     <color name="ic_launcher_background">#795548</color>
 
     <color name="colorActionBar">#FFFFFF</color>
+    <color name="colorLyricsText">#FFFFFF</color>
     <color name="primaryText">#212121</color>
     <color name="colorIcon">#212121</color>
     <color name="colorTitle">#ffffff</color>

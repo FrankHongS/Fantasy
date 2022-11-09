@@ -1,16 +1,28 @@
 package com.frankhon.fantasymusic.ui.activities
 
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.media.AudioPlayerManager
+import com.frankhon.fantasymusic.receivers.MusicInfoReceiver
+import com.frankhon.fantasymusic.receivers.MusicPlayerConfigurationReceiver
+import com.frankhon.fantasymusic.receivers.MusicProgressReceiver
 import com.frankhon.fantasymusic.ui.fragments.main.MainFragment
+import com.frankhon.fantasymusic.utils.MUSIC_INFO_ACTION
+import com.frankhon.fantasymusic.utils.MUSIC_PLAYER_CONFIGURATION_ACTION
+import com.frankhon.fantasymusic.utils.MUSIC_PROGRESS_ACTION
 import com.hon.mylogger.MyLogger
 
 class MainActivity : AppCompatActivity() {
 
     private var fragment: MainFragment? = null
+
+    private val musicInfoReceiver by lazy { MusicInfoReceiver() }
+    private val musicPlayerConfigurationReceiver by lazy { MusicPlayerConfigurationReceiver() }
+    private val musicProgressReceiver by lazy { MusicProgressReceiver() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         MyLogger.d("onCreate: ")
@@ -21,6 +33,7 @@ class MainActivity : AppCompatActivity() {
                 .add(R.id.fragment_container, MainFragment())
                 .commit()
         }
+        registerMusicReceivers()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -36,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         MyLogger.d("onDestroy: ")
         super.onDestroy()
         AudioPlayerManager.release()
+        unregisterMusicReceivers()
     }
 
     /**
@@ -49,5 +63,24 @@ class MainActivity : AppCompatActivity() {
         fragment?.takeIf { it.isVisible && (it.closeDrawer() || it.collapsePanel()) }
             ?.let { return }
         super.onBackPressed()
+    }
+
+    /**
+     * 动态注册监听播放器状态的广播接收器（动态广播比静态广播优先级高，避免出现广播接收不到的情况）
+     */
+    private fun registerMusicReceivers() {
+        registerReceiver(musicInfoReceiver, IntentFilter(MUSIC_INFO_ACTION))
+        registerReceiver(
+            musicPlayerConfigurationReceiver, IntentFilter(
+                MUSIC_PLAYER_CONFIGURATION_ACTION
+            )
+        )
+        registerReceiver(musicProgressReceiver, IntentFilter(MUSIC_PROGRESS_ACTION))
+    }
+
+    private fun unregisterMusicReceivers() {
+        unregisterReceiver(musicInfoReceiver)
+        unregisterReceiver(musicPlayerConfigurationReceiver)
+        unregisterReceiver(musicProgressReceiver)
     }
 }

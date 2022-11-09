@@ -5,7 +5,7 @@ import android.view.View
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.view.SimpleBottomControlPanel
+import com.frankhon.fantasymusic.ui.view.panel.SimpleBottomControlPanel
 
 /**
  * Created by Frank Hon on 2020-04-19 20:32.

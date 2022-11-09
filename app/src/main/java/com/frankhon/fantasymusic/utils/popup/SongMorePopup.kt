@@ -5,16 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.application.ServiceLocator
 import com.frankhon.fantasymusic.media.AudioPlayerManager
-import com.frankhon.fantasymusic.utils.dp
-import com.frankhon.fantasymusic.utils.drawable
-import com.frankhon.fantasymusic.utils.getStringArray
-import com.frankhon.fantasymusic.utils.showToast
+import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.event.SongDeleteEvent
 import kotlinx.coroutines.launch
@@ -35,10 +33,10 @@ fun View.showMorePopup(song: SimpleSong, scope: LifecycleCoroutineScope) {
             anchorView = view
             setAdapter(MorePopupAdapter(this, song, scope))
             setDropDownGravity(Gravity.START)
-            width = 145.dp
+            width = 160.dp
             isModal = true
             verticalOffset = -view.height / 2
-            horizontalOffset = (-100).dp
+            horizontalOffset = (-120).dp
             setBackgroundDrawable(drawable(R.drawable.bg_common_popup))
             show()
         }
@@ -51,6 +49,9 @@ private class MorePopupAdapter(
 ) : BaseAdapter() {
 
     private val actionArray = getStringArray(R.array.action_song_more)
+    private val iconList = listOf(
+        R.drawable.ic_action_delete_song, R.drawable.ic_action_playlist_add
+    )
 
     override fun getCount(): Int {
         return actionArray.size
@@ -72,7 +73,7 @@ private class MorePopupAdapter(
             view.tag = SongMorePopupViewHolder(view, song, popupWindow, scope)
         }
         val viewHolder = view.tag as SongMorePopupViewHolder
-        viewHolder.bindView(getItem(position), position)
+        viewHolder.bindView(iconList[position], getItem(position), position)
         return view
     }
 }
@@ -84,32 +85,42 @@ private class SongMorePopupViewHolder(
     private val scope: LifecycleCoroutineScope
 ) {
 
+    private val actionImage = view.findViewById<ImageView>(R.id.iv_more_action)
     private val actionText = view.findViewById<TextView>(R.id.tv_more_action)
 
-    fun bindView(content: String, position: Int) {
+    fun bindView(iconRes: Int, content: String, position: Int) {
+        actionImage.setImageResource(iconRes)
         actionText.text = content
         view.setOnClickListener { _ ->
             popupWindow.dismiss()
             when (position) {
-                0 -> {
-                    song.let {
-                        if (it.canDelete) {
-                            val localMusicDataSource = ServiceLocator.provideLocalDataSource()
-                            scope.launch {
-                                //将歌曲从播放列表中删除
-                                AudioPlayerManager.removeSongFromPlayList(it)
-                                //将歌曲从数据库中删除
-                                localMusicDataSource.deleteSong(it)
-                                //通知UI更新
-                                EventBus.getDefault().post(SongDeleteEvent(it))
-                            }
-                        } else {
-                            showToast(R.string.unable_to_delete)
-                        }
-                    }
-                }
+                0 -> deleteSong()
+                1 -> addIntoPlaylist()
             }
         }
+    }
+
+    private fun deleteSong() {
+        song.let {
+            if (it.canDelete) {
+                scope.launch {
+                    val musicRepository = ServiceLocator.provideMusicRepository()
+                    //将歌曲从播放列表中删除
+                    AudioPlayerManager.removeSongFromPlayList(it)
+                    //将歌曲从数据库中删除
+                    musicRepository.deleteSong(it)
+                    //通知UI更新
+                    EventBus.getDefault().post(SongDeleteEvent(it))
+                }
+            } else {
+                showToast(R.string.unable_to_delete)
+            }
+        }
+    }
+
+    private fun addIntoPlaylist() {
+        AudioPlayerManager.addIntoPlaylist(song)
+        showToast(String.format(getString(R.string.add_into_playlist), song.name))
     }
 
 }

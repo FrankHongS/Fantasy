@@ -107,12 +107,16 @@ object AudioPlayer {
                 originPlaylist.add(0, it)
                 curPlaylist.add(curIndex + 1, it)
                 play(curIndex + 1)
+                updatePlayerConfig(PlayerConfiguration.PLAYLIST)
             } else {
                 play(index)
             }
         }
     }
 
+    /**
+     * @return true, playlist为空，添加歌曲并播放；false, playlist不为空，将歌曲添加到当前播放歌曲之后
+     */
     @JvmStatic
     fun addIntoPlaylist(song: SimpleSong): Boolean {
         song.let {
@@ -123,6 +127,7 @@ object AudioPlayer {
                 } else {
                     originPlaylist.add(0, it)
                     curPlaylist.add(curIndex + 1, it)
+                    updatePlayerConfig(PlayerConfiguration.PLAYLIST)
                 }
             }
         }
@@ -150,6 +155,7 @@ object AudioPlayer {
             MyLogger.e("setPlayList: index = $index is out of range, playlist's size = ${playlist.size}")
             return
         }
+        MyLogger.d("setPlaylist: playMode = $curPlayMode")
         originPlaylist.setData(playlist)
         when (curPlayMode) {
             PlayMode.LOOP_LIST, PlayMode.LOOP_SINGLE -> {
@@ -163,7 +169,6 @@ object AudioPlayer {
                 play(newIndex)
             }
         }
-        MyLogger.d("setPlaylist: playMode = $curPlayMode, playlist = $curPlaylist")
     }
 
     @JvmStatic
@@ -236,7 +241,7 @@ object AudioPlayer {
         }
         curIndex = curPlaylist.indexOf(curSong)
         updatePlayerConfig(PlayerConfiguration.PLAY_MODE)
-        MyLogger.d("setPlayMode: playMode = $curPlayMode, playlist = $curPlaylist")
+        MyLogger.d("setPlayMode: playMode = $curPlayMode")
     }
 
     @JvmStatic
@@ -327,6 +332,29 @@ object AudioPlayer {
         MyLogger.d("onPrepared() playerState = ${PlayerState.PLAYING}, curSong = $curSong")
     }
 
+    /**
+     * when isLooping is true, MediaPlayer won't invoke onCompleted()
+     */
+    private fun onCompleted(mp: MediaPlayer) {
+        MyLogger.d(
+            "onCompleted() playerState = ${PlayerState.COMPLETED}, isPlaying=${mp.isPlaying}, " +
+                    "currentTrackPosition = ${mp.currentPosition}, duration = ${mp.duration}"
+        )
+        updatePlayerState(PlayerState.COMPLETED)
+        next()
+    }
+
+    /**
+     * @return true, consume the error, and won't invoke onCompletion()
+     */
+    private fun onError(mediaPlayer: MediaPlayer, what: Int, extra: Int): Boolean {
+        MyLogger.d("onError() playerState = ${PlayerState.ERROR}, what = $what, extra = $extra")
+        this.errorMsg = "AudioPlayer: Error($what, $extra)"
+        mediaPlayer.reset()
+        updatePlayerState(PlayerState.ERROR)
+        return true
+    }
+
     private fun startUpdateProgress() {
         launchProgressMonitor()
     }
@@ -349,28 +377,6 @@ object AudioPlayer {
                 }
             }
         }
-    }
-
-    private fun onCompleted(mp: MediaPlayer) {
-        MyLogger.d(
-            "onCompleted() playerState = ${PlayerState.COMPLETED}, isPlaying=${mp.isPlaying}, " +
-                    "currentTrackPosition = ${mp.currentPosition}, duration = ${mp.duration}"
-        )
-        updatePlayerState(PlayerState.COMPLETED)
-        if (curPlayMode != PlayMode.LOOP_SINGLE) {
-            next()
-        }
-    }
-
-    /**
-     * @return true, consume the error, and won't invoke onCompletion()
-     */
-    private fun onError(mediaPlayer: MediaPlayer, what: Int, extra: Int): Boolean {
-        MyLogger.d("onError() playerState = ${PlayerState.ERROR}, what = $what, extra = $extra")
-        this.errorMsg = "AudioPlayer: Error($what, $extra)"
-        mediaPlayer.reset()
-        updatePlayerState(PlayerState.ERROR)
-        return true
     }
 
     private fun transientPause() {
@@ -456,7 +462,7 @@ object AudioPlayer {
 
     private fun updatePlayerConfig(configType: PlayerConfiguration) {
         sendBroadcast(
-            Intent(MUSIC_PLAY_MODE_ACTION).apply {
+            Intent(MUSIC_PLAYER_CONFIGURATION_ACTION).apply {
                 setPackage(PACKAGE_ID)
                 if (configType == PlayerConfiguration.PLAY_MODE) {
                     putExtra(KEY_PLAY_MODE, curPlayMode.name)

@@ -36,6 +36,10 @@ val Int.dp: Int
         return dp2px(this)
     }
 
+fun String?.matchesUri(): Boolean {
+    return this?.matches(Regex("^(https?://|file://).*")) ?: false
+}
+
 inline fun <reified T> getSystemService(name: String): T {
     return Fantasy.getAppContext().getSystemService(name) as T
 }
@@ -67,6 +71,27 @@ fun formatTime(millis: Long): String {
         MyLogger.e(e)
     }
     return ""
+}
+
+/**
+ * @return 毫秒数 milli seconds
+ */
+fun transferLyricsTime(timeStr: String): Long {
+    var tempList = timeStr.split(':')
+    var sum = 0L
+    if (tempList.size > 1) {
+        val minutes = tempList[0].toInt()
+        sum += minutes * 60 * 1000
+        val rest = tempList[1]
+        tempList = rest.split('.')
+        if (tempList.size > 1) {
+            val seconds = tempList[0].toInt()
+            val milliSeconds = tempList[1].toInt()
+            sum += seconds * 1000 + milliSeconds
+            return sum
+        }
+    }
+    return 0L
 }
 
 fun <T> MutableList<T>.setData(data: List<T>) {

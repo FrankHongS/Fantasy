@@ -33,6 +33,7 @@
     <string name="play_error">播放异常</string>
 
     <string name="unable_to_delete">内置歌曲，不支持删除</string>
+    <string name="add_into_playlist">添加%s成功</string>
 
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>

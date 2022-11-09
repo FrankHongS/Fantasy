@@ -5,7 +5,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <com.frankhon.fantasymusic.view.GridTextView
+    <com.frankhon.fantasymusic.ui.view.GridTextView
             android:id="@+id/gtv_search_suggestions"
             android:layout_width="0dp"
             android:layout_height="80dp"
@@ -56,7 +56,7 @@
             app:layout_constraintTop_toBottomOf="@+id/svg_search_songs"
             tools:visibility="visible" />
 
-    <com.frankhon.fantasymusic.view.SimpleBottomControlPanel
+    <com.frankhon.fantasymusic.ui.view.panel.SimpleBottomControlPanel
             android:id="@+id/sbcp_control_panel"
             android:layout_width="match_parent"
             android:layout_height="68dp"

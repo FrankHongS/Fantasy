@@ -4,7 +4,6 @@
         package="com.frankhon.fantasymusic">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
@@ -48,27 +47,6 @@
             </intent-filter>
         </service>
 
-        <receiver
-                android:name=".receivers.MusicInfoReceiver"
-                android:exported="false">
-            <intent-filter>
-                <action android:name="com.frankhon.fantasy.MUSIC_INFO" />
-            </intent-filter>
-        </receiver>
-        <receiver
-                android:name=".receivers.MusicProgressReceiver"
-                android:exported="false">
-            <intent-filter>
-                <action android:name="com.frankhon.fantasy.MUSIC_PROGRESS" />
-            </intent-filter>
-        </receiver>
-        <receiver
-                android:name=".receivers.MusicPlayerConfigurationReceiver"
-                android:exported="false">
-            <intent-filter>
-                <action android:name="com.frankhon.fantasy.MUSIC_PLAYER_CONFIGURATION" />
-            </intent-filter>
-        </receiver>
         <receiver
                 android:name="androidx.media.session.MediaButtonReceiver"
                 android:exported="false">

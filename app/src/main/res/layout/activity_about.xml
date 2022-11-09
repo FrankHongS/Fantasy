@@ -6,7 +6,7 @@
         android:layout_height="match_parent"
         android:background="@color/navigationBarColor">
 
-    <com.frankhon.fantasymusic.view.CustomActionBar
+    <com.frankhon.fantasymusic.ui.view.CustomActionBar
             android:id="@+id/cab_about"
             android:layout_width="match_parent"
             android:layout_height="@dimen/default_action_bar_height"

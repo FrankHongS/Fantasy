@@ -7,12 +7,12 @@
         tools:ignore="UnusedAttribute">
 
     <ImageView
-            android:id="@+id/ic_more_action_icon"
+            android:id="@+id/iv_more_action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            android:src="@drawable/ic_delete_song"
+            tools:src="@drawable/ic_action_delete_song"
             tools:ignore="ContentDescription"
             tools:visibility="visible" />
 
@@ -22,10 +22,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
             android:layout_marginEnd="8dp"
-            android:layout_toEndOf="@id/ic_more_action_icon"
+            android:layout_toEndOf="@id/iv_more_action"
             android:singleLine="true"
+            android:textSize="14sp"
             android:textColor="@color/primaryText"
             tools:text="删除歌曲" />
 

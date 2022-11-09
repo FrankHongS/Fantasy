@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.view
+package com.frankhon.fantasymusic.ui.view.panel
 
 import android.content.Context
 import android.util.AttributeSet
@@ -14,6 +14,8 @@ import com.frankhon.fantasymusic.media.PlayerState
 import com.frankhon.fantasymusic.media.isPlaying
 import com.frankhon.fantasymusic.media.observer.PlayerConfigurationObserver
 import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
+import com.frankhon.fantasymusic.ui.view.AnimatedAudioCircleImageView
+import com.frankhon.fantasymusic.ui.view.AnimatedAudioToggleButton
 import com.frankhon.fantasymusic.utils.color
 import com.frankhon.fantasymusic.utils.dp
 import com.frankhon.fantasymusic.utils.popup.dismissPlaylistPopup
@@ -118,8 +120,10 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
                 updateNextButton(curPlayMode, curSongIndex, curPlaylist.size)
                 // update album image
                 if (curPlayerState.isPlaying()) {
+                    songName.isSelected = true
                     albumImage.startRotateAnimator()
                 } else {
+                    songName.isSelected = false
                     albumImage.cancelRotateAnimator()
                 }
                 albumImage.startUpdateProgress(curPlaybackPosition.toInt(), it.duration.toInt())
@@ -139,16 +143,19 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
     override fun onPlaying(song: SimpleSong) {
         updatePlayControlIcon(PlayerState.PLAYING)
         albumImage.startRotateAnimator()
+        songName.isSelected = true
     }
 
     override fun onAudioResume(song: SimpleSong) {
         updatePlayControlIcon(PlayerState.RESUMED)
         albumImage.resumeRotateAnimator()
+        songName.isSelected = true
     }
 
     override fun onAudioPause() {
         updatePlayControlIcon(PlayerState.PAUSED)
         albumImage.pauseRotateAnimator()
+        songName.isSelected = false
     }
 
     override fun onAudioStop() {
@@ -190,7 +197,10 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
     }
 
     private fun setDefaultPanel() {
-        songName.text = context.getText(R.string.app_name)
+        songName.run {
+            text = context.getText(R.string.app_name)
+            isSelected = false
+        }
         artistName.text = context.getText(R.string.welcome_text)
         albumImage.run {
             setImageResource(R.mipmap.ic_launcher)

@@ -8,6 +8,7 @@ import android.os.Parcelable
  * E-mail: frank_hon@foxmail.com
  */
 data class SearchSongItem(
+    val cid: String?,
     val name: String?,
     val artist: String?,
     val albumPicUrl: String? = "",
@@ -20,11 +21,12 @@ data class SearchSongItem(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
+        parcel.readString(),
         parcel.readInt()
     )
 
     fun clone(): SearchSongItem {
-        return SearchSongItem(name, artist, albumPicUrl, songUri, downloadState)
+        return SearchSongItem(cid, name, artist, albumPicUrl, songUri, downloadState)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -46,6 +48,7 @@ data class SearchSongItem(
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(cid)
         parcel.writeString(name)
         parcel.writeString(artist)
         parcel.writeString(albumPicUrl)

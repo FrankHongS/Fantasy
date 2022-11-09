@@ -11,16 +11,19 @@ import com.frankhon.fantasymusic.vo.SimpleSong
  */
 @Entity(tableName = "songs", primaryKeys = ["song_name", "song_artist"])
 data class DBSong(
+    val cid: String? = "",
     @ColumnInfo(name = "song_name")
     val name: String,
     @ColumnInfo(name = "song_artist")
     val artist: String,
     @ColumnInfo(name = "song_uri")
     val songUri: String,
+    @ColumnInfo(name = "lyrics_uri")
+    var lyricsUri: String? = "",
     @ColumnInfo(name = "pic_url")
     val picUrl: String,
     //是否可以删除，内置歌曲不支持删除
-    @ColumnInfo(name="able_to_delete")
-    val canDelete: Boolean = true
+    @ColumnInfo(name = "able_to_delete")
+    var canDelete: Boolean = true
 )
 

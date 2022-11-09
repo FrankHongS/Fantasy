@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.view
+package com.frankhon.fantasymusic.ui.view
 
 import android.animation.ValueAnimator
 import android.content.Context

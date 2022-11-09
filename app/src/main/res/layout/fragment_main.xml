@@ -8,11 +8,10 @@
         android:fitsSystemWindows="true"
         tools:openDrawer="start">
 
-    <com.frankhon.fantasymusic.view.SlidingUpPanelLayout
+    <com.frankhon.fantasymusic.ui.view.SlidingUpPanelLayout
             android:id="@+id/supl_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:layout_width="match_parent"
@@ -50,11 +49,11 @@
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-        <include
-                layout="@layout/layout_panel"
+        <com.frankhon.fantasymusic.ui.view.panel.HomeBottomControlPanel
+                android:id="@+id/cbpl_control_panel"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/default_panel_total_height" />
-    </com.frankhon.fantasymusic.view.SlidingUpPanelLayout>
+    </com.frankhon.fantasymusic.ui.view.SlidingUpPanelLayout>
 
     <com.google.android.material.navigation.NavigationView
             android:id="@+id/nv_drawer"

@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.view
+package com.frankhon.fantasymusic.ui.view
 
 import android.content.Context
 import android.graphics.Canvas

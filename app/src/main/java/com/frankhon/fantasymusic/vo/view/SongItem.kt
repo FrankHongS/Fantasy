@@ -1,6 +1,9 @@
 package com.frankhon.fantasymusic.vo.view
 
 /**
+ *
+ * SongFragment和播放列表的item使用
+ *
  * Created by Frank Hon on 2022/8/29 7:14 下午.
  * E-mail: frank_hon@foxmail.com
  */

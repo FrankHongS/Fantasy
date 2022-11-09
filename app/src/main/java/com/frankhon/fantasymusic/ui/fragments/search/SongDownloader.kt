@@ -20,6 +20,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
+import java.io.File
 
 /**
  * Created by Frank Hon on 2022/10/23 8:51 下午.
@@ -34,8 +35,8 @@ class SongDownloader(private val context: Context) : DefaultLifecycleObserver {
     private var song: SimpleSong? = null
     private var downloadId = 0L
     private val mainScope by lazy { MainScope() }
-    private val localMusicDataSource by lazy {
-        ServiceLocator.provideLocalDataSource()
+    private val musicRepository by lazy {
+        ServiceLocator.provideMusicRepository()
     }
     private val downloadCompleteReceiver = object : BroadcastReceiver() {
         @SuppressLint("Range")
@@ -52,9 +53,9 @@ class SongDownloader(private val context: Context) : DefaultLifecycleObserver {
                         SongDownloadManager.removeSong(it)
                         mainScope.launch {
                             it.songUri = storedUri
+                            musicRepository.insertSong(it)
                             EventBus.getDefault()
                                 .post(DownloadCompleteEvent(it))
-                            localMusicDataSource.insertSong(it)
                         }
                     }
                 }
@@ -92,7 +93,7 @@ class SongDownloader(private val context: Context) : DefaultLifecycleObserver {
                             .setDestinationInExternalFilesDir(
                                 context,
                                 Environment.DIRECTORY_MUSIC,
-                                "$name.mp3"
+                                "songs${File.separator}$name.mp3"
                             )
                         downloadId = downloadManager.enqueue(request)
                     }

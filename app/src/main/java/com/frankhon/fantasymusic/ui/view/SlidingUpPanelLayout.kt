@@ -1,4 +1,4 @@
-package com.frankhon.fantasymusic.view
+package com.frankhon.fantasymusic.ui.view
 
 import android.annotation.SuppressLint
 import android.content.Context

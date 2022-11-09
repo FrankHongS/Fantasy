@@ -8,15 +8,19 @@ import android.os.Parcelable
  * E-mail: v-shhong@microsoft.com
  */
 class SimpleSong(
+    val cid: String?,
     var name: String?,
     var artist: String?,
     var songUri: String? = "",
+    var lyricsUri: String? = "",
     var picUrl: String? = "",
     // unit, ms
     var duration: Long = 0L,
     var canDelete: Boolean = true
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -36,9 +40,11 @@ class SimpleSong(
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(cid)
         parcel.writeString(name)
         parcel.writeString(artist)
         parcel.writeString(songUri)
+        parcel.writeString(lyricsUri)
         parcel.writeString(picUrl)
         parcel.writeLong(duration)
         parcel.writeInt(if (canDelete) 1 else 0)
@@ -49,7 +55,7 @@ class SimpleSong(
     }
 
     override fun toString(): String {
-        return "SimpleSong(name=$name, canDelete=$canDelete)"
+        return "SimpleSong(name=$name, lyricsUri=$lyricsUri)"
     }
 
     /**

@@ -1,8 +1,11 @@
 package com.frankhon.fantasymusic.data.repository
 
+import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.data.Result
 import com.frankhon.fantasymusic.data.source.local.LocalMusicDataSource
 import com.frankhon.fantasymusic.data.source.remote.RemoteMusicDataSource
+import com.frankhon.fantasymusic.utils.getString
+import com.frankhon.fantasymusic.utils.matchesUri
 import com.frankhon.fantasymusic.vo.bean.DataSongWrapper
 
 /**
@@ -15,7 +18,16 @@ class SearchRepository(
 ) {
 
     suspend fun findSong(keyword: String): Result<DataSongWrapper> {
+        if (keyword.isEmpty()) {
+            return Result.failure(getString(R.string.search_input_empty))
+        }
         val result = remoteDataSource.findSong(keyword)
+        result.takeIf {
+            it.isSuccess
+                    && it.data?.data?.songs.isNullOrEmpty()
+        }?.let { _ ->
+            return Result.failure(getString(R.string.search_result_empty))
+        }
         return result.apply {
             if (isSuccess) {
                 data?.data?.let {
@@ -33,7 +45,18 @@ class SearchRepository(
                     }
                         .filter { song ->
                             //过滤掉非法Url(?表示匹配前面字符0或1次)
-                            song.url?.matches(Regex("^(https?://|file://).*")) == true
+                            if (song.url?.matchesUri() == true) {
+                                true
+                            } else {
+                                val singleSongUrl =
+                                    remoteDataSource.getSingleSongUrl(song.cid).data?.songUrl
+                                if (singleSongUrl.matchesUri()) {
+                                    song.url = singleSongUrl
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
                         }
                     it.songs = newData
                 }

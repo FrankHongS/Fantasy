@@ -28,6 +28,7 @@ object AudioPlayerManager {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             musicPlayer = IMusicPlayer.Stub.asInterface(service)
             invokeOnServiceConnected()
+            LyricsManager.init()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -94,6 +95,7 @@ object AudioPlayerManager {
         }
         lifecycleObservers.clear()
         configurationObservers.clear()
+        LyricsManager.release()
     }
 
     @JvmStatic

@@ -6,7 +6,7 @@
         android:layout_height="68dp"
         tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <com.frankhon.fantasymusic.view.AnimatedAudioCircleImageView
+    <com.frankhon.fantasymusic.ui.view.AnimatedAudioCircleImageView
             android:id="@+id/iv_song_bottom_pic"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -25,7 +25,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="14dp"
-            android:ellipsize="end"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
             android:singleLine="true"
             android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@+id/include"

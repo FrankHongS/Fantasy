@@ -18,7 +18,7 @@ const val ACTION_STOP = "com.frankhon.fantasy.Stop"
 
 const val MUSIC_INFO_ACTION = "com.frankhon.fantasy.MUSIC_INFO"
 const val MUSIC_PROGRESS_ACTION = "com.frankhon.fantasy.MUSIC_PROGRESS"
-const val MUSIC_PLAY_MODE_ACTION = "com.frankhon.fantasy.MUSIC_PLAYER_CONFIGURATION"
+const val MUSIC_PLAYER_CONFIGURATION_ACTION = "com.frankhon.fantasy.MUSIC_PLAYER_CONFIGURATION"
 
 const val KEY_PLAYER_STATE = "PLAYER_STATE"
 const val KEY_PLAYER_ERROR_MESSAGE = "PLAYER_ERROR_MESSAGE"

@@ -18,6 +18,7 @@ import com.frankhon.fantasymusic.utils.FRAGMENT_MAIN_TO_SEARCH_TRANSITION_NAME
 import com.frankhon.fantasymusic.utils.showToast
 import com.frankhon.fantasymusic.ui.view.GridTextView
 import com.frankhon.fantasymusic.vo.event.DownloadCompleteEvent
+import com.frankhon.fantasymusic.vo.view.DOWNLOAD_STATE_DOWNLOADED
 import com.frankhon.fantasymusic.vo.view.SearchSongItem
 import com.frankhon.simplesearchview.generator.DefaultSearchSuggestionGenerator
 import com.hon.mylogger.MyLogger
@@ -114,7 +115,8 @@ class SearchFragment : BaseFragment() {
             searchResultList?.forEachIndexed { index, item ->
                 if (item.name == song.name && item.artist == song.artist) {
                     item.songUri = song.songUri
-                    item.downloadState = 2
+                    item.lyricsUri = song.lyricsUri
+                    item.downloadState = DOWNLOAD_STATE_DOWNLOADED
                     searchResultAdapter.notifyItemChanged(index)
                     return
                 }

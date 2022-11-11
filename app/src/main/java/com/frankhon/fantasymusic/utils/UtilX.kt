@@ -103,8 +103,8 @@ fun bindService(
     service: Intent,
     conn: ServiceConnection,
     flags: Int
-) {
-    appContext.bindService(service, conn, flags)
+): Boolean {
+    return appContext.bindService(service, conn, flags)
 }
 
 fun startService(intent: Intent) {
@@ -119,7 +119,11 @@ fun View.drawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(context, 
 
 fun View.color(@ColorRes resId: Int) = ContextCompat.getColor(context, resId)
 
-fun getString(@StringRes resId: Int) = Fantasy.getAppContext().getString(resId)
+fun string(@StringRes resId: Int) = Fantasy.getAppContext().getString(resId)
+
+fun color(@ColorRes resId: Int) = Fantasy.getAppContext().color(resId)
+
+fun drawable(@DrawableRes resId: Int) = Fantasy.getAppContext().drawable(resId)
 
 fun getStringArray(@ArrayRes resId: Int): Array<String> =
     appContext.resources.getStringArray(resId)

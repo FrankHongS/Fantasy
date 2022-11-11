@@ -7,16 +7,22 @@ import android.os.Parcelable
  * Created by Frank Hon on 2022/8/29 7:14 下午.
  * E-mail: frank_hon@foxmail.com
  */
+const val DOWNLOAD_STATE_INITIAL = 0
+const val DOWNLOAD_STATE_DOWNLOADING = 1
+const val DOWNLOAD_STATE_DOWNLOADED = 2
+
 data class SearchSongItem(
     val cid: String?,
     val name: String?,
     val artist: String?,
     val albumPicUrl: String? = "",
     var songUri: String? = "",
+    var lyricsUri: String? = "",
     // 0 未下载，1 下载中，2 已下载
-    var downloadState: Int = 0
+    var downloadState: Int = DOWNLOAD_STATE_INITIAL
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -26,7 +32,7 @@ data class SearchSongItem(
     )
 
     fun clone(): SearchSongItem {
-        return SearchSongItem(cid, name, artist, albumPicUrl, songUri, downloadState)
+        return SearchSongItem(cid, name, artist, albumPicUrl, songUri, lyricsUri, downloadState)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -53,6 +59,7 @@ data class SearchSongItem(
         parcel.writeString(artist)
         parcel.writeString(albumPicUrl)
         parcel.writeString(songUri)
+        parcel.writeString(lyricsUri)
         parcel.writeInt(downloadState)
     }
 

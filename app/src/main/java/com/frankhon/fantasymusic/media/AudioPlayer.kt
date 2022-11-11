@@ -78,7 +78,11 @@ object AudioPlayer {
     private var curState = PlayerState.IDLE
     private val curPlaylist by lazy { mutableListOf<SimpleSong>() }
     private var curPlayMode = PlayMode.LOOP_LIST
+
     private var errorMsg = ""
+
+    // 记录上次播放时间，milli secs; 避免快速切换歌曲导致异常
+    private var latestPlayTime: Long = 0L
 
     /**
      * 原始播放列表，即顺序播放列表，[PlayMode.LOOP_LIST]和[PlayMode.LOOP_SINGLE]都需使用该序列
@@ -104,7 +108,7 @@ object AudioPlayer {
         song?.let {
             val index = curPlaylist.indexOf(it)
             if (index == -1) {
-                originPlaylist.add(0, it)
+                updateOriginPlaylist(it)
                 curPlaylist.add(curIndex + 1, it)
                 play(curIndex + 1)
                 updatePlayerConfig(PlayerConfiguration.PLAYLIST)
@@ -125,7 +129,7 @@ object AudioPlayer {
                     playAndAddIntoPlaylist(it)
                     return true
                 } else {
-                    originPlaylist.add(0, it)
+                    updateOriginPlaylist(it)
                     curPlaylist.add(curIndex + 1, it)
                     updatePlayerConfig(PlayerConfiguration.PLAYLIST)
                 }
@@ -135,7 +139,7 @@ object AudioPlayer {
     }
 
     @JvmStatic
-    fun removeSongFromPlayList(index: Int) {
+    fun removeSongFromPlayList(index: Int): Boolean {
         originPlaylist.remove(curPlaylist[index])
         if (index == curIndex) {
             if (curPlaylist.size > 1) {
@@ -147,6 +151,7 @@ object AudioPlayer {
         }
         curIndex = curPlaylist.indexOf(curSong)
         updatePlayerConfig(PlayerConfiguration.PLAYLIST)
+        return curPlaylist.isEmpty()
     }
 
     @JvmStatic
@@ -256,7 +261,28 @@ object AudioPlayer {
         }
     }
 
+    @JvmStatic
+    fun release() {
+        MyLogger.d("release()")
+        stopUpdateProgress()
+        abandonAudioFocus()
+        stop()
+        mHttpProxyCache.shutdown()
+        resetCurPlayInfo()
+
+        errorMsg = ""
+        latestPlayTime = 0
+    }
+
     // endregion
+
+    private fun updateOriginPlaylist(song: SimpleSong) {
+        if (curPlayMode == PlayMode.SHUFFLE) {
+            originPlaylist.add(0, song)
+        } else {
+            originPlaylist.add(curIndex + 1, song)
+        }
+    }
 
     private fun getDuration(): Long {
         val duration = if (curState == PlayerState.IDLE || curState == PlayerState.PREPARING) {
@@ -297,22 +323,26 @@ object AudioPlayer {
     }
 
     private fun innerPlay(index: Int) {
+        if (checkFastPlay()) {
+            return
+        }
         curIndex = index
         curSong = curPlaylist[curIndex]
-        prepare(curSong?.songUri.orEmpty())
+        val songUri = curSong?.songUri.orEmpty()
+        prepare(songUri)
     }
 
-    private fun prepare(audioFilePath: String) {
+    private fun prepare(audioUri: String) {
         updatePlayerState(PlayerState.PREPARING)
         MyLogger.d("prepare() playerState = ${PlayerState.PREPARING}")
         val result = requestAudioFocus()
         if (result == AUDIOFOCUS_REQUEST_GRANTED) {
             try {
                 mediaPlayer.reset()
-                if (audioFilePath.startsWith("file://")) {
-                    mediaPlayer.setDataSource(audioFilePath)
+                if (audioUri.startsWith("file://")) {
+                    mediaPlayer.setDataSource(audioUri)
                 } else {
-                    mediaPlayer.setDataSource(mHttpProxyCache.getProxyUrl(audioFilePath))
+                    mediaPlayer.setDataSource(mHttpProxyCache.getProxyUrl(audioUri))
                 }
                 mediaPlayer.isLooping = curPlayMode == PlayMode.LOOP_SINGLE
                 mediaPlayer.prepareAsync()
@@ -385,16 +415,6 @@ object AudioPlayer {
         pause()
     }
 
-    @JvmStatic
-    fun release() {
-        MyLogger.d("release()")
-        stopUpdateProgress()
-        abandonAudioFocus()
-        stop()
-        mHttpProxyCache.shutdown()
-        resetCurPlayInfo()
-    }
-
     private fun resetCurPlayInfo() {
         curSong = null
         curPlaylist.clear()
@@ -402,6 +422,16 @@ object AudioPlayer {
         curIndex = -1
         curState = PlayerState.IDLE
         curPlayMode = PlayMode.LOOP_LIST
+    }
+
+    private fun checkFastPlay(): Boolean {
+        val curTime = System.currentTimeMillis()
+        if (curTime - latestPlayTime < 500) {
+            return true
+        } else {
+            latestPlayTime = curTime
+        }
+        return false
     }
 
     private fun updatePlayerState(state: PlayerState) {

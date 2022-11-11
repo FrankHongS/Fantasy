@@ -1,7 +1,6 @@
 package com.frankhon.fantasymusic.data.repository
 
 import android.net.Uri
-import androidx.lifecycle.LiveData
 import com.frankhon.fantasymusic.data.source.local.LocalMusicDataSource
 import com.frankhon.fantasymusic.data.source.remote.RemoteMusicDataSource
 import com.frankhon.fantasymusic.utils.*
@@ -32,7 +31,9 @@ class MusicRepository(
                         fileName = getLyricsFileName(name, artist)
                     )
                     lyricsFile?.let {
-                        dbSong.lyricsUri = Uri.fromFile(it).toString()
+                        val uriStr = Uri.fromFile(it).toString()
+                        dbSong.lyricsUri = uriStr
+                        this.lyricsUri = uriStr
                     }
                 }
             }

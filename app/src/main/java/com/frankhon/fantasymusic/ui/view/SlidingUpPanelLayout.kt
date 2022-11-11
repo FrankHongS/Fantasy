@@ -227,33 +227,37 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
     }
 
     fun expand(): Boolean {
-        if (panelState != 0) {
-            return false
+        return if (panelState != 0) {
+            false
+        } else {
+            post {
+                if (viewDragHelper.smoothSlideViewTo(bottomView, 0, height - bottomView.height)) {
+                    ViewCompat.postInvalidateOnAnimation(this)
+                }
+            }
+            true
         }
-        if (viewDragHelper.smoothSlideViewTo(bottomView, 0, height - bottomView.height)) {
-            ViewCompat.postInvalidateOnAnimation(this)
-            return true
-        }
-        return false
     }
 
     fun collapse(): Boolean {
-        if (panelState == 0) {
-            return false
+        return if (panelState == 0) {
+            false
+        } else {
+            post {
+                if (viewDragHelper.smoothSlideViewTo(
+                        bottomView,
+                        0,
+                        height - PANEL_HEIGHT.dp
+                    )
+                ) {
+                    ViewCompat.postInvalidateOnAnimation(this)
+                }
+            }
+            true
         }
-        if (::bottomView.isInitialized && viewDragHelper.smoothSlideViewTo(
-                bottomView,
-                0,
-                height - PANEL_HEIGHT.dp
-            )
-        ) {
-            ViewCompat.postInvalidateOnAnimation(this)
-            return true
-        }
-        return false
     }
 
-    fun setAllowDragging(allowDragging: Boolean) {
+    fun isAllowDragging(allowDragging: Boolean) {
         this.allowDragging = allowDragging
     }
 

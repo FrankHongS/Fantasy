@@ -2,6 +2,7 @@ package com.frankhon.fantasymusic.application;
 
 import static com.frankhon.fantasymusic.utils.Notification.createNotificationChannel;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 
@@ -15,6 +16,7 @@ import com.hon.mylogger.MyLogger;
  */
 public class Fantasy extends Application {
 
+    @SuppressLint("StaticFieldLeak")
     private static Context sContext;
 
     @Override

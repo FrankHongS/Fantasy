@@ -119,8 +119,12 @@ private class SongMorePopupViewHolder(
     }
 
     private fun addIntoPlaylist() {
-        AudioPlayerManager.addIntoPlaylist(song)
-        showToast(String.format(getString(R.string.add_into_playlist), song.name))
+        val isSuccess = AudioPlayerManager.addIntoPlaylist(song)
+        if (isSuccess) {
+            showToast(String.format(string(R.string.add_into_playlist), song.name))
+        } else {
+            showToast(String.format(string(R.string.add_into_playlist_failure), song.name))
+        }
     }
 
 }

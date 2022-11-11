@@ -2,8 +2,6 @@ package com.frankhon.fantasymusic.vo.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
-import com.frankhon.fantasymusic.vo.SimpleSong
 
 /**
  * Created by Frank Hon on 2022/9/9 3:44 下午.

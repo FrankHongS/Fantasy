@@ -10,13 +10,15 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.view.animation.LinearInterpolator
 import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatImageView
 import com.frankhon.fantasymusic.R
 import kotlin.math.min
 
 /**
  * 圆形ImageView+旋转+进度条
- *
+ * known issues:
+ * 在后台暂停旋转动画或者切换图片会失效
  * @author shuaihua
  * @since 2021/8/20 10:44 上午
  */
@@ -154,21 +156,21 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
     }
 
     override fun setImageDrawable(drawable: Drawable?) {
-        super.setImageDrawable(drawable)
         drawable?.let {
             mBitmap = getBitmapFromDrawable(it)
             resetBitmap()
         }
-    }
-
-    override fun setImageResource(resId: Int) {
-        super.setImageResource(resId)
-        mBitmap = getBitmapFromDrawable(drawable)
+        super.setImageDrawable(drawable)
     }
 
     override fun setImageURI(uri: Uri?) {
         super.setImageURI(uri)
         mBitmap = getBitmapFromDrawable(drawable)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        cancelRotateAnimator()
     }
 
     /**
@@ -193,18 +195,19 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
         }
     }
 
-    fun resetProgress() {
-        progressRotatedDegree = 0f
-        invalidate()
-    }
-
     fun startRotateAnimator() {
-        imageAnimator.start()
+        imageAnimator.run {
+            if (!isStarted || !isRunning) {
+                start()
+            }
+        }
     }
 
     fun cancelRotateAnimator() {
-        if (imageAnimator.isRunning) {
-            imageAnimator.cancel()
+        imageAnimator.run {
+            if (isStarted || isRunning) {
+                cancel()
+            }
         }
     }
 
@@ -218,6 +221,12 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
         } else {
             startRotateAnimator()
         }
+    }
+
+    fun reset(@DrawableRes defaultResId: Int) {
+        cancelRotateAnimator()
+        progressRotatedDegree = 0f
+        setImageResource(defaultResId)
     }
 
     private fun getBitmapFromDrawable(drawable: Drawable): Bitmap? {

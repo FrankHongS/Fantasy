@@ -21,6 +21,10 @@
     <string name="search_input_empty">Search input is empty</string>
     <string name="search_result_empty">Sorry, result is empty, and try other songs or artists please</string>
 
+    <string name="title_local_songs">Local Songs</string>
+    <string name="songs_count">%s songs</string>
+    <string name="play_all">Play all</string>
+
     <!-- Play mode-->
     <string name="play_mode_shuffle">Shuffle</string>
     <string name="play_mode_single_loop">Single loop</string>
@@ -34,4 +38,5 @@
 
     <string name="unable_to_delete">Songs from App not support to delete</string>
     <string name="add_into_playlist">%s added into playlist</string>
+    <string name="add_into_playlist_failure">%s exists in the playlist</string>
 </resources>

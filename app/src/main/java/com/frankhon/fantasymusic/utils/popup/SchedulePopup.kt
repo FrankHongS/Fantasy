@@ -66,7 +66,7 @@ private class SchedulePopupAdapter(private val popupWindow: ListPopupWindow) : B
                     removeSchedulePause()
                 } else {
                     val minutes = timeList[position]
-                    showToast(String.format(getString(R.string.schedule_start), minutes))
+                    showToast(String.format(string(R.string.schedule_start), minutes))
                     schedulePause(minutes)
                 }
             }

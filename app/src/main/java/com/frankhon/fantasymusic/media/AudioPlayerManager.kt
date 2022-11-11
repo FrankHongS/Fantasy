@@ -8,13 +8,14 @@ import android.os.IBinder
 import com.frankhon.fantasymusic.IMusicPlayer
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.application.Fantasy
-import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
 import com.frankhon.fantasymusic.media.observer.PlayerConfigurationObserver
+import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
 import com.frankhon.fantasymusic.utils.appContext
 import com.frankhon.fantasymusic.utils.bindService
 import com.frankhon.fantasymusic.utils.showToast
 import com.frankhon.fantasymusic.utils.startService
 import com.frankhon.fantasymusic.vo.SimpleSong
+import com.hon.mylogger.MyLogger
 
 /**
  * Created by Frank Hon on 2020/11/1 8:26 PM.
@@ -22,13 +23,16 @@ import com.frankhon.fantasymusic.vo.SimpleSong
  */
 object AudioPlayerManager {
     private var musicPlayer: IMusicPlayer? = null
-    private var onServiceConnectedListener: ((AudioPlayerManager) -> Unit)? = null
     private var hasBoundService = false
+
+    //是否正在连接AudioPlayer服务；避免重复连接
+    private var isConnectingService = false
     private val connection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            hasBoundService = true
+            isConnectingService = false
             musicPlayer = IMusicPlayer.Stub.asInterface(service)
             invokeOnServiceConnected()
-            LyricsManager.init()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -37,6 +41,8 @@ object AudioPlayerManager {
         }
     }
 
+    private val onServiceConnectedListeners = mutableListOf<OnServiceConnectedListener>()
+
     private val lifecycleObservers = mutableListOf<PlayerLifecycleObserver>()
     private val configurationObservers = mutableListOf<PlayerConfigurationObserver>()
 
@@ -44,22 +50,40 @@ object AudioPlayerManager {
      * @param listener 绑定服务之后的操作，不要在该监听器中做播放操作，因为此时不一定完成服务的绑定
      */
     @JvmStatic
-    fun connect(listener: ((AudioPlayerManager) -> Unit)? = null) {
+    fun connect(listener: OnServiceConnectedListener? = null) {
         if (hasBoundService) {
-            listener?.invoke(this)
+            listener?.onServiceConnected(this)
         } else {
-            this.onServiceConnectedListener = listener
-            hasBoundService = true
-            val intent = Intent(appContext, AudioPlayerService::class.java)
-            bindService(intent, connection, Context.BIND_AUTO_CREATE)
-            startService(intent)
+            if (!isConnectingService) {
+                isConnectingService = true
+                launchMediaService()
+            }
+            listener?.let {
+                onServiceConnectedListeners.add(it)
+            }
         }
     }
 
+    private fun launchMediaService() {
+        val intent = Intent(appContext, AudioPlayerService::class.java)
+        val result = bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        if (!result) {
+            isConnectingService = false
+        }
+        startService(intent)
+    }
+
     private fun invokeOnServiceConnected() {
-        onServiceConnectedListener?.invoke(this)
+        LyricsManager.init()
+        onServiceConnectedListeners.forEach {
+            it.onServiceConnected(this)
+        }
+        MyLogger.d(
+            "invokeOnServiceConnected: size = ${onServiceConnectedListeners.size}\n" +
+                    "onServiceConnectedListeners = $onServiceConnectedListeners"
+        )
         // avoid memory leak from anonymous inner class
-        onServiceConnectedListener = null
+        onServiceConnectedListeners.clear()
     }
 
     @JvmStatic
@@ -145,8 +169,16 @@ object AudioPlayerManager {
      * @param song
      */
     @JvmStatic
-    fun addIntoPlaylist(song: SimpleSong) {
-        musicPlayer?.addIntoPlaylist(song)
+    fun addIntoPlaylist(song: SimpleSong): Boolean {
+        val currentPlayerInfo = getCurrentPlayerInfo()
+        currentPlayerInfo?.run {
+            val index = curPlaylist.indexOf(song)
+            if (index == -1) {
+                musicPlayer?.addIntoPlaylist(song)
+                return true
+            }
+        }
+        return false
     }
 
     @JvmStatic
@@ -278,6 +310,12 @@ object AudioPlayerManager {
                 it.onPlaylistChanged(curPlayMode, curPlaylist, curSongIndex)
             }
         }
+    }
+
+    interface OnServiceConnectedListener {
+
+        fun onServiceConnected(manager: AudioPlayerManager)
+
     }
 
 }

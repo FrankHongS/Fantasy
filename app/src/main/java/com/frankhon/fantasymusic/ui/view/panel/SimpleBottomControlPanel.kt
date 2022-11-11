@@ -8,10 +8,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import com.bumptech.glide.Glide
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.media.AudioPlayerManager
-import com.frankhon.fantasymusic.media.PlayMode
-import com.frankhon.fantasymusic.media.PlayerState
-import com.frankhon.fantasymusic.media.isPlaying
+import com.frankhon.fantasymusic.media.*
 import com.frankhon.fantasymusic.media.observer.PlayerConfigurationObserver
 import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
 import com.frankhon.fantasymusic.ui.view.AnimatedAudioCircleImageView
@@ -90,13 +87,22 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
 
     }
 
-    override fun onAttachedToWindow() {
-        MyLogger.d("onAttachedToWindow: ")
-        super.onAttachedToWindow()
+    fun connectAudioPlayer() {
+        MyLogger.d("connectAudioPlayer: ")
         // 注册时使用connect，以免与播放器的连接断开
-        AudioPlayerManager.connect {
-            it.registerLifecycleObserver(this)
-            it.registerConfigurationObserver(this)
+        AudioPlayerManager.connect(object : AudioPlayerManager.OnServiceConnectedListener {
+            override fun onServiceConnected(manager: AudioPlayerManager) {
+                manager.registerLifecycleObserver(this@SimpleBottomControlPanel)
+                manager.registerConfigurationObserver(this@SimpleBottomControlPanel)
+            }
+        })
+    }
+
+    fun disconnectAudioPlayer() {
+        MyLogger.d("disconnectAudioPlayer: ")
+        AudioPlayerManager.let {
+            it.unregisterLifecycleObserver(this)
+            it.unregisterConfigurationObserver(this)
         }
     }
 
@@ -104,16 +110,16 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
         MyLogger.d("onDetachedFromWindow: ")
         super.onDetachedFromWindow()
         ib_panel_playlist.dismissPlaylistPopup()
-        AudioPlayerManager.let {
-            it.unregisterLifecycleObserver(this)
-            it.unregisterConfigurationObserver(this)
-        }
     }
 
     //region Audio lifecycle
 
     override fun onPlayerConnected(playerInfo: CurrentPlayerInfo?) {
         playerInfo?.run {
+            if (curPlayerState.isStopped()) {
+                setDefaultPanel()
+                return
+            }
             curSong?.let {
                 updateSongPanel(it)
                 updatePlayControlIcon(curPlayerState, false)
@@ -132,7 +138,7 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
     }
 
     override fun onPrepare(song: SimpleSong, playMode: PlayMode, curIndex: Int, totalSize: Int) {
-        albumImage.pauseRotateAnimator()
+        albumImage.cancelRotateAnimator()
         updateSongPanel(song)
         updatePlayControlIcon(PlayerState.PREPARING)
         updateNextButton(playMode, curIndex, totalSize)
@@ -186,27 +192,13 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
         updateNextButton(playMode, curIndex, playlist.size)
     }
 
-    // tricky 通过通知栏切歌，然后暂停，专辑图片一直旋转；应该是属性动画在后台无法正常暂停，以下为临时处理方案
-    fun doOnResume() {
-        val currentPlayerInfo = AudioPlayerManager.getCurrentPlayerInfo()
-        currentPlayerInfo?.run {
-            if (curPlayerState == PlayerState.PAUSED) {
-                albumImage.pauseRotateAnimator()
-            }
-        }
-    }
-
     private fun setDefaultPanel() {
         songName.run {
             text = context.getText(R.string.app_name)
             isSelected = false
         }
         artistName.text = context.getText(R.string.welcome_text)
-        albumImage.run {
-            setImageResource(R.mipmap.ic_launcher)
-            cancelRotateAnimator()
-            resetProgress()
-        }
+        albumImage.reset(R.mipmap.ic_launcher)
         ib_next_song.isEnabled = false
         toggleButton.setPlayState(AnimatedAudioToggleButton.ControlButtonState.INITIAL)
     }

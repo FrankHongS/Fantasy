@@ -57,6 +57,11 @@ class PlayModeImageButton @JvmOverloads constructor(
         this.listener = listener
     }
 
+    fun reset() {
+        position = 0
+        playMode = State.LOOP_LIST
+    }
+
     private fun getModeByPosition(position: Int): State {
         return when (position) {
             0 -> State.LOOP_LIST

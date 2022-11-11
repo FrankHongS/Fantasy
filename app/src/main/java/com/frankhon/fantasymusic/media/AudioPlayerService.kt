@@ -13,6 +13,7 @@ import com.frankhon.fantasymusic.media.AudioPlayer.previous
 import com.frankhon.fantasymusic.media.AudioPlayer.release
 import com.frankhon.fantasymusic.media.AudioPlayer.resume
 import com.frankhon.fantasymusic.media.AudioPlayer.setPlaylist
+import com.frankhon.fantasymusic.media.AudioPlayer.stop
 import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
@@ -72,17 +73,20 @@ class AudioPlayerService : Service() {
         MyLogger.d("onDestroy")
         super.onDestroy()
         unregisterReceiver(pauseMusicReceiver)
+        release()
     }
 
     private fun stopMusic() {
         stopForeground(false)
         releaseMediaSession()
+        stop()
         release()
     }
 
     private inner class ServiceStub : IMusicPlayer.Stub() {
         override fun play(song: SimpleSong) {
             AudioPlayer.play(song)
+            sendMediaNotification(this@AudioPlayerService, AudioPlayer.getCurrentPlayerInfo(), true)
         }
 
         override fun playAndAddIntoPlaylist(song: SimpleSong) {
@@ -102,7 +106,10 @@ class AudioPlayerService : Service() {
         }
 
         override fun removeSongFromPlayList(index: Int) {
-            AudioPlayer.removeSongFromPlayList(index)
+            val isPlaylistEmpty = AudioPlayer.removeSongFromPlayList(index)
+            if (isPlaylistEmpty) {
+                stopMusic()
+            }
         }
 
         override fun setPlayList(playList: List<SimpleSong>, index: Int) {

@@ -39,7 +39,7 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         MainViewModel.FACTORY(ServiceLocator.provideMusicRepository(), this, arguments)
     }
 
-    private var songs = arrayListOf<SimpleSong>()
+    private var songs = mutableListOf<SimpleSong>()
     private lateinit var songAdapter: SongAdapter
     private lateinit var refreshLayout: SwipeRefreshLayout
 
@@ -58,11 +58,13 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         MyLogger.d("onViewCreated: $savedInstanceState")
         super.onViewCreated(view, savedInstanceState)
-        AudioPlayerManager.connect {
-            it.registerLifecycleObserver(this)
-        }
+        AudioPlayerManager.connect(object : AudioPlayerManager.OnServiceConnectedListener {
+            override fun onServiceConnected(manager: AudioPlayerManager) {
+                manager.registerLifecycleObserver(this@SongFragment)
+            }
+        })
         model.songs.observe(viewLifecycleOwner) {
-            MyLogger.d("setData: $it")
+            MyLogger.d("setData: ${it.size}")
             refreshLayout.isRefreshing = false
             songs.run {
                 setData(it)
@@ -102,6 +104,11 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         model.select(songs.indexOf(song))
     }
 
+    override fun onAudioStop() {
+        // 取消选中
+        model.select(-1)
+    }
+
     private fun initView(view: View) {
         refreshLayout = view.findViewById(R.id.srl_songs)
         val songsList = view.findViewById<RecyclerView>(R.id.rv_songs)
@@ -114,12 +121,16 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         }
         songsList.run {
             layoutManager = LinearLayoutManager(context)
-            songAdapter = SongAdapter({ view, index ->
-                view.showMorePopup(songs[index], lifecycleScope)
-            }) { _, index ->
-                AudioPlayerManager.setPlayList(songs, index)
-            }
-            adapter = songAdapter
+            adapter = SongAdapter(
+                onPlayAllClickListener = {
+                    AudioPlayerManager.setPlayList(songs)
+                },
+                onMoreClickListener = { view, index ->
+                    view.showMorePopup(songs[index], lifecycleScope)
+                }) { _, index ->
+                AudioPlayerManager.playAndAddIntoPlaylist(songs[index])
+            }.apply { songAdapter = this }
+            addItemDecoration(SongItemDecoration())
         }
         model.selected.observe(viewLifecycleOwner) {
             MyLogger.d("select: $it $songAdapter")

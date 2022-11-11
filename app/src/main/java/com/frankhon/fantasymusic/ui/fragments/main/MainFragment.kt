@@ -10,10 +10,12 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.media.PlayMode
+import com.frankhon.fantasymusic.media.isStopped
 import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
 import com.frankhon.fantasymusic.ui.activities.MainActivity
 import com.frankhon.fantasymusic.ui.activities.about.AboutActivity
@@ -21,14 +23,15 @@ import com.frankhon.fantasymusic.ui.activities.adapter.MainAdapter
 import com.frankhon.fantasymusic.ui.fragments.BaseFragment
 import com.frankhon.fantasymusic.ui.fragments.search.SearchFragment
 import com.frankhon.fantasymusic.ui.view.SlidingUpPanelLayout
+import com.frankhon.fantasymusic.ui.view.TabLayoutMediator
 import com.frankhon.fantasymusic.ui.view.panel.HomeBottomControlPanel
 import com.frankhon.fantasymusic.utils.FRAGMENT_MAIN_TO_SEARCH_TRANSITION_NAME
+import com.frankhon.fantasymusic.utils.dp
 import com.frankhon.fantasymusic.utils.navigate
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.hon.mylogger.MyLogger
 
 /**
@@ -62,28 +65,37 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver {
         super.onViewCreated(view, savedInstanceState)
         parentActivity = activity as? MainActivity
         initView(view)
-        connectAudioPlayer()
     }
 
-    override fun onResume() {
-        super.onResume()
-        controlPanel.doOnResume()
+    override fun onStart() {
+        super.onStart()
+        connectAudioPlayer()
+        controlPanel.connectAudioPlayer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        disconnectAudioPlayer()
+        controlPanel.disconnectAudioPlayer()
     }
 
     override fun onDestroyView() {
         MyLogger.d("onDestroyView: ")
         super.onDestroyView()
-        disconnectAudioPlayer()
     }
 
     override fun onPlayerConnected(playerInfo: CurrentPlayerInfo?) {
-        playerInfo?.curSong?.run {
-            panelLayout.setAllowDragging(true)
+        playerInfo?.run {
+            val isPlayerStopped = curPlayerState.isStopped()
+            panelLayout.isAllowDragging(!isPlayerStopped)
+            if (isPlayerStopped) {
+                collapsePanel()
+            }
         }
     }
 
     override fun onPrepare(song: SimpleSong, playMode: PlayMode, curIndex: Int, totalSize: Int) {
-        panelLayout.setAllowDragging(true)
+        panelLayout.isAllowDragging(true)
     }
 
     override fun onAudioStop() {
@@ -120,6 +132,7 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver {
             //note: 使用childFragmentManager，不能使用parentFragmentManager，或者横竖屏切换时viewPager不能恢复
             adapter = MainAdapter(childFragmentManager, lifecycle)
             isSaveEnabled = true
+            setPageTransformer(MarginPageTransformer(16.dp))
         }
         TabLayoutMediator(tabLayout, viewPager, true, false) { tab, pos ->
             tab.text = when (pos) {
@@ -151,9 +164,11 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver {
     }
 
     private fun connectAudioPlayer() {
-        AudioPlayerManager.connect {
-            it.registerLifecycleObserver(this)
-        }
+        AudioPlayerManager.connect(object : AudioPlayerManager.OnServiceConnectedListener {
+            override fun onServiceConnected(manager: AudioPlayerManager) {
+                manager.registerLifecycleObserver(this@MainFragment)
+            }
+        })
     }
 
     private fun disconnectAudioPlayer() {
@@ -164,7 +179,7 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver {
 
     private fun resetPanelLayout() {
         collapsePanel()
-        panelLayout.setAllowDragging(false)
+        panelLayout.isAllowDragging(false)
     }
 
     fun collapsePanel() = panelLayout.collapse()

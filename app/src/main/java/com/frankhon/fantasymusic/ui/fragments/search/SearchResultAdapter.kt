@@ -17,6 +17,7 @@ import com.frankhon.fantasymusic.application.AppExecutors
 import com.frankhon.fantasymusic.utils.showToast
 import com.frankhon.fantasymusic.utils.transformToSimpleSong
 import com.frankhon.fantasymusic.vo.SimpleSong
+import com.frankhon.fantasymusic.vo.view.DOWNLOAD_STATE_DOWNLOADING
 import com.frankhon.fantasymusic.vo.view.SearchSongItem
 
 /**
@@ -107,7 +108,7 @@ class SearchResultAdapter(
                                 showToast(R.string.downloading)
                                 downloader.startDownload(song.transformToSimpleSong())
                                 downloadButton.setImageResource(R.drawable.ic_download_song_disable)
-                                downloadState = 1
+                                downloadState = DOWNLOAD_STATE_DOWNLOADING
                             }
                         }
                         2 -> showToast(R.string.song_downloaded)

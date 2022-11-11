@@ -4,17 +4,21 @@
     <!--<color name="colorPrimaryDark">#5D4037</color>-->
     <color name="colorPrimaryDark">#795548</color>
     <color name="colorAccent">#9E9E9E</color>
+    <color name="colorBackground">#F2F2F2</color>
+    <color name="colorContentBackground">#FFFFFF</color>
     <color name="ic_launcher_background">#795548</color>
 
     <color name="colorActionBar">#FFFFFF</color>
     <color name="colorLyricsText">#FFFFFF</color>
     <color name="primaryText">#212121</color>
     <color name="colorIcon">#212121</color>
-    <color name="colorTitle">#ffffff</color>
-    <color name="secondText">#e0e0e0</color>
+    <color name="colorTitle">#FFFFFF</color>
+    <color name="secondText">#d0d0d0</color>
     <color name="highlightText">#FF5722</color>
+    <color name="buttonText">#F57F17</color>
 
     <color name="navigationBarColor">#F2F2F2</color>
+    <color name="indicatorColor">#00897B</color>
     <color name="progressColor">#009688</color>
     <color name="completeColor">#009688</color>
 </resources>

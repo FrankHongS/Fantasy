@@ -25,10 +25,15 @@ open class BaseFragment : Fragment() {
         controlPanel = view.findViewById(R.id.sbcp_control_panel)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
+        controlPanel?.connectAudioPlayer()
         isInstantiated = true
-        controlPanel?.doOnResume()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        controlPanel?.disconnectAudioPlayer()
     }
 
     override fun onDestroy() {

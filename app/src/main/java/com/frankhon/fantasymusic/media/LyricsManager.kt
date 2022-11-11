@@ -64,8 +64,13 @@ object LyricsManager : PlayerLifecycleObserver {
                 for (i in it.indices) {
                     val lyricTime = it[i].first
                     if (lyricTime > progress) {
-                        curLyricsIndex = max(0, i - 1)
-                        break
+                        if (i == 0) {
+                            curLyricsIndex = 0
+                            return ""
+                        } else {
+                            curLyricsIndex = i - 1
+                            break
+                        }
                     }
                 }
             }
@@ -82,36 +87,34 @@ object LyricsManager : PlayerLifecycleObserver {
     fun release() {
         lyricsCache.evictAll()
         lyricListJob?.cancel()
-        curLyricsIndex = 0
+        reset()
     }
 
     override fun onPlayerConnected(playerInfo: CurrentPlayerInfo?) {
         MyLogger.d("onPlayerConnected: ${playerInfo?.curSong}")
         playerInfo?.curSong?.let {
-            lyricListJob?.cancel()
-            lyricListJob = Job()
-            mainScope.launch(lyricListJob!!) {
-                withContext(Dispatchers.IO) {
-                    curLyrics = lyricsCache.get(it)
-                }
-            }
+            getLyricsFromCache(it)
         }
     }
 
     override fun onPrepare(song: SimpleSong, playMode: PlayMode, curIndex: Int, totalSize: Int) {
         reset()
-        lyricListJob?.cancel()
-        lyricListJob = Job()
-        mainScope.launch(lyricListJob!!) {
-            withContext(Dispatchers.IO) {
-                curLyrics = lyricsCache.get(song)
-            }
-        }
+        getLyricsFromCache(song)
     }
 
     private fun reset() {
         curLyrics = null
         curLyricsIndex = 0
+    }
+
+    private fun getLyricsFromCache(it: SimpleSong): Job {
+        lyricListJob?.cancel()
+        lyricListJob = Job()
+        return mainScope.launch(lyricListJob!!) {
+            withContext(Dispatchers.IO) {
+                curLyrics = lyricsCache.get(it)
+            }
+        }
     }
 
 }

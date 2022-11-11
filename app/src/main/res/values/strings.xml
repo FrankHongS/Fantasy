@@ -22,6 +22,10 @@
 
     <string name="playlist_artist_name" translatable="false">- %s</string>
 
+    <string name="title_local_songs">本地歌曲</string>
+    <string name="songs_count">共 %s 首</string>
+    <string name="play_all">播放全部</string>
+
     <string name="play_mode_shuffle">随机播放</string>
     <string name="play_mode_single_loop">单曲循环</string>
     <string name="play_mode_list_loop">列表循环</string>
@@ -34,6 +38,7 @@
 
     <string name="unable_to_delete">内置歌曲，不支持删除</string>
     <string name="add_into_playlist">添加%s成功</string>
+    <string name="add_into_playlist_failure">%s已存在于播放列表</string>
 
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>

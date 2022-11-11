@@ -4,15 +4,14 @@
     "name": "晴天",
     "artist": "周杰伦",
     "path": "songs/晴天_周杰伦.mp3",
-    "fileName": "晴天_周杰伦.mp3",
-    "songPic": "https://mcontent.migu.cn/newlv2/new/album/20220722/8592/s_Z8DSIg9VKXMCqCuk.jpg"
+    "songPic": "https://mcontent.migu.cn/newlv2/new/album/20220722/8592/s_Z8DSIg9VKXMCqCuk.jpg",
+    "lyrics": "lyrics/晴天_周杰伦.lyrics"
   },
   {
     "id": 1,
     "name": "园游会",
     "artist": "周杰伦",
     "path": "songs/园游会_周杰伦.mp3",
-    "fileName": "园游会_周杰伦.mp3",
     "songPic": "https://mcontent.migu.cn/newlv2/new/album/20220720/7949/s_T66K13KYSyK25mbd.jpg"
   },
   {
@@ -20,7 +19,6 @@
     "name": "遥远的你",
     "artist": "于婷",
     "path": "songs/遥远的你_于婷.mp3",
-    "fileName": "遥远的你_于婷.mp3",
     "songPic": "https://mcontent.migu.cn/newlv2/new/artist/20211122/1108586970/s_dFVOW8Zm4uMz3xCZ.jpg"
   },
   {
@@ -28,7 +26,6 @@
     "name": "记念",
     "artist": "雷雨心",
     "path": "songs/记念_雷雨心.mp3",
-    "fileName": "记念_雷雨心.mp3",
     "songPic": "https://mcontent.migu.cn/newlv2/new/album/20210410/1158/s_5bCVP4aSZc2MnX7D.jpg"
   }
 ]

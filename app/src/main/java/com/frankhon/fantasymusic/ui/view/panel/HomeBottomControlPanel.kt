@@ -70,15 +70,15 @@ class HomeBottomControlPanel @JvmOverloads constructor(
             val toastText = when (it) {
                 PlayModeImageButton.State.SHUFFLE -> {
                     AudioPlayerManager.setPlayMode(PlayMode.SHUFFLE)
-                    getString(R.string.play_mode_shuffle)
+                    string(R.string.play_mode_shuffle)
                 }
                 PlayModeImageButton.State.LOOP_SINGLE -> {
                     AudioPlayerManager.setPlayMode(PlayMode.LOOP_SINGLE)
-                    getString(R.string.play_mode_single_loop)
+                    string(R.string.play_mode_single_loop)
                 }
                 PlayModeImageButton.State.LOOP_LIST -> {
                     AudioPlayerManager.setPlayMode(PlayMode.LOOP_LIST)
-                    getString(R.string.play_mode_list_loop)
+                    string(R.string.play_mode_list_loop)
                 }
             }
             showToast(toastText)
@@ -112,12 +112,21 @@ class HomeBottomControlPanel @JvmOverloads constructor(
         }
     }
 
-    override fun onAttachedToWindow() {
-        MyLogger.d("onAttachedToWindow: ")
-        super.onAttachedToWindow()
-        AudioPlayerManager.connect {
-            it.registerLifecycleObserver(this)
-            it.registerConfigurationObserver(this)
+    fun connectAudioPlayer() {
+        MyLogger.d("connectAudioPlayer: ")
+        AudioPlayerManager.connect(object : AudioPlayerManager.OnServiceConnectedListener {
+            override fun onServiceConnected(manager: AudioPlayerManager) {
+                manager.registerLifecycleObserver(this@HomeBottomControlPanel)
+                manager.registerConfigurationObserver(this@HomeBottomControlPanel)
+            }
+        })
+    }
+
+    fun disconnectAudioPlayer() {
+        MyLogger.d("disconnectAudioPlayer: ")
+        AudioPlayerManager.let {
+            it.unregisterLifecycleObserver(this)
+            it.unregisterConfigurationObserver(this)
         }
     }
 
@@ -125,16 +134,16 @@ class HomeBottomControlPanel @JvmOverloads constructor(
         MyLogger.d("onDetachedFromWindow: ")
         super.onDetachedFromWindow()
         ib_playlist.dismissPlaylistPopup()
-        AudioPlayerManager.let {
-            it.unregisterLifecycleObserver(this)
-            it.unregisterConfigurationObserver(this)
-        }
     }
 
     //region Audio lifecycle
     override fun onPlayerConnected(playerInfo: CurrentPlayerInfo?) {
         playerInfo?.run {
             MyLogger.d("onPlayerConnected: curPlayerState = $curPlayerState")
+            if (curPlayerState.isStopped()) {
+                setDefaultPanel()
+                return
+            }
             curSong?.let {
                 updateSongPanel(it)
                 updatePlayControlIcon(curPlayerState, false)
@@ -167,7 +176,7 @@ class HomeBottomControlPanel @JvmOverloads constructor(
 
     override fun onPrepare(song: SimpleSong, playMode: PlayMode, curIndex: Int, totalSize: Int) {
         tv_song_lyrics.isVisible = false
-        iv_song_bottom_pic.pauseRotateAnimator()
+        iv_song_bottom_pic.cancelRotateAnimator()
         updateSongPanel(song)
         updatePlayControlIcon(PlayerState.PREPARING)
         updatePreviousNextButton(playMode, curIndex, totalSize)
@@ -236,33 +245,20 @@ class HomeBottomControlPanel @JvmOverloads constructor(
     }
     //endregion
 
-    // tricky 通过通知栏切歌，然后暂停，专辑图片一直旋转；应该是属性动画在后台无法正常暂停，以下为临时处理方案
-    fun doOnResume() {
-        val currentPlayerInfo = AudioPlayerManager.getCurrentPlayerInfo()
-        currentPlayerInfo?.run {
-            if (curPlayerState == PlayerState.PAUSED) {
-                iv_song_bottom_pic.pauseRotateAnimator()
-            }
-        }
-    }
-
     private fun setDefaultPanel() {
-        iv_song_bottom_pic.run {
-            setImageResource(R.mipmap.ic_launcher)
-            cancelRotateAnimator()
-            resetProgress()
-        }
+        iv_song_bottom_pic.reset(R.mipmap.ic_launcher)
         tv_current_time.text = msToMMSS(0)
         tv_song_duration.text = ""
         tv_bottom_song_name.run {
-            text = getString(R.string.app_name)
+            text = string(R.string.app_name)
             isSelected = false
         }
-        tv_bottom_artist_name.text = getString(R.string.welcome_text)
+        tv_bottom_artist_name.text = string(R.string.welcome_text)
         ib_player_toggle.setPlayState(AnimatedAudioToggleButton.ControlButtonState.INITIAL)
         ib_previous_song.isEnabled = false
         ib_next_song.isEnabled = false
         sb_play_progress.progress = 0
+        ib_play_mode.reset()
         tv_song_lyrics.isVisible = false
     }
 
@@ -277,7 +273,12 @@ class HomeBottomControlPanel @JvmOverloads constructor(
                     .into(iv_song_bottom_pic)
                 tv_bottom_song_name.text = name
                 tv_bottom_artist_name.text = artist
-//                panelLayout.setAllowDragging(true)
+            } ?: kotlin.run {
+                MyLogger.e(
+                    "updateSongPanel: context=$context," +
+                            " isDestroyed=${(context as? Activity)?.isDestroyed}," +
+                            " isFinishing=${(context as? Activity)?.isFinishing}"
+                )
             }
         }
     }
@@ -299,7 +300,7 @@ class HomeBottomControlPanel @JvmOverloads constructor(
     }
 
     private fun updatePreviousNextButton(curPlayMode: PlayMode, curIndex: Int, totalSize: Int) {
-        if (totalSize == 1) {
+        if (totalSize == 0 || totalSize == 1) {
             ib_previous_song.isEnabled = false
             ib_next_song.isEnabled = false
             return

@@ -136,7 +136,7 @@ private class PlaylistPopupViewHolder(
 
     fun bindView(song: SongItem, position: Int) {
         songName.text = song.name
-        artistName.text = String.format(getString(R.string.playlist_artist_name), song.artist)
+        artistName.text = String.format(string(R.string.playlist_artist_name), song.artist)
         nowPlaying.isVisible = song.isPlaying
         removeButton.setOnClickListener {
             removeListener(position)

@@ -27,19 +27,30 @@ fun getSongsFromAssets(): List<DBSong> {
     val songObjects = Gson().fromJson(reader, JsonArray::class.java)
     for (i in 0 until songObjects.size()) {
         val song = songObjects[i] as JsonObject
+        val name = song.get("name").asString
+        val artist = song.get("artist").asString
         val songSrc = context.assets.open(song.get("path").asString)
+        val lyricsSrc = song.get("lyrics")?.asString?.let { context.assets.open(it) }
         val dir = File(context.filesDir.absolutePath + File.separator + "songs")
         if (!dir.exists()) {
             dir.mkdirs()
         }
-        val tempFile = File(dir, song.get("fileName").asString)
-        if (!tempFile.exists()) {
-            writeToTargetFile(songSrc, tempFile)
+        val musicFile = File(dir, getMusicFileName(name, artist))
+        if (!musicFile.exists()) {
+            writeToTargetFile(songSrc, musicFile)
+        }
+        val lyricsFile = lyricsSrc?.let {
+            val file = File(dir, getLyricsFileName(name, artist))
+            if (!file.exists()) {
+                writeToTargetFile(it, file)
+            }
+            file
         }
         val dbSong = DBSong(
-            name = song.get("name").asString,
-            artist = song.get("artist").asString,
-            songUri = Uri.fromFile(tempFile).toString(),
+            name = name,
+            artist = artist,
+            songUri = Uri.fromFile(musicFile).toString(),
+            lyricsUri = lyricsFile?.let { Uri.fromFile(it).toString() }.orEmpty(),
             picUrl = song.get("songPic").asString
         )
         songs.add(dbSong)
@@ -178,4 +189,11 @@ fun getLyricsFileName(songName: String?, artist: String?): String {
         return ""
     }
     return "${songName}_$artist.lyrics"
+}
+
+fun getMusicFileName(songName: String?, artist: String?): String {
+    if (songName.isNullOrEmpty() && artist.isNullOrEmpty()) {
+        return ""
+    }
+    return "${songName}_$artist.mp3"
 }

@@ -4,7 +4,7 @@ import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.data.Result
 import com.frankhon.fantasymusic.data.source.local.LocalMusicDataSource
 import com.frankhon.fantasymusic.data.source.remote.RemoteMusicDataSource
-import com.frankhon.fantasymusic.utils.getString
+import com.frankhon.fantasymusic.utils.string
 import com.frankhon.fantasymusic.utils.matchesUri
 import com.frankhon.fantasymusic.vo.bean.DataSongWrapper
 
@@ -19,14 +19,14 @@ class SearchRepository(
 
     suspend fun findSong(keyword: String): Result<DataSongWrapper> {
         if (keyword.isEmpty()) {
-            return Result.failure(getString(R.string.search_input_empty))
+            return Result.failure(string(R.string.search_input_empty))
         }
         val result = remoteDataSource.findSong(keyword)
         result.takeIf {
             it.isSuccess
                     && it.data?.data?.songs.isNullOrEmpty()
         }?.let { _ ->
-            return Result.failure(getString(R.string.search_result_empty))
+            return Result.failure(string(R.string.search_result_empty))
         }
         return result.apply {
             if (isSuccess) {

@@ -76,7 +76,8 @@ fun SimpleSong.transformToDBSong(): DBSong {
         artist = artist.orEmpty(),
         songUri = songUri.orEmpty(),
         lyricsUri = lyricsUri.orEmpty(),
-        picUrl = picUrl.orEmpty()
+        picUrl = picUrl.orEmpty(),
+        canDelete = canDelete
     )
 }
 
@@ -95,5 +96,6 @@ fun SearchSongItem.transformToSimpleSong() = SimpleSong(
     name = name.orEmpty(),
     artist = artist.orEmpty(),
     songUri = songUri.orEmpty(),
+    lyricsUri = lyricsUri.orEmpty(),
     picUrl = albumPicUrl.orEmpty()
 )

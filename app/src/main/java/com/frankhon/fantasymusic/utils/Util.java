@@ -66,7 +66,7 @@ public final class Util {
 
         Notification notification = new NotificationCompat.Builder(context, Constants.PLAYER_CHANNEL_ID)
                 .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.ic_baseline_music_note_24)
+                .setSmallIcon(R.drawable.ic_notification_icon)
                 .setContentTitle(song.getName())
                 .setContentText(song.getArtist())
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.song_pic))

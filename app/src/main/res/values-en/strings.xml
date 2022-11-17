@@ -39,4 +39,8 @@
     <string name="unable_to_delete">Songs from App not support to delete</string>
     <string name="add_into_playlist">%s added into playlist</string>
     <string name="add_into_playlist_failure">%s exists in the playlist</string>
+
+    <string name="settings_enable">enable</string>
+    <string name="settings_unable">unable</string>
+    <string name="system_notification_style">System notification style</string>
 </resources>

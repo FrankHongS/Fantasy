@@ -43,6 +43,9 @@
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
+    <string name="settings_enable">启用</string>
+    <string name="settings_unable">不启用</string>
+    <string name="system_notification_style">系统通知栏样式</string>
     <string name="about_me_key" translatable="false">about_me</string>
     <string name="about_me_title" translatable="false">About me</string>
     <string name="about_me_desc_key" translatable="false">about_me_desc</string>

@@ -1,5 +1,6 @@
 package com.frankhon.fantasymusic.ui.view
 
+import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
@@ -29,7 +30,9 @@ class CustomActionBar @JvmOverloads constructor(
         View.inflate(context, R.layout.layout_custom_action_bar, this)
         setBackgroundResource(R.color.colorActionBar)
         iv_back.setOnClickListener {
-            onBackClickListener?.invoke(it)
+            onBackClickListener?.invoke(it)?: kotlin.run {
+                (context as? Activity)?.onBackPressed()
+            }
         }
         ViewCompat.setElevation(this, 4.dp.toFloat())
     }

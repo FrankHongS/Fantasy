@@ -23,3 +23,7 @@ enum class PlayerState() {
 fun PlayerState.isPlaying() = this == PlayerState.PLAYING || this == PlayerState.RESUMED
 
 fun PlayerState.isStopped() = this == PlayerState.IDLE || this == PlayerState.STOPPED
+
+fun PlayerState.isPlayingInNotification() =
+    this == PlayerState.PLAYING || this == PlayerState.RESUMED
+            || this == PlayerState.PREPARING || this == PlayerState.COMPLETED

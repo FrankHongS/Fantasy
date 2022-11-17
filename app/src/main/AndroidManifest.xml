@@ -31,11 +31,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="content" android:mimeType="audio/mpeg"/>
+                <data
+                        android:mimeType="audio/mpeg"
+                        android:scheme="content" />
             </intent-filter>
         </activity>
         <activity
                 android:name=".ui.activities.about.AboutActivity"
+                android:theme="@style/CustomActionBar" />
+        <activity
+                android:name=".ui.activities.settings.SettingsActivity"
                 android:theme="@style/CustomActionBar" />
 
         <service

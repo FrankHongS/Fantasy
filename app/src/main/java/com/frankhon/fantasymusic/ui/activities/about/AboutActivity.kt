@@ -27,7 +27,6 @@ class AboutActivity : AppCompatActivity() {
         tv_app_version.text =
             String.format(getString(R.string.app_version), BuildConfig.VERSION_NAME)
         cab_about.run {
-            setOnBackClickListener { finish() }
             setActionBarTitle(R.string.about)
         }
     }

@@ -1,42 +1,44 @@
 ext.versions = [
-        'minSdk'          : 21,
-        'compileSdk'      : 31,
-        'targetSdk'       : 31,
-        'buildTools'      : '30.0.3',
-        'versionCode'     : 2,
-        'versionName'     : '2.0.0',
+        'minSdk'            : 21,
+        'compileSdk'        : 31,
+        'targetSdk'         : 31,
+        'buildTools'        : '30.0.3',
+        'versionCode'       : 2,
+        'versionName'       : '2.0.0',
 
-        'gradle_version'  : '7.2.0',
+        'gradle_version'    : '7.2.0',
 
-        'kotlin_version'  : '1.6.21',
-        'core_ktx'        : '1.7.0',
-        'kotlin_coroutine': '1.5.2',
+        'kotlin_version'    : '1.6.21',
+        'core_ktx'          : '1.7.0',
+        'kotlin_coroutine'  : '1.5.2',
 
-        'lifecycle'       : '2.4.1',
+        'lifecycle'         : '2.4.1',
 
-        'navigation'      : '2.4.2',
-        'room'            : '2.4.2',
+        'navigation'        : '2.4.2',
+        'room'              : '2.4.2',
+        'datastore'         : '1.0.0',
 
-        'supportLibrary'  : '1.4.1',
-        'material'        : '1.1.0',
-        'constraintlayout': '2.1.4',
-        'preference'      : '1.2.0',
-        'media'           : '1.6.0',
-        'retrofit'        : '2.9.0',
-        'okhttp'          : '3.14.9',
-        'rxJava'          : '2.2.8',
-        'rxAndroid'       : '2.1.1',
-        'rxPermissions'   : '0.10.2',
-        'glide'           : '4.9.0',
-        'butterknife'     : '10.1.0',
-        'eventbus'        : '3.1.1',
-        'simplechartview' : '0.0.3',
-        'mylogger'        : '1.0.4',
-        'simplesearchview': 'v1.0.1',
+        'supportLibrary'    : '1.4.1',
+        'material'          : '1.1.0',
+        'constraintlayout'  : '2.1.4',
+        'preference'        : '1.2.0',
+        'swiperefreshlayout': '1.1.0',
+        'media'             : '1.6.0',
+        'retrofit'          : '2.9.0',
+        'okhttp'            : '3.14.9',
+        'rxJava'            : '2.2.8',
+        'rxAndroid'         : '2.1.1',
+        'rxPermissions'     : '0.10.2',
+        'glide'             : '4.9.0',
+        'butterknife'       : '10.1.0',
+        'eventbus'          : '3.1.1',
+        'simplechartview'   : '0.0.3',
+        'mylogger'          : '1.0.4',
+        'simplesearchview'  : 'v1.0.1',
 
-        'junit'           : '4.12',
-        'test'            : '1.2.0',
-        'espresso'        : '3.2.0'
+        'junit'             : '4.12',
+        'test'              : '1.2.0',
+        'espresso'          : '3.2.0'
 ]
 
 ext.deps = [
@@ -53,16 +55,21 @@ ext.deps = [
                 'room_ktx': "androidx.room:room-ktx:${versions.room}",
                 'compiler': "androidx.room:room-compiler:${versions.room}"
         ],
+        'datastore'       : [
+                'preferences': "androidx.datastore:datastore-preferences:${versions.datastore}"
+        ],
         'support'         : [
-                'appCompat'       : "androidx.appcompat:appcompat:${versions.supportLibrary}",
-                'material'        : "com.google.android.material:material:${versions.material}",
-                'cardview'        : "androidx.cardview:cardview:${versions.supportLibrary}",
-                'constraintlayout': "androidx.constraintlayout:constraintlayout:${versions.constraintlayout}",
-                'preference'      : "androidx.preference:preference:${versions.preference}"
+                'appCompat'         : "androidx.appcompat:appcompat:${versions.supportLibrary}",
+                'material'          : "com.google.android.material:material:${versions.material}",
+                'cardview'          : "androidx.cardview:cardview:${versions.supportLibrary}",
+                'constraintlayout'  : "androidx.constraintlayout:constraintlayout:${versions.constraintlayout}",
+                'preference'        : "androidx.preference:preference:${versions.preference}",
+                'swiperefreshlayout': "androidx.swiperefreshlayout:swiperefreshlayout:${versions.swiperefreshlayout}"
         ],
         'lifecycle'       : [
                 'runtime'  : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
-                'viewmodel': "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}"
+                'viewmodel': "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}",
+                'livedata' : "androidx.lifecycle:lifecycle-livedata-ktx:${versions.lifecycle}"
         ],
         'media'           : "androidx.media:media:${versions.media}",
         'test'            : [

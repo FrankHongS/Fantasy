@@ -45,7 +45,7 @@ dependencies {
     implementation deps.support.material
     implementation deps.support.constraintlayout
     implementation deps.support.preference
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation deps.support.swiperefreshlayout
 
     implementation deps.media
 
@@ -58,6 +58,9 @@ dependencies {
     kapt deps.room.compiler
     // To use Kotlin Symbol Processing (KSP)
     // ksp deps.room.compiler
+    implementation deps.datastore.preferences
+
+    implementation deps.lifecycle.livedata
 
     implementation deps.retrofit.root
     implementation deps.retrofit.converter_gson

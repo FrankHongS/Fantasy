@@ -14,6 +14,7 @@ import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.hon.mylogger.MyLogger
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 
 /**
  * Note:
@@ -389,6 +390,7 @@ object AudioPlayer {
     fun release() {
         MyLogger.d("release()")
         stopUpdateProgress()
+        mainScope.cancel()
         abandonAudioFocus()
         stop()
         mHttpProxyCache.shutdown()
@@ -426,13 +428,15 @@ object AudioPlayer {
 
     private fun sendState() {
         if (curState != PlayerState.STOPPED) {
-            sendMediaNotification(
-                getCurrentPlayerInfo(),
-                curState != PlayerState.IDLE
-                        && curState != PlayerState.ERROR
-                        && curState != PlayerState.PAUSED
-                        && curState != PlayerState.FINISHED
-            )
+            mainScope.launch {
+                readDataStore().collect {
+                    val style = it[KEY_NOTIFICATION_STYLE] ?: 0
+                    sendMediaNotification(
+                        style == 0,
+                        getCurrentPlayerInfo()
+                    )
+                }
+            }
         } else {
             cancelNotification()
         }

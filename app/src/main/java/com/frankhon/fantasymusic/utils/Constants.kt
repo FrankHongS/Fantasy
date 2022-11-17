@@ -15,6 +15,7 @@ const val ACTION_NEXT = "com.frankhon.fantasy.Next"
 const val ACTION_RESUME = "com.frankhon.fantasy.Resume"
 const val ACTION_PAUSE = "com.frankhon.fantasy.Pause"
 const val ACTION_STOP = "com.frankhon.fantasy.Stop"
+const val ACTION_CHANGE_NOTIFICATION_STYLE = "com.frankhon.fantasy.CHANGE_NOTIFICATION_STYLE"
 
 const val MUSIC_INFO_ACTION = "com.frankhon.fantasy.MUSIC_INFO"
 const val MUSIC_PROGRESS_ACTION = "com.frankhon.fantasy.MUSIC_PROGRESS"

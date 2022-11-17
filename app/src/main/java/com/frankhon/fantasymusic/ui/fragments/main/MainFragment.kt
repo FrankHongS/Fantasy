@@ -18,6 +18,7 @@ import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
 import com.frankhon.fantasymusic.ui.activities.MainActivity
 import com.frankhon.fantasymusic.ui.activities.about.AboutActivity
 import com.frankhon.fantasymusic.ui.activities.adapter.MainAdapter
+import com.frankhon.fantasymusic.ui.activities.settings.SettingsActivity
 import com.frankhon.fantasymusic.ui.fragments.BaseFragment
 import com.frankhon.fantasymusic.ui.fragments.search.SearchFragment
 import com.frankhon.fantasymusic.ui.view.SlidingUpPanelLayout
@@ -131,6 +132,7 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver {
         navigationView.run {
             setNavigationItemSelectedListener {
                 when (it.itemId) {
+                    R.id.nav_settings -> parentActivity?.navigate<SettingsActivity>()
                     R.id.nav_about -> parentActivity?.navigate<AboutActivity>()
                 }
                 true

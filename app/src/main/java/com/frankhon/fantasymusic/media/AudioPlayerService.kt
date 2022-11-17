@@ -17,6 +17,10 @@ import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.hon.mylogger.MyLogger
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 /**
  * Created by Frank Hon on 2020/11/1 7:52 PM.
@@ -25,6 +29,7 @@ import com.hon.mylogger.MyLogger
 class AudioPlayerService : Service() {
 
     private val musicPlayer = ServiceStub()
+    private val mainScope by lazy { MainScope() }
 
     private val pauseMusicReceiver by lazy {
         object : BroadcastReceiver() {
@@ -78,6 +83,20 @@ class AudioPlayerService : Service() {
         stopForeground(false)
         releaseMediaSession()
         release()
+        mainScope.cancel()
+    }
+
+    private fun sendMediaNotification() {
+        mainScope.launch {
+            readDataStore().collect {
+                val style = it[KEY_NOTIFICATION_STYLE]
+                sendMediaNotification(
+                    style == 0,
+                    this@AudioPlayerService,
+                    AudioPlayer.getCurrentPlayerInfo(),
+                )
+            }
+        }
     }
 
     private inner class ServiceStub : IMusicPlayer.Stub() {
@@ -87,17 +106,13 @@ class AudioPlayerService : Service() {
 
         override fun playAndAddIntoPlaylist(song: SimpleSong) {
             AudioPlayer.playAndAddIntoPlaylist(song)
-            sendMediaNotification(this@AudioPlayerService, AudioPlayer.getCurrentPlayerInfo(), true)
+            sendMediaNotification()
         }
 
         override fun addIntoPlaylist(song: SimpleSong) {
             val isPlaying = AudioPlayer.addIntoPlaylist(song)
             if (isPlaying) {
-                sendMediaNotification(
-                    this@AudioPlayerService,
-                    AudioPlayer.getCurrentPlayerInfo(),
-                    true
-                )
+                sendMediaNotification()
             }
         }
 
@@ -107,7 +122,7 @@ class AudioPlayerService : Service() {
 
         override fun setPlayList(playList: List<SimpleSong>, index: Int) {
             setPlaylist(playList, index)
-            sendMediaNotification(this@AudioPlayerService, AudioPlayer.getCurrentPlayerInfo(), true)
+            sendMediaNotification()
         }
 
         override fun pause() {

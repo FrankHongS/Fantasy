@@ -154,7 +154,7 @@ class HomeBottomControlPanel @JvmOverloads constructor(
                 tv_current_time.text = msToMMSS(curPlaybackPosition)
                 sb_play_progress.progress = curPlaybackPosition.toInt()
                 LyricsManager.run {
-                    compareAndGetLyric(curPlaybackPosition)?.let { content ->
+                    compareAndGetLyric(curPlaybackPosition).let { content ->
                         tv_song_lyrics.safeSetText(content)
                     }
                 }

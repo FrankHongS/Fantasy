@@ -99,3 +99,11 @@ fun SearchSongItem.transformToSimpleSong() = SimpleSong(
     lyricsUri = lyricsUri.orEmpty(),
     picUrl = albumPicUrl.orEmpty()
 )
+
+fun SongItem.compareTo(song: SimpleSong?): Boolean {
+    return song?.let {
+        name == it.name && artist == it.artist
+    } ?: kotlin.run {
+        false
+    }
+}

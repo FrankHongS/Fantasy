@@ -20,6 +20,13 @@ interface MusicDao {
     @Query("select * from songs")
     suspend fun getSongs(): List<DBSong>
 
+    @Query("select * from songs order by created_at asc limit :limit offset :offset")
+    suspend fun getSongs(limit: Int, offset: Int): List<DBSong>
+
     @Delete
     suspend fun deleteSong(song: DBSong): Int
+
+    @Query("select count(*) from songs")
+    suspend fun getCount(): Int
+
 }

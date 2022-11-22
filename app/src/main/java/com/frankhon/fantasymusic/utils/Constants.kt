@@ -9,6 +9,9 @@ package com.frankhon.fantasymusic.utils
 const val APP_NAME = "Fantasy"
 const val PACKAGE_ID = "com.frankhon.fantasymusic"
 
+const val DEFAULT_SONGS_IN_APP_COUNT = 4
+const val DEFAULT_SONGS_PAGE_LIMIT = 10
+
 const val PLAYER_CHANNEL_ID = "Player"
 const val ACTION_PREVIOUS = "com.frankhon.fantasy.Previous"
 const val ACTION_NEXT = "com.frankhon.fantasy.Next"

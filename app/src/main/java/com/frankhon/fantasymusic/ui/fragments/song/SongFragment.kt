@@ -15,13 +15,13 @@ import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.media.PlayMode
 import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
 import com.frankhon.fantasymusic.ui.fragments.BaseFragment
-import com.frankhon.fantasymusic.ui.fragments.main.MainViewModel
+import com.frankhon.fantasymusic.utils.DEFAULT_SONGS_PAGE_LIMIT
 import com.frankhon.fantasymusic.utils.popup.showMorePopup
-import com.frankhon.fantasymusic.utils.setData
 import com.frankhon.fantasymusic.utils.transferToSongItems
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.event.SongDeleteEvent
 import com.hon.mylogger.MyLogger
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -35,13 +35,15 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
     /**
      * Activity之间共享ViewModel
      */
-    private val model by activityViewModels<MainViewModel> {
-        MainViewModel.FACTORY(ServiceLocator.provideMusicRepository(), this, arguments)
+    private val model by activityViewModels<SongViewModel> {
+        SongViewModel.FACTORY(ServiceLocator.provideMusicRepository(), this, arguments)
     }
 
-    private var songs = mutableListOf<SimpleSong>()
     private lateinit var songAdapter: SongAdapter
     private lateinit var refreshLayout: SwipeRefreshLayout
+
+    private val songList
+        get() = model.songs
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,20 +65,10 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
                 manager.registerLifecycleObserver(this@SongFragment)
             }
         })
-        model.songs.observe(viewLifecycleOwner) {
-            MyLogger.d("setData: ${it.size}")
-            refreshLayout.isRefreshing = false
-            songs.run {
-                setData(it)
-                songAdapter.setData(
-                    transferToSongItems(),
-                    indexOf(AudioPlayerManager.getCurrentPlayerInfo()?.curSong)
-                )
-            }
-        }
-        //避免Fragment的View重建时，setData()两次
-        if (!isInstantiated) {
-            model.getSongs()
+        if (model.count == -1) {
+            loadSongs()
+        } else {
+            setData(model.songs, model.count)
         }
     }
 
@@ -94,20 +86,23 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onSongDelete(event: SongDeleteEvent) {
-        val index = songs.indexOf(event.song)
+        val index = songList.indexOf(event.song)
         if (index != -1) {
             model.deleteSong(index)
+            songAdapter.deleteSong(index)
         }
     }
 
+    // region Audio Lifecycle
     override fun onPrepare(song: SimpleSong, playMode: PlayMode, curIndex: Int, totalSize: Int) {
-        model.select(songs.indexOf(song))
+        model.select(song)
     }
 
     override fun onAudioStop() {
         // 取消选中
-        model.select(-1)
+        model.select(null)
     }
+    // endregion
 
     private fun initView(view: View) {
         refreshLayout = view.findViewById(R.id.srl_songs)
@@ -116,20 +111,35 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         refreshLayout.run {
             isRefreshing = true
             setOnRefreshListener {
-                model.getSongs()
+                loadSongs()
             }
         }
         songsList.run {
             layoutManager = LinearLayoutManager(context)
             adapter = SongAdapter(
+                pageLimit = DEFAULT_SONGS_PAGE_LIMIT,
                 onPlayAllClickListener = {
-                    AudioPlayerManager.setPlayList(songs)
+                    lifecycleScope.launchWhenResumed {
+                        val allSongs = model.getAllSongs()
+                        AudioPlayerManager.setPlayList(allSongs)
+                    }
                 },
                 onMoreClickListener = { view, index ->
-                    view.showMorePopup(songs[index], lifecycleScope)
+                    view.showMorePopup(songList[index], lifecycleScope)
                 }) { _, index ->
-                AudioPlayerManager.playAndAddIntoPlaylist(songs[index])
-            }.apply { songAdapter = this }
+                AudioPlayerManager.playAndAddIntoPlaylist(songList[index])
+            }.apply {
+                songAdapter = this
+                setOnLoadListener {
+                    lifecycleScope.launchWhenResumed {
+                        val moreSongs = model.loadMoreSongs()
+                        addSongs(
+                            moreSongs.transferToSongItems(),
+                            getCurrentSong()
+                        )
+                    }
+                }
+            }
             addItemDecoration(SongItemDecoration())
         }
         model.selected.observe(viewLifecycleOwner) {
@@ -137,4 +147,26 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
             songAdapter.select(it)
         }
     }
+
+    private fun loadSongs() {
+        lifecycleScope.launch {
+            val songs = model.loadSongs()
+            val count = model.getCount()
+            setData(songs, count)
+        }
+    }
+
+    private fun setData(songs: List<SimpleSong>, count: Int) {
+        MyLogger.d("setData: $count")
+        refreshLayout.isRefreshing = false
+        songAdapter.run {
+            setSongsCount(count)
+            setSongs(songs.transferToSongItems(), getCurrentSong())
+            if (songs.size == count) {
+                markNoMoreState()
+            }
+        }
+    }
+
+    private fun getCurrentSong() = AudioPlayerManager.getCurrentPlayerInfo()?.curSong
 }

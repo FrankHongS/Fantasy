@@ -25,6 +25,7 @@ data class SongItem(
 
         if (name != other.name) return false
         if (artist != other.artist) return false
+        if (isPlaying != other.isPlaying) return false
 
         return true
     }
@@ -32,6 +33,9 @@ data class SongItem(
     override fun hashCode(): Int {
         var result = name?.hashCode() ?: 0
         result = 31 * result + (artist?.hashCode() ?: 0)
+        result = 31 * result + isPlaying.hashCode()
         return result
     }
+
+
 }

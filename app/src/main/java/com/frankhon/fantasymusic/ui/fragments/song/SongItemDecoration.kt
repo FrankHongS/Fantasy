@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
+import com.frankhon.customview.paging.PagingAdapter
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.utils.color
 import com.frankhon.fantasymusic.utils.dp
@@ -28,11 +29,11 @@ class SongItemDecoration : RecyclerView.ItemDecoration() {
 
     override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         val count = parent.childCount
-        val itemCount = parent.adapter?.itemCount ?: 0
+        val dataSize = (parent.adapter as? PagingAdapter<*>)?.getDataSize() ?: 0
         for (pos in 0 until count) {
             val child = parent[pos]
             val adapterPos = parent.getChildAdapterPosition(child)
-            if (adapterPos == 0 || adapterPos == itemCount - 1) {
+            if (adapterPos == 0 || adapterPos == dataSize) {
                 continue
             }
             c.drawLine(

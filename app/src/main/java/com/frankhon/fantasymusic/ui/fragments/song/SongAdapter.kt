@@ -11,11 +11,13 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.frankhon.customview.paging.PagingAdapter
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.ui.base.BaseViewHolder
+import com.frankhon.fantasymusic.utils.compareTo
 import com.frankhon.fantasymusic.utils.safeSetText
-import com.frankhon.fantasymusic.utils.setData
 import com.frankhon.fantasymusic.utils.string
+import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.view.SongItem
 
 /**
@@ -23,20 +25,23 @@ import com.frankhon.fantasymusic.vo.view.SongItem
  * E-mail: v-shhong@microsoft.com
  */
 class SongAdapter(
+    pageLimit: Int,
     private val onPlayAllClickListener: (View) -> Unit,
     private val onMoreClickListener: (View, Int) -> Unit,
     private val onItemClickListener: (song: SongItem, index: Int) -> Unit
-) : RecyclerView.Adapter<BaseViewHolder<SongItem>>() {
+) : PagingAdapter<SongItem>(pageLimit) {
 
     companion object {
-        private const val TYPE_HEADER = 0
-        private const val TYPE_NORMAL = 1
+        private const val TYPE_HEADER = 4
     }
 
-    private val songs = mutableListOf<SongItem>()
-    private var curPlayingIndex = -1
+    private var curSong: SimpleSong? = null
+    private var songsCount = 0
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<SongItem> {
+    override fun onCreateNormalViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): BaseViewHolder<SongItem> {
         return when (viewType) {
             TYPE_HEADER -> HeaderViewHolder(
                 LayoutInflater.from(parent.context)
@@ -52,55 +57,65 @@ class SongAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return songs.size + 1
+    override fun onBindNormalViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (position == 0) {
+            (holder as? HeaderViewHolder)?.bindView(songsCount)
+        } else {
+            (holder as? SongViewHolder)?.bindView(position, dataList[position - 1])
+        }
     }
 
-    override fun getItemViewType(position: Int): Int {
+    override fun getItemCount(): Int {
+        return super.getItemCount() + 1
+    }
+
+    override fun getNormalItemViewType(position: Int): Int {
         return when (position) {
             0 -> TYPE_HEADER
-            else -> TYPE_NORMAL
+            else -> super.getNormalItemViewType(position)
         }
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<SongItem>, position: Int) {
-        if (position == 0) {
-            (holder as? HeaderViewHolder)?.bindView(songs.size)
-        } else {
-            holder.bindView(position, songs[position - 1])
-        }
+    fun setSongsCount(count: Int) {
+        this.songsCount = count
     }
 
-    fun setData(items: List<SongItem>, playingIndex: Int) {
-        if (items == songs) {
-            return
-        }
-        curPlayingIndex = playingIndex
-        songs.setData(items)
-        notifyDataChangedWithSelected(playingIndex)
+    fun setSongs(items: List<SongItem>, song: SimpleSong?) {
+        curSong = song
+        setData(items.map { songItem ->
+            songItem.also {
+                it.isPlaying = songItem.compareTo(song)
+            }
+        }, false)
     }
 
-    fun select(playingIndex: Int) {
-        if (curPlayingIndex == playingIndex) {
-            return
-        }
-        curPlayingIndex = playingIndex
-        notifyDataChangedWithSelected(playingIndex)
+    fun addSongs(items: List<SongItem>, song: SimpleSong?) {
+        curSong = song
+        addData(items.map { songItem ->
+            songItem.also {
+                it.isPlaying = songItem.compareTo(song)
+            }
+        })
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun deleteItem(index: Int) {
-        songs.removeAt(index)
+    fun select(song: SimpleSong?) {
+        if (curSong == song) {
+            return
+        }
+        curSong = song
+        dataList.map { songItem ->
+            songItem.also {
+                it.isPlaying = songItem.compareTo(curSong)
+            }
+        }
         notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun notifyDataChangedWithSelected(playingIndex: Int) {
-        songs.mapIndexed { index, songItem ->
-            songItem.also {
-                it.isPlaying = index == playingIndex
-            }
-        }
+    fun deleteSong(index: Int) {
+        songsCount--
+        dataList.removeAt(index)
         notifyDataSetChanged()
     }
 

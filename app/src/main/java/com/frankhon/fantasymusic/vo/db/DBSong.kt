@@ -22,6 +22,8 @@ data class DBSong(
     val picUrl: String,
     //是否可以删除，内置歌曲不支持删除
     @ColumnInfo(name = "able_to_delete")
-    var canDelete: Boolean = true
+    var canDelete: Boolean = true,
+    @ColumnInfo(name = "created_at")
+    val createdAt: Long = System.currentTimeMillis()
 )
 

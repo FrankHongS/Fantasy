@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
     implementation deps.kotlin.kotlin_lib
     implementation deps.kotlin.core_ktx
     implementation deps.kotlin.kotlin_coroutine
@@ -74,7 +74,7 @@ dependencies {
     implementation 'com.danikula:videocache:2.7.1'
 
     implementation deps.mylogger
-    implementation deps.simplesearchview
+    implementation deps.customview
 
     testImplementation deps.test.junit
     androidTestImplementation deps.test.runner

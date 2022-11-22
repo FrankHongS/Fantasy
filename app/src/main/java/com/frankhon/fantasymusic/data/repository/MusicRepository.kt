@@ -15,7 +15,14 @@ class MusicRepository(
     private val remoteDataSource: RemoteMusicDataSource
 ) {
 
-    suspend fun getSongs(): List<SimpleSong> {
+    suspend fun getSongs(page: Int, pageLimit: Int=DEFAULT_SONGS_PAGE_LIMIT): List<SimpleSong> {
+        return localDataSource.getSongsByPage(
+            limit = pageLimit,
+            offset = (page - 1) * pageLimit
+        ).transformToSimpleSongs()
+    }
+
+    suspend fun getAllSongs(): List<SimpleSong> {
         return localDataSource.getSongs().transformToSimpleSongs()
     }
 
@@ -43,5 +50,14 @@ class MusicRepository(
 
     suspend fun deleteSong(song: SimpleSong) {
         return localDataSource.deleteSong(song.transformToDBSong())
+    }
+
+    suspend fun getCount(): Int {
+        val count = localDataSource.getCount()
+        return if (count == 0) {
+            DEFAULT_SONGS_IN_APP_COUNT
+        } else {
+            count
+        }
     }
 }

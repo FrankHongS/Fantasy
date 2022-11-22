@@ -14,9 +14,9 @@ import kotlinx.coroutines.withContext
  */
 class LocalMusicDataSource(private val musicDao: MusicDao) {
 
-    suspend fun getSongs(): List<DBSong> {
-        var songs = musicDao.getSongs()
-        if (songs.isEmpty()) {
+    suspend fun getSongsByPage(limit: Int, offset: Int): List<DBSong> {
+        var songs = musicDao.getSongs(limit, offset)
+        if (songs.isEmpty() && offset == 0) {
             MyLogger.d("From assets")
             songs = withContext(Dispatchers.IO) {
                 getSongsFromAssets()
@@ -24,6 +24,17 @@ class LocalMusicDataSource(private val musicDao: MusicDao) {
             musicDao.insertSongs(songs.onEach { it.canDelete = false })
         } else {
             MyLogger.d("From db")
+        }
+        return songs
+    }
+
+    suspend fun getSongs(): List<DBSong> {
+        var songs = musicDao.getSongs()
+        if (songs.isEmpty()) {
+            songs = withContext(Dispatchers.IO) {
+                getSongsFromAssets()
+            }
+            musicDao.insertSongs(songs.onEach { it.canDelete = false })
         }
         return songs
     }
@@ -39,5 +50,9 @@ class LocalMusicDataSource(private val musicDao: MusicDao) {
             //数据库中删除成功之后，将本地歌曲文件删除
             deleteFile(song)
         }
+    }
+
+    suspend fun getCount(): Int {
+        return musicDao.getCount()
     }
 }

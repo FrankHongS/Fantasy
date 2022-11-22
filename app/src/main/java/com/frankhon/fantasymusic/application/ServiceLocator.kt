@@ -31,6 +31,12 @@ object ServiceLocator {
         }
     }
 
+    private val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE `songs` ADD COLUMN `created_at` INTEGER NOT NULL default 1")
+        }
+    }
+
     //endregion
 
     private val musicDatabase = Room.databaseBuilder(
@@ -40,6 +46,7 @@ object ServiceLocator {
     )
         .addMigrations(MIGRATION_1_2)
         .addMigrations(MIGRATION_2_3)
+        .addMigrations(MIGRATION_3_4)
         .fallbackToDestructiveMigration()
         .build()
 

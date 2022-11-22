@@ -34,7 +34,7 @@ ext.versions = [
         'eventbus'          : '3.1.1',
         'simplechartview'   : '0.0.3',
         'mylogger'          : '1.0.4',
-        'simplesearchview'  : 'v1.0.1',
+        'customview'        : 'v1.0.5',
 
         'junit'             : '4.12',
         'test'              : '1.2.0',
@@ -42,23 +42,23 @@ ext.versions = [
 ]
 
 ext.deps = [
-        'kotlin'          : [
+        'kotlin'         : [
                 'kotlin_lib'      : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin_version}",
                 'core_ktx'        : "androidx.core:core-ktx:${versions.core_ktx}",
                 'kotlin_coroutine': "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlin_coroutine}"
         ],
-        'navigation'      : [
+        'navigation'     : [
                 'navigation_fragment': "androidx.navigation:navigation-fragment:${versions.navigation}",
                 'navigation_ui'      : "androidx.navigation:navigation-ui:${versions.navigation}"
         ],
-        'room'            : [
+        'room'           : [
                 'room_ktx': "androidx.room:room-ktx:${versions.room}",
                 'compiler': "androidx.room:room-compiler:${versions.room}"
         ],
-        'datastore'       : [
+        'datastore'      : [
                 'preferences': "androidx.datastore:datastore-preferences:${versions.datastore}"
         ],
-        'support'         : [
+        'support'        : [
                 'appCompat'         : "androidx.appcompat:appcompat:${versions.supportLibrary}",
                 'material'          : "com.google.android.material:material:${versions.material}",
                 'cardview'          : "androidx.cardview:cardview:${versions.supportLibrary}",
@@ -66,40 +66,40 @@ ext.deps = [
                 'preference'        : "androidx.preference:preference:${versions.preference}",
                 'swiperefreshlayout': "androidx.swiperefreshlayout:swiperefreshlayout:${versions.swiperefreshlayout}"
         ],
-        'lifecycle'       : [
+        'lifecycle'      : [
                 'runtime'  : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
                 'viewmodel': "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}",
                 'livedata' : "androidx.lifecycle:lifecycle-livedata-ktx:${versions.lifecycle}"
         ],
-        'media'           : "androidx.media:media:${versions.media}",
-        'test'            : [
+        'media'          : "androidx.media:media:${versions.media}",
+        'test'           : [
                 'junit' : "junit:junit:${versions.junit}",
                 'runner': "androidx.test:runner:${versions.test}",
                 'rule'  : "androidx.test:rules:${versions.test}"
         ],
-        'espresso'        : [
+        'espresso'       : [
                 'core': "androidx.test.espresso:espresso-core:${versions.espresso}"
         ],
-        'glide'           : [
+        'glide'          : [
                 'root'    : "com.github.bumptech.glide:glide:${versions.glide}",
                 'compiler': "com.github.bumptech.glide:compiler:${versions.glide}"
         ],
-        'eventbus'        : "org.greenrobot:eventbus:${versions.eventbus}",
-        'datepicker'      : "com.wdullaer:materialdatetimepicker:${versions.datepicker}",
-        'retrofit'        : [
+        'eventbus'       : "org.greenrobot:eventbus:${versions.eventbus}",
+        'datepicker'     : "com.wdullaer:materialdatetimepicker:${versions.datepicker}",
+        'retrofit'       : [
                 'root'           : "com.squareup.retrofit2:retrofit:${versions.retrofit}",
                 'converter_gson' : "com.squareup.retrofit2:converter-gson:${versions.retrofit}",
                 'adapter_rxjava2': "com.squareup.retrofit2:adapter-rxjava2:${versions.retrofit}"
         ],
-        'okhttp_logging'  : "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}",
-        'rxJava'          : "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
-        'rxAndroid'       : "io.reactivex.rxjava2:rxandroid:${versions.rxAndroid}",
-        'rxPermissions'   : "com.github.tbruyelle:rxpermissions:${versions.rxPermissions}",
-        'butterknife'     : [
+        'okhttp_logging' : "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}",
+        'rxJava'         : "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
+        'rxAndroid'      : "io.reactivex.rxjava2:rxandroid:${versions.rxAndroid}",
+        'rxPermissions'  : "com.github.tbruyelle:rxpermissions:${versions.rxPermissions}",
+        'butterknife'    : [
                 'runtime' : "com.jakewharton:butterknife:${versions.butterknife}",
                 'compiler': "com.jakewharton:butterknife-compiler:${versions.butterknife}"
         ],
-        'simplechartview' : "com.hon.simplechartview:simplechartview:${versions.simplechartview}",
-        'mylogger'        : "com.frankhon.mylogger:mylogger:${versions.mylogger}",
-        'simplesearchview': "com.github.FrankHongS:LT-02:${versions.simplesearchview}"
+        'simplechartview': "com.hon.simplechartview:simplechartview:${versions.simplechartview}",
+        'mylogger'       : "com.frankhon.mylogger:mylogger:${versions.mylogger}",
+        'customview'     : "com.github.FrankHongS:LT-02:${versions.customview}"
 ]

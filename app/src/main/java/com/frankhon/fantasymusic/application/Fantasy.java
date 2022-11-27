@@ -24,8 +24,7 @@ public class Fantasy extends Application {
         super.onCreate();
         sContext = getApplicationContext();
 
-//        registerActivityLifecycleCallbacks(new FantasyActivityLifecycleCallback());
-
+        registerActivityLifecycleCallbacks(new FantasyActivityLifecycleCallback());
         createNotificationChannel();
 
         MyLogger.setLoggable(BuildConfig.DEBUG);

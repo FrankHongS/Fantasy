@@ -68,6 +68,7 @@ dependencies {
 
     implementation deps.glide.root
     annotationProcessor deps.glide.compiler
+    implementation 'jp.wasabeef:glide-transformations:4.3.0'
 
     implementation deps.eventbus
 

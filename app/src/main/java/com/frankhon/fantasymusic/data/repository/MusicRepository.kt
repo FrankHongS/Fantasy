@@ -15,10 +15,13 @@ class MusicRepository(
     private val remoteDataSource: RemoteMusicDataSource
 ) {
 
-    suspend fun getSongs(page: Int, pageLimit: Int=DEFAULT_SONGS_PAGE_LIMIT): List<SimpleSong> {
+    suspend fun getSongs(
+        offset: Int = 0,
+        pageLimit: Int = DEFAULT_SONGS_PAGE_LIMIT
+    ): List<SimpleSong> {
         return localDataSource.getSongsByPage(
             limit = pageLimit,
-            offset = (page - 1) * pageLimit
+            offset = offset
         ).transformToSimpleSongs()
     }
 

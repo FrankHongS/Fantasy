@@ -12,6 +12,7 @@ import android.view.animation.LinearInterpolator
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatImageView
+import com.bumptech.glide.Glide
 import com.frankhon.fantasymusic.R
 import kotlin.math.min
 
@@ -188,7 +189,7 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
         bitmapPaint.alpha = alpha
     }
 
-    fun startUpdateProgress(progress: Int, total: Int) {
+    fun updateProgress(progress: Int, total: Int) {
         if (total != 0) {
             progressRotatedDegree = progress * 360f / total
             invalidate()
@@ -196,11 +197,7 @@ class AnimatedAudioCircleImageView @JvmOverloads constructor(
     }
 
     fun startRotateAnimator() {
-        imageAnimator.run {
-            if (!isStarted || !isRunning) {
-                start()
-            }
-        }
+        imageAnimator.start()
     }
 
     fun cancelRotateAnimator() {

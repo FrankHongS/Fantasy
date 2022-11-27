@@ -4,6 +4,11 @@
         <attr name="panelHeight" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="AnimatedAudioToggleButton">
+        <attr name="tintColor" format="color" />
+        <attr name="loadingBarPadding" format="dimension" />
+    </declare-styleable>
+
     <declare-styleable name="AnimatedAudioCircleImageView">
         <attr name="borderWidth" format="dimension" />
         <attr name="borderColor" format="color" />

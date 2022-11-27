@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.frankhon.customview.paging.PagingAdapter
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.ui.base.BaseViewHolder
@@ -19,6 +18,7 @@ import com.frankhon.fantasymusic.utils.safeSetText
 import com.frankhon.fantasymusic.utils.string
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.view.SongItem
+import kotlin.math.max
 
 /**
  * Created by Frank_Hon on 11/12/2020.
@@ -76,11 +76,8 @@ class SongAdapter(
         }
     }
 
-    fun setSongsCount(count: Int) {
-        this.songsCount = count
-    }
-
-    fun setSongs(items: List<SongItem>, song: SimpleSong?) {
+    fun setSongs(count: Int, items: List<SongItem>, song: SimpleSong?) {
+        songsCount = count
         curSong = song
         setData(items.map { songItem ->
             songItem.also {
@@ -96,6 +93,12 @@ class SongAdapter(
                 it.isPlaying = songItem.compareTo(song)
             }
         })
+        //如果加载更多时，item总数大于count，更新count，这种情况一般发生在下载新歌曲之后
+        val count = max(dataList.size, songsCount)
+        if (count != songsCount) {
+            songsCount = count
+            notifyItemChanged(0)
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -109,7 +112,7 @@ class SongAdapter(
                 it.isPlaying = songItem.compareTo(curSong)
             }
         }
-        notifyDataSetChanged()
+        notifyItemRangeChanged(1, dataList.size)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -136,7 +139,7 @@ class SongAdapter(
             item.run {
                 Glide.with(itemView)
                     .load(songPic)
-                    .apply(RequestOptions.placeholderOf(R.mipmap.ic_launcher))
+                    .placeholder(R.drawable.default_placeholder)
                     .into(songPicView)
                 songName.text = name
                 artistName.text = artist

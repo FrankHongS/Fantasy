@@ -90,6 +90,12 @@ object LyricsManager : PlayerLifecycleObserver {
         reset()
     }
 
+    suspend fun getLyrics(song: SimpleSong): List<Pair<Long, String>>? {
+        return withContext(Dispatchers.IO) {
+            lyricsCache.get(song)
+        }
+    }
+
     override fun onPlayerConnected(playerInfo: CurrentPlayerInfo?) {
         MyLogger.d("onPlayerConnected: ${playerInfo?.curSong}")
         playerInfo?.curSong?.let {
@@ -107,13 +113,11 @@ object LyricsManager : PlayerLifecycleObserver {
         curLyricsIndex = 0
     }
 
-    private fun getLyricsFromCache(it: SimpleSong): Job {
+    private fun getLyricsFromCache(song: SimpleSong) {
         lyricListJob?.cancel()
         lyricListJob = Job()
-        return mainScope.launch(lyricListJob!!) {
-            withContext(Dispatchers.IO) {
-                curLyrics = lyricsCache.get(it)
-            }
+        mainScope.launch(lyricListJob!!) {
+            curLyrics = getLyrics(song)
         }
     }
 

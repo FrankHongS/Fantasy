@@ -15,15 +15,15 @@ class PlayModeImageButton @JvmOverloads constructor(
 ) : AppCompatImageButton(context, attrs, defStyleAttr) {
 
     enum class State {
-        SHUFFLE,
         LOOP_LIST,
+        SHUFFLE,
         LOOP_SINGLE
     }
 
     var playMode = State.LOOP_LIST
         set(value) {
-            val pos = getPositionByMode(value);
-            setImageResource(icons[pos])
+            position = getPositionByMode(value);
+            setImageResource(icons[position])
             field = value
         }
 
@@ -44,6 +44,8 @@ class PlayModeImageButton @JvmOverloads constructor(
             playMode = getModeByPosition(position)
             listener?.invoke(playMode)
         }
+        setImageResource(icons.first())
+        background = null
     }
 
     fun setIcons(icons: List<Int>) {

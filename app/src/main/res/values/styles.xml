@@ -7,4 +7,9 @@
         <item name="android:fontFamily">@font/product_font_family</item>
     </style>
 
+    <style name="TransitionsTheme" parent="AppTheme">
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/transition_slide</item>
+    </style>
+
 </resources>

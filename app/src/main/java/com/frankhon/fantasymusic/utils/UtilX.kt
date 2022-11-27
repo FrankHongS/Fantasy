@@ -1,9 +1,12 @@
 package com.frankhon.fantasymusic.utils
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.Color
+import android.os.Build
 import android.view.View
 import androidx.annotation.ArrayRes
 import androidx.annotation.ColorRes
@@ -23,11 +26,6 @@ import java.util.*
  * E-mail: frank_hon@foxmail.com
  */
 
-fun dp2px(dp: Int): Int {
-    val density = Fantasy.getAppContext().resources.displayMetrics.density
-    return (dp * density + 0.5f).toInt()
-}
-
 /**
  * 扩展属性，DSL
  */
@@ -40,75 +38,9 @@ fun String?.matchesUri(): Boolean {
     return this?.matches(Regex("^(https?://|file://).*")) ?: false
 }
 
-inline fun <reified T> getSystemService(name: String): T {
-    return Fantasy.getAppContext().getSystemService(name) as T
-}
-
-val appContext = Fantasy.getAppContext() as Context
-
-fun sendBroadcast(intent: Intent) {
-    Fantasy.getAppContext().sendBroadcast(intent)
-}
-
-val packageId: String
-    get() = Fantasy.getAppContext().packageName
-
-fun msToMMSS(millis: Long): String {
-    try {
-        val sdf = SimpleDateFormat("mm:ss", Locale.CHINA)
-        return sdf.format(millis)
-    } catch (e: IllegalArgumentException) {
-        MyLogger.e(e)
-    }
-    return ""
-}
-
-fun formatTime(millis: Long): String {
-    try {
-        val sdf = SimpleDateFormat("MM-dd HH:mm:ss", Locale.CHINA)
-        return sdf.format(millis)
-    } catch (e: IllegalArgumentException) {
-        MyLogger.e(e)
-    }
-    return ""
-}
-
-/**
- * @return 毫秒数 milli seconds
- */
-fun transferLyricsTime(timeStr: String): Long {
-    var tempList = timeStr.split(':')
-    var sum = 0L
-    if (tempList.size > 1) {
-        val minutes = tempList[0].toInt()
-        sum += minutes * 60 * 1000
-        val rest = tempList[1]
-        tempList = rest.split('.')
-        if (tempList.size > 1) {
-            val seconds = tempList[0].toInt()
-            val milliSeconds = tempList[1].toInt()
-            sum += seconds * 1000 + milliSeconds
-            return sum
-        }
-    }
-    return 0L
-}
-
 fun <T> MutableList<T>.setData(data: List<T>) {
     clear()
     addAll(data)
-}
-
-fun bindService(
-    service: Intent,
-    conn: ServiceConnection,
-    flags: Int
-): Boolean {
-    return appContext.bindService(service, conn, flags)
-}
-
-fun startService(intent: Intent) {
-    appContext.startService(intent)
 }
 
 fun Context.drawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(this, resId)
@@ -119,29 +51,24 @@ fun View.drawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(context, 
 
 fun View.color(@ColorRes resId: Int) = ContextCompat.getColor(context, resId)
 
-fun string(@StringRes resId: Int) = Fantasy.getAppContext().getString(resId)
-
-fun color(@ColorRes resId: Int) = Fantasy.getAppContext().color(resId)
-
-fun drawable(@DrawableRes resId: Int) = Fantasy.getAppContext().drawable(resId)
-
-fun getStringArray(@ArrayRes resId: Int): Array<String> =
-    appContext.resources.getStringArray(resId)
-
-fun getIntegerArray(@ArrayRes resId: Int): IntArray =
-    appContext.resources.getIntArray(resId)
-
 inline fun <reified T : Activity> Context.navigate() {
     startActivity(Intent(this, T::class.java))
 }
 
-fun stopAudio() {
-    startService(
-        Intent(appContext, AudioPlayerService::class.java)
-            .apply {
-                action = ACTION_STOP
-            }
-    )
+inline fun <reified T : Activity> Context.navigateInSingleTop() {
+    startActivity(Intent(this, T::class.java)
+        .apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        })
+}
+
+inline fun <reified T : Activity> Context.navigateWithTransitions() {
+    (this as? Activity)?.let {
+        startActivity(
+            Intent(it, T::class.java),
+            ActivityOptions.makeSceneTransitionAnimation(it).toBundle()
+        )
+    }
 }
 
 /**
@@ -149,4 +76,27 @@ fun stopAudio() {
  */
 inline fun <reified T : Fragment> NavHostFragment.getSpecifiedFragment(): T? {
     return childFragmentManager.fragments.first() as? T
+}
+
+@Suppress("DEPRECATION")
+fun Activity.toImmersiveMode() {
+    val decorView = window.decorView
+    val option =
+        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+//                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or
+//                    View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+    decorView.systemUiVisibility = option
+    window.run {
+
+    }
+    window.run {
+        statusBarColor = Color.TRANSPARENT
+        navigationBarColor = Color.TRANSPARENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // 有些设备导航栏无法变透明，需额外设置这个
+            isNavigationBarContrastEnforced = false
+        }
+    }
 }

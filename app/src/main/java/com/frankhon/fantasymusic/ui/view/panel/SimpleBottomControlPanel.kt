@@ -11,15 +11,13 @@ import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.media.*
 import com.frankhon.fantasymusic.media.observer.PlayerConfigurationObserver
 import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
+import com.frankhon.fantasymusic.ui.activities.SongDetailActivity
 import com.frankhon.fantasymusic.ui.view.AnimatedAudioCircleImageView
 import com.frankhon.fantasymusic.ui.view.AnimatedAudioToggleButton
-import com.frankhon.fantasymusic.utils.color
-import com.frankhon.fantasymusic.utils.dp
+import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.utils.popup.dismissPlaylistPopup
 import com.frankhon.fantasymusic.utils.popup.showPlaylistPopup
 import com.frankhon.fantasymusic.utils.popup.updatePlaylistPopup
-import com.frankhon.fantasymusic.utils.showToast
-import com.frankhon.fantasymusic.utils.transferToSongItems
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.hon.mylogger.MyLogger
@@ -53,22 +51,7 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
         ViewCompat.setElevation(this, 8.dp.toFloat())
         setDefaultPanel()
 
-        toggleButton.setOnControlButtonClickListener { curState ->
-            when (curState) {
-                AnimatedAudioToggleButton.ControlButtonState.PLAYING -> {
-                    val currentPlayerInfo = AudioPlayerManager.getCurrentPlayerInfo()
-                    currentPlayerInfo?.run {
-                        if (curPlayerState == PlayerState.ERROR) {
-                            AudioPlayerManager.play(curSong)
-                        } else {
-                            AudioPlayerManager.resume()
-                        }
-                    } ?: kotlin.run { AudioPlayerManager.resume() }
-                }
-                AnimatedAudioToggleButton.ControlButtonState.PAUSED -> AudioPlayerManager.pause()
-                else -> {}
-            }
-        }
+        toggleButton.bindClickListener()
 
         ib_next_song.setOnClickListener {
             AudioPlayerManager.next()
@@ -84,7 +67,12 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
                 }
             }
         }
-
+        setOnClickListener {
+            AudioPlayerManager.getCurrentPlayerInfo()?.takeIf { !it.curPlayerState.isStopped() }
+                ?.run {
+                    context.navigateWithTransitions<SongDetailActivity>()
+                }
+        }
     }
 
     fun connectAudioPlayer() {
@@ -122,7 +110,7 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
             }
             curSong?.let {
                 updateSongPanel(it)
-                updatePlayControlIcon(curPlayerState, false)
+                toggleButton.updatePlayControlIcon(curPlayerState, false)
                 updateNextButton(curPlayMode, curSongIndex, curPlaylist.size)
                 // update album image
                 if (curPlayerState.isPlaying()) {
@@ -132,7 +120,7 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
                     songName.isSelected = false
                     albumImage.cancelRotateAnimator()
                 }
-                albumImage.startUpdateProgress(curPlaybackPosition.toInt(), it.duration.toInt())
+                albumImage.updateProgress(curPlaybackPosition.toInt(), it.duration.toInt())
             }
         }
     }
@@ -140,26 +128,26 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
     override fun onPrepare(song: SimpleSong, playMode: PlayMode, curIndex: Int, totalSize: Int) {
         albumImage.cancelRotateAnimator()
         updateSongPanel(song)
-        updatePlayControlIcon(PlayerState.PREPARING)
+        toggleButton.updatePlayControlIcon(PlayerState.PREPARING)
         updateNextButton(playMode, curIndex, totalSize)
         //更新播放列表中当前播放歌曲
         ib_panel_playlist.updatePlaylistPopup(index = curIndex)
     }
 
     override fun onPlaying(song: SimpleSong) {
-        updatePlayControlIcon(PlayerState.PLAYING)
+        toggleButton.updatePlayControlIcon(PlayerState.PLAYING)
         albumImage.startRotateAnimator()
         songName.isSelected = true
     }
 
     override fun onAudioResume(song: SimpleSong) {
-        updatePlayControlIcon(PlayerState.RESUMED)
+        toggleButton.updatePlayControlIcon(PlayerState.RESUMED)
         albumImage.resumeRotateAnimator()
         songName.isSelected = true
     }
 
     override fun onAudioPause() {
-        updatePlayControlIcon(PlayerState.PAUSED)
+        toggleButton.updatePlayControlIcon(PlayerState.PAUSED)
         albumImage.pauseRotateAnimator()
         songName.isSelected = false
     }
@@ -169,11 +157,11 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
     }
 
     override fun onFinished() {
-        updatePlayControlIcon(PlayerState.FINISHED)
+        toggleButton.updatePlayControlIcon(PlayerState.FINISHED)
     }
 
     override fun onError(errorMsg: String) {
-        updatePlayControlIcon(PlayerState.PAUSED)
+        toggleButton.updatePlayControlIcon(PlayerState.PAUSED)
         if (errorMsg.isNotEmpty()) {
             showToast(errorMsg)
         }
@@ -182,7 +170,7 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
     // endregion
 
     override fun onProgressUpdated(curPosition: Long, duration: Long) {
-        albumImage.startUpdateProgress(curPosition.toInt(), duration.toInt())
+        albumImage.updateProgress(curPosition.toInt(), duration.toInt())
     }
 
     override fun onPlaylistChanged(playMode: PlayMode, playlist: List<SimpleSong>, curIndex: Int) {
@@ -198,7 +186,7 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
             isSelected = false
         }
         artistName.text = context.getText(R.string.welcome_text)
-        albumImage.reset(R.mipmap.ic_launcher)
+        albumImage.reset(R.drawable.default_placeholder)
         ib_next_song.isEnabled = false
         toggleButton.setPlayState(AnimatedAudioToggleButton.ControlButtonState.INITIAL)
     }
@@ -207,27 +195,11 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
         song.run {
             Glide.with(context)
                 .load(picUrl)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
+                .placeholder(R.drawable.default_placeholder)
+                .error(R.drawable.default_placeholder)
                 .into(albumImage)
             songName.text = name
             artistName.text = artist
-        }
-    }
-
-    private fun updatePlayControlIcon(playerState: PlayerState, shouldAnimate: Boolean = true) {
-        when (playerState) {
-            PlayerState.PLAYING, PlayerState.RESUMED -> toggleButton.setPlayState(
-                AnimatedAudioToggleButton.ControlButtonState.PLAYING, shouldAnimate
-            )
-            PlayerState.PREPARING -> toggleButton.setPlayState(
-                AnimatedAudioToggleButton.ControlButtonState.PREPARING,
-                shouldAnimate
-            )
-            else -> toggleButton.setPlayState(
-                AnimatedAudioToggleButton.ControlButtonState.PAUSED,
-                shouldAnimate
-            )
         }
     }
 

@@ -16,8 +16,9 @@
 
     <com.frankhon.fantasymusic.ui.view.AnimatedAudioToggleButton
             android:id="@+id/ib_player_toggle"
-            android:layout_width="48dp"
-            android:layout_height="match_parent" />
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            tools:layout_width="48dp" />
 
     <ImageButton
             android:id="@+id/ib_next_song"

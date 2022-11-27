@@ -10,6 +10,9 @@ import com.frankhon.fantasymusic.application.Fantasy
  */
 
 fun showToast(content: String) {
+    if (content.isEmpty()) {
+        return
+    }
     Toast.makeText(Fantasy.getAppContext(), content, Toast.LENGTH_SHORT).show()
 }
 

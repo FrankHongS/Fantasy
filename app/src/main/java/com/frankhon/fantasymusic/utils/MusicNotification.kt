@@ -24,6 +24,7 @@ import com.frankhon.fantasymusic.media.AudioPlayerService
 import com.frankhon.fantasymusic.media.PlayMode
 import com.frankhon.fantasymusic.media.isPlayingInNotification
 import com.frankhon.fantasymusic.ui.activities.MainActivity
+import com.frankhon.fantasymusic.ui.activities.SongDetailActivity
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 
@@ -156,7 +157,7 @@ private fun buildNotification(
     val contentIntent = PendingIntent.getActivity(
         context,
         1,
-        Intent(context, MainActivity::class.java),
+        Intent(context, SongDetailActivity::class.java),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
     return NotificationCompat.Builder(context, PLAYER_CHANNEL_ID)
@@ -311,7 +312,7 @@ fun buildNormalMediaNotification(
     val contentIntent = PendingIntent.getActivity(
         context,
         1,
-        Intent(context, MainActivity::class.java),
+        Intent(context, SongDetailActivity::class.java),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
 

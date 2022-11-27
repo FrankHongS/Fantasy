@@ -29,15 +29,15 @@
                         app:layout_scrollFlags="scroll|enterAlways"
                         app:menu="@menu/menu_main"
                         app:title="@string/app_name"
-                        app:titleTextColor="@color/colorTitle" />
+                        app:titleTextColor="@color/colorWhiteA" />
 
                 <com.google.android.material.tabs.TabLayout
                         android:id="@+id/tl_main"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:tabIndicatorHeight="4dp"
-                        app:tabSelectedTextColor="@color/colorTitle"
-                        app:tabTextColor="@color/secondText" />
+                        app:tabSelectedTextColor="@color/colorWhiteA"
+                        app:tabTextColor="@color/colorWhiteD" />
 
             </com.google.android.material.appbar.AppBarLayout>
 

@@ -180,7 +180,8 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
             viewDragHelper.cancel()
             return false
         }
-        return viewDragHelper.shouldInterceptTouchEvent(ev)
+        val result = viewDragHelper.shouldInterceptTouchEvent(ev)
+        return result
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -260,6 +261,8 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
     fun isAllowDragging(allowDragging: Boolean) {
         this.allowDragging = allowDragging
     }
+
+    fun isCollapsed() = panelState == 0
 
     private class SavedState : AbsSavedState {
         var panelState = 0

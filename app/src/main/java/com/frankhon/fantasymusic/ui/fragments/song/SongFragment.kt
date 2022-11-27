@@ -18,6 +18,7 @@ import com.frankhon.fantasymusic.ui.fragments.BaseFragment
 import com.frankhon.fantasymusic.utils.DEFAULT_SONGS_PAGE_LIMIT
 import com.frankhon.fantasymusic.utils.popup.showMorePopup
 import com.frankhon.fantasymusic.utils.transferToSongItems
+import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.event.SongDeleteEvent
 import com.hon.mylogger.MyLogger
@@ -93,14 +94,18 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         }
     }
 
+    override fun onPlayerConnected(playerInfo: CurrentPlayerInfo?) {
+        songAdapter.select(playerInfo?.curSong)
+    }
+
     // region Audio Lifecycle
     override fun onPrepare(song: SimpleSong, playMode: PlayMode, curIndex: Int, totalSize: Int) {
-        model.select(song)
+        songAdapter.select(song)
     }
 
     override fun onAudioStop() {
         // 取消选中
-        model.select(null)
+        songAdapter.select(null)
     }
     // endregion
 
@@ -116,6 +121,7 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         }
         songsList.run {
             layoutManager = LinearLayoutManager(context)
+            itemAnimator = null
             adapter = SongAdapter(
                 pageLimit = DEFAULT_SONGS_PAGE_LIMIT,
                 onPlayAllClickListener = {
@@ -132,7 +138,7 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
                 songAdapter = this
                 setOnLoadListener {
                     lifecycleScope.launchWhenResumed {
-                        val moreSongs = model.loadMoreSongs()
+                        val moreSongs = model.loadMoreSongs(offset = getDataSize())
                         addSongs(
                             moreSongs.transferToSongItems(),
                             getCurrentSong()
@@ -141,10 +147,6 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
                 }
             }
             addItemDecoration(SongItemDecoration())
-        }
-        model.selected.observe(viewLifecycleOwner) {
-            MyLogger.d("select: $it $songAdapter")
-            songAdapter.select(it)
         }
     }
 
@@ -160,8 +162,7 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         MyLogger.d("setData: $count")
         refreshLayout.isRefreshing = false
         songAdapter.run {
-            setSongsCount(count)
-            setSongs(songs.transferToSongItems(), getCurrentSong())
+            setSongs(count, songs.transferToSongItems(), getCurrentSong())
             if (songs.size == count) {
                 markNoMoreState()
             }

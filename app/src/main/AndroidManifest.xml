@@ -21,7 +21,8 @@
         <activity
                 android:name=".ui.activities.MainActivity"
                 android:exported="true"
-                android:launchMode="singleTask">
+                android:screenOrientation="portrait"
+                tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -37,6 +38,12 @@
                         android:scheme="content" />
             </intent-filter>
         </activity>
+        <activity
+                android:name=".ui.activities.SongDetailActivity"
+                android:launchMode="singleTask"
+                android:screenOrientation="portrait"
+                android:theme="@style/TransitionsTheme"
+                tools:ignore="LockedOrientationActivity" />
         <activity
                 android:name=".ui.activities.about.AboutActivity"
                 android:theme="@style/CustomActionBar" />

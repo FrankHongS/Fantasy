@@ -6,14 +6,19 @@
     <color name="colorAccent">#9E9E9E</color>
     <color name="colorBackground">#F2F2F2</color>
     <color name="colorContentBackground">#FFFFFF</color>
+    <color name="colorDetailBackground">#AA333333</color>
     <color name="ic_launcher_background">#795548</color>
 
     <color name="colorActionBar">#FFFFFF</color>
     <color name="colorLyricsText">#FFFFFF</color>
     <color name="primaryText">#212121</color>
     <color name="colorIcon">#212121</color>
-    <color name="colorTitle">#FFFFFF</color>
-    <color name="secondText">#d0d0d0</color>
+    <color name="colorWhiteA">#FFFFFF</color>
+    <color name="colorWhiteB">#EEEEEE</color>
+    <color name="colorWhiteC">#E0E0E0</color>
+    <color name="colorWhiteD">#D0D0D0</color>
+    <color name="colorWhiteE">#ADADAD</color>
+    <color name="colorIconWhite">#FFFFFF</color>
     <color name="highlightText">#FF5722</color>
     <color name="buttonText">#F57F17</color>
 

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.SeekBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
@@ -13,6 +12,7 @@ import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.media.*
 import com.frankhon.fantasymusic.media.observer.PlayerConfigurationObserver
 import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
+import com.frankhon.fantasymusic.ui.activities.SongDetailActivity
 import com.frankhon.fantasymusic.ui.view.AnimatedAudioToggleButton
 import com.frankhon.fantasymusic.ui.view.PlayModeImageButton
 import com.frankhon.fantasymusic.utils.*
@@ -44,58 +44,18 @@ class HomeBottomControlPanel @JvmOverloads constructor(
         ViewCompat.setElevation(this, 8.dp.toFloat())
         setDefaultPanel()
 
-        ib_player_toggle.setOnControlButtonClickListener { curState ->
-            when (curState) {
-                AnimatedAudioToggleButton.ControlButtonState.PLAYING -> {
-                    val currentPlayerInfo = AudioPlayerManager.getCurrentPlayerInfo()
-                    currentPlayerInfo?.run {
-                        if (curPlayerState == PlayerState.ERROR) {
-                            AudioPlayerManager.play(curSong)
-                        } else {
-                            AudioPlayerManager.resume()
-                        }
-                    } ?: kotlin.run { AudioPlayerManager.resume() }
-                }
-                AnimatedAudioToggleButton.ControlButtonState.PAUSED -> AudioPlayerManager.pause()
-                else -> {}
-            }
-        }
+        ib_player_toggle.bindClickListener()
+
         ib_next_song.setOnClickListener {
             AudioPlayerManager.next()
         }
         ib_previous_song.setOnClickListener {
             AudioPlayerManager.previous()
         }
-        ib_play_mode.setPlayModeListener {
-            val toastText = when (it) {
-                PlayModeImageButton.State.SHUFFLE -> {
-                    AudioPlayerManager.setPlayMode(PlayMode.SHUFFLE)
-                    string(R.string.play_mode_shuffle)
-                }
-                PlayModeImageButton.State.LOOP_SINGLE -> {
-                    AudioPlayerManager.setPlayMode(PlayMode.LOOP_SINGLE)
-                    string(R.string.play_mode_single_loop)
-                }
-                PlayModeImageButton.State.LOOP_LIST -> {
-                    AudioPlayerManager.setPlayMode(PlayMode.LOOP_LIST)
-                    string(R.string.play_mode_list_loop)
-                }
-            }
-            showToast(toastText)
-        }
-        sb_play_progress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-            }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
-                seekBar.tag = true
-            }
+        ib_play_mode.bindClickListener()
+        sb_play_progress.bindChangeListener()
 
-            override fun onStopTrackingTouch(seekBar: SeekBar) {
-                seekBar.tag = false
-                AudioPlayerManager.seekTo(seekBar.progress)
-            }
-        })
         ib_playlist.setOnClickListener {
             val currentPlayerInfo = AudioPlayerManager.getCurrentPlayerInfo()
             currentPlayerInfo?.run {
@@ -109,6 +69,13 @@ class HomeBottomControlPanel @JvmOverloads constructor(
         }
         ib_schedule_pause.setOnClickListener {
             it.showSchedulePopup()
+        }
+
+        view_panel_mask.setOnClickListener {
+            AudioPlayerManager.getCurrentPlayerInfo()?.takeIf { !it.curPlayerState.isStopped() }
+                ?.run {
+                    context.navigateWithTransitions<SongDetailActivity>()
+                }
         }
     }
 
@@ -146,13 +113,18 @@ class HomeBottomControlPanel @JvmOverloads constructor(
             }
             curSong?.let {
                 updateSongPanel(it)
-                updatePlayControlIcon(curPlayerState, false)
+                ib_player_toggle.updatePlayControlIcon(curPlayerState, false)
                 updatePreviousNextButton(curPlayMode, curSongIndex, curPlaylist.size)
                 ib_play_mode.playMode = PlayModeImageButton.State.valueOf(curPlayMode.name)
-                updateSongDuration(it)
                 // update progress
+                updateSongDuration(it)
                 tv_current_time.text = msToMMSS(curPlaybackPosition)
                 sb_play_progress.progress = curPlaybackPosition.toInt()
+                iv_song_bottom_pic.updateProgress(
+                    curPlaybackPosition.toInt(),
+                    it.duration.toInt()
+                )
+                // update lyrics
                 LyricsManager.run {
                     compareAndGetLyric(curPlaybackPosition).let { content ->
                         tv_song_lyrics.safeSetText(content)
@@ -166,10 +138,6 @@ class HomeBottomControlPanel @JvmOverloads constructor(
                     tv_bottom_song_name.isSelected = false
                     iv_song_bottom_pic.cancelRotateAnimator()
                 }
-                iv_song_bottom_pic.startUpdateProgress(
-                    curPlaybackPosition.toInt(),
-                    it.duration.toInt()
-                )
             }
         }
     }
@@ -178,7 +146,7 @@ class HomeBottomControlPanel @JvmOverloads constructor(
         tv_song_lyrics.isVisible = false
         iv_song_bottom_pic.cancelRotateAnimator()
         updateSongPanel(song)
-        updatePlayControlIcon(PlayerState.PREPARING)
+        ib_player_toggle.updatePlayControlIcon(PlayerState.PREPARING)
         updatePreviousNextButton(playMode, curIndex, totalSize)
         //更新播放列表中当前播放歌曲
         ib_playlist.updatePlaylistPopup(index = curIndex)
@@ -186,19 +154,19 @@ class HomeBottomControlPanel @JvmOverloads constructor(
 
     override fun onPlaying(song: SimpleSong) {
         updateSongDuration(song)
-        updatePlayControlIcon(PlayerState.PLAYING)
+        ib_player_toggle.updatePlayControlIcon(PlayerState.PLAYING)
         iv_song_bottom_pic.startRotateAnimator()
         tv_bottom_song_name.isSelected = true
     }
 
     override fun onAudioResume(song: SimpleSong) {
-        updatePlayControlIcon(PlayerState.RESUMED)
+        ib_player_toggle.updatePlayControlIcon(PlayerState.RESUMED)
         iv_song_bottom_pic.resumeRotateAnimator()
         tv_bottom_song_name.isSelected = true
     }
 
     override fun onAudioPause() {
-        updatePlayControlIcon(PlayerState.PAUSED)
+        ib_player_toggle.updatePlayControlIcon(PlayerState.PAUSED)
         iv_song_bottom_pic.pauseRotateAnimator()
         tv_bottom_song_name.isSelected = false
     }
@@ -208,25 +176,24 @@ class HomeBottomControlPanel @JvmOverloads constructor(
     }
 
     override fun onFinished() {
-        updatePlayControlIcon(PlayerState.FINISHED)
+        ib_player_toggle.updatePlayControlIcon(PlayerState.FINISHED)
     }
 
     override fun onError(errorMsg: String) {
-        updatePlayControlIcon(PlayerState.PAUSED)
-        if (errorMsg.isNotEmpty()) {
-            showToast(errorMsg)
-        }
+        ib_player_toggle.updatePlayControlIcon(PlayerState.PAUSED)
+        showToast(errorMsg)
     }
     //endregion
 
     //region Audio player configuration
     override fun onProgressUpdated(curPosition: Long, duration: Long) {
-        iv_song_bottom_pic.startUpdateProgress(curPosition.toInt(), duration.toInt())
+        iv_song_bottom_pic.updateProgress(curPosition.toInt(), duration.toInt())
         tv_current_time.text = msToMMSS(curPosition)
-        val isTracking = (sb_play_progress.tag as? Boolean) ?: false
-        //未拖拽时更新进度条
-        if (!isTracking) {
-            sb_play_progress.progress = curPosition.toInt()
+        sb_play_progress.run {
+            //未拖拽时更新进度条
+            if (!isTracking) {
+                progress = curPosition.toInt()
+            }
         }
         LyricsManager.run {
             compareAndGetLyric(curPosition)?.let { tv_song_lyrics.safeSetText(it) }
@@ -246,9 +213,9 @@ class HomeBottomControlPanel @JvmOverloads constructor(
     //endregion
 
     private fun setDefaultPanel() {
-        iv_song_bottom_pic.reset(R.mipmap.ic_launcher)
+        iv_song_bottom_pic.reset(R.drawable.default_placeholder)
         tv_current_time.text = msToMMSS(0)
-        tv_song_duration.text = ""
+        tv_song_duration.text = msToMMSS(0)
         tv_bottom_song_name.run {
             text = string(R.string.app_name)
             isSelected = false
@@ -268,8 +235,8 @@ class HomeBottomControlPanel @JvmOverloads constructor(
                 // Glide可以感知Activity的生命周期，onStop停止加载，onStart恢复加载
                 Glide.with(it)
                     .load(picUrl)
-                    .placeholder(R.mipmap.ic_launcher)
-                    .error(R.mipmap.ic_launcher)
+                    .placeholder(R.drawable.default_placeholder)
+                    .error(R.drawable.default_placeholder)
                     .into(iv_song_bottom_pic)
                 tv_bottom_song_name.text = name
                 tv_bottom_artist_name.text = artist
@@ -280,22 +247,6 @@ class HomeBottomControlPanel @JvmOverloads constructor(
                             " isFinishing=${(context as? Activity)?.isFinishing}"
                 )
             }
-        }
-    }
-
-    private fun updatePlayControlIcon(playerState: PlayerState, shouldAnimate: Boolean = true) {
-        when (playerState) {
-            PlayerState.PLAYING, PlayerState.RESUMED -> ib_player_toggle.setPlayState(
-                AnimatedAudioToggleButton.ControlButtonState.PLAYING, shouldAnimate
-            )
-            PlayerState.PREPARING -> ib_player_toggle.setPlayState(
-                AnimatedAudioToggleButton.ControlButtonState.PREPARING,
-                shouldAnimate
-            )
-            else -> ib_player_toggle.setPlayState(
-                AnimatedAudioToggleButton.ControlButtonState.PAUSED,
-                shouldAnimate
-            )
         }
     }
 

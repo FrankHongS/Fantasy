@@ -25,5 +25,6 @@
     <color name="navigationBarColor">#F2F2F2</color>
     <color name="indicatorColor">#00897B</color>
     <color name="progressColor">#009688</color>
+    <color name="lyricHighlightColor">#009688</color>
     <color name="completeColor">#009688</color>
 </resources>

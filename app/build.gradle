@@ -22,10 +22,28 @@ android {
             }
         }
     }
-    buildTypes {
+
+    signingConfigs {
         release {
+            storeFile file('Fantasy.keystore')
+            storePassword ""
+            keyAlias "key0"
+            keyPassword ""
+        }
+    }
+
+    buildTypes {
+        debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            debuggable false
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {

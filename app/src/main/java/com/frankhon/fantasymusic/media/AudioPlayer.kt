@@ -46,13 +46,12 @@ object AudioPlayer {
             MyLogger.d("focusChange: $focusChange")
             when (focusChange) {
                 AUDIOFOCUS_LOSS_TRANSIENT -> {
-                    if (curState == PlayerState.PLAYING || curState == PlayerState.RESUMED) {
+                    if (curState.isPlaying()) {
                         transientPause()
                     }
                 }
                 AUDIOFOCUS_GAIN -> {
                     if (isTransientPause) {
-                        isTransientPause = false
                         resume()
                     }
                 }
@@ -189,6 +188,7 @@ object AudioPlayer {
 
     @JvmStatic
     fun resume() {
+        isTransientPause = false
         if (!mediaPlayer.isPlaying) {
             val result = requestAudioFocus()
             if (result == AUDIOFOCUS_REQUEST_GRANTED) {
@@ -275,6 +275,7 @@ object AudioPlayer {
 
         errorMsg = ""
         latestPlayTime = 0
+        isTransientPause = false
     }
 
     // endregion

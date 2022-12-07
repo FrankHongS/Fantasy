@@ -146,7 +146,7 @@ class SongDetailActivity : AppCompatActivity(), PlayerLifecycleObserver,
     private fun loadLyrics(song: SimpleSong, action: (() -> Unit)? = null) {
         lifecycleScope.launch {
             lv_lyrics_detail.reset()
-            LyricsManager.getLyrics(song)?.let { lyrics ->
+            LyricsManager.loadLyrics(song)?.let { lyrics ->
                 lv_lyrics_detail.setLyrics(lyrics, action)
             }
         }

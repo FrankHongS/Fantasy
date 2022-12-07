@@ -41,13 +41,16 @@ object AudioPlayerManager {
         }
     }
 
+    /**
+     * 可能同时多个界面连接播放器
+     */
     private val onServiceConnectedListeners = mutableListOf<OnServiceConnectedListener>()
 
     private val lifecycleObservers = mutableListOf<PlayerLifecycleObserver>()
     private val configurationObservers = mutableListOf<PlayerConfigurationObserver>()
 
     /**
-     * @param listener 绑定服务之后的操作，不要在该监听器中做播放操作，因为此时不一定完成服务的绑定
+     * @param listener 绑定服务之后的操作
      */
     @JvmStatic
     fun connect(listener: OnServiceConnectedListener? = null) {
@@ -74,7 +77,6 @@ object AudioPlayerManager {
     }
 
     private fun invokeOnServiceConnected() {
-        LyricsManager.init()
         onServiceConnectedListeners.forEach {
             it.onServiceConnected(this)
         }

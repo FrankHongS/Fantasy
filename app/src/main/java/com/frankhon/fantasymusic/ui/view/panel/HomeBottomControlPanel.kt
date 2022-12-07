@@ -25,6 +25,9 @@ import com.frankhon.fantasymusic.vo.SimpleSong
 import com.hon.mylogger.MyLogger
 import kotlinx.android.synthetic.main.layout_panel.view.*
 import kotlinx.android.synthetic.main.layout_song_control.view.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 /**
  * 相对复杂的底部控制栏
@@ -36,6 +39,8 @@ class HomeBottomControlPanel @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr), PlayerLifecycleObserver,
     PlayerConfigurationObserver {
+
+    private val mainScope by lazy { MainScope() }
 
     init {
         View.inflate(context, R.layout.layout_panel, this)
@@ -101,6 +106,7 @@ class HomeBottomControlPanel @JvmOverloads constructor(
         MyLogger.d("onDetachedFromWindow: ")
         super.onDetachedFromWindow()
         ib_playlist.dismissPlaylistPopup()
+        mainScope.cancel()
     }
 
     //region Audio lifecycle
@@ -125,8 +131,8 @@ class HomeBottomControlPanel @JvmOverloads constructor(
                     it.duration.toInt()
                 )
                 // update lyrics
-                LyricsManager.run {
-                    compareAndGetLyric(curPlaybackPosition).let { content ->
+                loadLyrics(it) {
+                    LyricsManager.getLyricText(curPlaybackPosition).let { content ->
                         tv_song_lyrics.safeSetText(content)
                     }
                 }
@@ -150,6 +156,7 @@ class HomeBottomControlPanel @JvmOverloads constructor(
         updatePreviousNextButton(playMode, curIndex, totalSize)
         //更新播放列表中当前播放歌曲
         ib_playlist.updatePlaylistPopup(index = curIndex)
+        loadLyrics(song)
     }
 
     override fun onPlaying(song: SimpleSong) {
@@ -196,7 +203,7 @@ class HomeBottomControlPanel @JvmOverloads constructor(
             }
         }
         LyricsManager.run {
-            compareAndGetLyric(curPosition)?.let { tv_song_lyrics.safeSetText(it) }
+            getLyricText(curPosition).let { tv_song_lyrics.safeSetText(it) }
         }
     }
 
@@ -271,6 +278,13 @@ class HomeBottomControlPanel @JvmOverloads constructor(
             sb_play_progress.run {
                 max = it.duration.toInt()
             }
+        }
+    }
+
+    private fun loadLyrics(song: SimpleSong, then: (() -> Unit)? = null) {
+        mainScope.launch {
+            LyricsManager.loadLyrics(song)
+            then?.invoke()
         }
     }
 }

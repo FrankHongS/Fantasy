@@ -20,7 +20,9 @@ fun TextView.safeSetText(content: String?) {
         isVisible = false
     } else {
         isVisible = true
-        text = content
+        if (text != content) {
+            text = content
+        }
     }
 }
 

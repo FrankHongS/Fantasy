@@ -14,9 +14,9 @@ import com.frankhon.fantasymusic.vo.db.DBSong
     entities = [DBSong::class],
     version = 4,
     exportSchema = true,
-    autoMigrations = [
-        AutoMigration(from = 1, to = 2)
-    ]
+//    autoMigrations = [
+//        AutoMigration(from = 1, to = 2)
+//    ]
 )
 abstract class MusicDatabase : RoomDatabase() {
 

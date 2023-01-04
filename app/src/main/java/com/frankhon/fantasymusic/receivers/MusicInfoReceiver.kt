@@ -22,14 +22,9 @@ class MusicInfoReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         intent.let {
-            val stateName = it.getStringExtra(KEY_PLAYER_STATE)
             val errorMsg = it.getStringExtra(KEY_PLAYER_ERROR_MESSAGE).orEmpty()
             val song = it.getParcelableExtra<SimpleSong>(KEY_CUR_SONG)
-            val state = if (stateName == null) {
-                null
-            } else {
-                PlayerState.valueOf(stateName)
-            }
+            val state = it.getSerializableExtra(KEY_PLAYER_STATE) as? PlayerState
             if (state != null) {
                 AudioPlayerManager.publishPlayerState(song, state, errorMsg)
             }

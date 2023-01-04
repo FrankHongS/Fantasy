@@ -30,11 +30,19 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
         private const val PANEL_HEIGHT = 68
     }
 
+    /**
+     * 控制板（panel）状态
+     */
+    private enum class State {
+        COLLAPSED,
+        EXPANDED,
+        DRAGGING
+    }
+
     private lateinit var bottomView: View
     private val touchPoint = Array(2) { 0f }
 
-    // 0 collapsed; 1 expanded; 2 dragging;
-    private var panelState = 0
+    private var panelState = State.COLLAPSED
     private var allowDragging = true
 
     private val viewDragHelperCallback by lazy {
@@ -51,9 +59,9 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
                 dy: Int
             ) {
                 panelState = when (top) {
-                    height - PANEL_HEIGHT.dp -> 0
-                    height - changedView.height -> 1
-                    else -> 2
+                    height - PANEL_HEIGHT.dp -> State.COLLAPSED
+                    height - changedView.height -> State.EXPANDED
+                    else -> State.DRAGGING
                 }
             }
 
@@ -133,7 +141,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         when (panelState) {
-            0 -> {
+            State.COLLAPSED -> {
                 var tempPaddingTop = paddingTop
                 children.forEach {
                     it.layout(
@@ -145,7 +153,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
                     tempPaddingTop += it.measuredHeight
                 }
             }
-            1 -> {
+            State.EXPANDED -> {
                 children.forEachIndexed { index, child ->
                     if (index == 0) {
                         child.layout(
@@ -164,7 +172,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
                     }
                 }
             }
-            2 -> {
+            State.DRAGGING -> {
                 children.forEach {
                     it.layout(it.left, it.top, it.right, it.bottom)
                 }
@@ -180,8 +188,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
             viewDragHelper.cancel()
             return false
         }
-        val result = viewDragHelper.shouldInterceptTouchEvent(ev)
-        return result
+        return viewDragHelper.shouldInterceptTouchEvent(ev)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -228,7 +235,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
     }
 
     fun expand(): Boolean {
-        return if (panelState != 0) {
+        return if (panelState == State.EXPANDED) {
             false
         } else {
             post {
@@ -241,7 +248,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
     }
 
     fun collapse(): Boolean {
-        return if (panelState == 0) {
+        return if (panelState == State.COLLAPSED) {
             false
         } else {
             post {
@@ -262,20 +269,20 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
         this.allowDragging = allowDragging
     }
 
-    fun isCollapsed() = panelState == 0
+    fun isCollapsed() = panelState == State.COLLAPSED
 
     private class SavedState : AbsSavedState {
-        var panelState = 0
+        var panelState = State.COLLAPSED
 
         constructor(source: Parcelable?) : super(source)
 
         constructor(parcel: Parcel) : super(parcel) {
-            panelState = parcel.readInt()
+            panelState = parcel.readSerializable() as State
         }
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             super.writeToParcel(parcel, flags)
-            parcel.writeInt(panelState)
+            parcel.writeSerializable(panelState)
         }
 
         override fun describeContents(): Int {

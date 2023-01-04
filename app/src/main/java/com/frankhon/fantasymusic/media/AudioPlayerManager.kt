@@ -240,8 +240,8 @@ object AudioPlayerManager {
         notifyProgressObserver(curPosition, duration)
     }
 
-    fun publishPlayMode(playMode: String) {
-        notifyPlayModeObserver(PlayMode.valueOf(playMode))
+    fun publishPlayMode(playMode: PlayMode) {
+        notifyPlayModeObserver(playMode)
     }
 
     fun publishPlaylistChanged() {

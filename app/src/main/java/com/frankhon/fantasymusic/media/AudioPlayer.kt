@@ -479,7 +479,7 @@ object AudioPlayer {
                     //在Android 8.0 以上要求静态注册的BroadcastReceiver所接收的消息必须是显式的，
                     // 我们通过设置包名的方式来告诉系统这个Intent是要发给哪个应用来接收。不设置的话就会接收不到消息
                     setPackage(PACKAGE_ID)
-                    putExtra(KEY_PLAYER_STATE, curState.name)
+                    putExtra(KEY_PLAYER_STATE, curState)
                     putExtra(KEY_CUR_SONG, it)
                     if (curState == PlayerState.ERROR && errorMsg.isNotEmpty()) {
                         putExtra(KEY_PLAYER_ERROR_MESSAGE, errorMsg)
@@ -502,9 +502,9 @@ object AudioPlayer {
             Intent(MUSIC_PLAYER_CONFIGURATION_ACTION).apply {
                 setPackage(PACKAGE_ID)
                 if (configType == PlayerConfiguration.PLAY_MODE) {
-                    putExtra(KEY_PLAY_MODE, curPlayMode.name)
+                    putExtra(KEY_PLAY_MODE, curPlayMode)
                 }
-                putExtra(KEY_PLAYER_CONFIG, configType.name)
+                putExtra(KEY_PLAYER_CONFIG, configType)
             })
     }
 }

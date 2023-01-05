@@ -1,11 +1,13 @@
 package com.frankhon.fantasymusic.ui.activities
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.ui.fragments.main.MainFragment
 import com.hon.mylogger.MyLogger
+import com.permissionx.guolindev.PermissionX
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +22,7 @@ class MainActivity : AppCompatActivity() {
                 .add(R.id.fragment_container, MainFragment())
                 .commit()
         }
+        requestPermissions()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -47,6 +50,20 @@ class MainActivity : AppCompatActivity() {
         fragment?.takeIf { it.isVisible && (it.closeDrawer() || it.collapsePanel()) }
             ?.let { return }
         super.onBackPressed()
+    }
+
+    private fun requestPermissions() {
+        PermissionX.init(this)
+            .permissions(Manifest.permission.BLUETOOTH_CONNECT)
+            .onExplainRequestReason { scope, permissions ->
+                scope.showRequestReasonDialog(
+                    permissions, "We need the permission to use bluetooth headset properly",
+                    "OK", "Cancel"
+                )
+            }
+            .request { allGranted, _, _ ->
+
+            }
     }
 
 }

@@ -1,6 +1,6 @@
 package com.frankhon.fantasymusic.application;
 
-import static com.frankhon.fantasymusic.utils.Notification.createNotificationChannel;
+import static com.frankhon.fantasymusic.media.notification.Notification.createNotificationChannel;
 
 import android.annotation.SuppressLint;
 import android.app.Application;

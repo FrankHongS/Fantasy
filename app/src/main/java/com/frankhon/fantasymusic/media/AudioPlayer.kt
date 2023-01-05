@@ -9,6 +9,9 @@ import android.media.MediaPlayer
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
+import com.frankhon.fantasymusic.media.notification.cancelNotification
+import com.frankhon.fantasymusic.media.notification.releaseMediaSession
+import com.frankhon.fantasymusic.media.notification.sendMediaNotification
 import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
@@ -189,7 +192,7 @@ object AudioPlayer {
     @JvmStatic
     fun resume() {
         isTransientPause = false
-        if (!mediaPlayer.isPlaying) {
+        if (!mediaPlayer.isPlaying && curState == PlayerState.PAUSED) {
             val result = requestAudioFocus()
             if (result == AUDIOFOCUS_REQUEST_GRANTED) {
                 mediaPlayer.start()
@@ -199,6 +202,18 @@ object AudioPlayer {
                 MyLogger.e("Error to resume playing: $result")
                 showToast("恢复播放失败")
             }
+        }
+    }
+
+    /**
+     * 在 暂停[PlayerState.PAUSED] 和 恢复[PlayerState.RESUMED] 之间切换播放器状态
+     */
+    @JvmStatic
+    fun toggle() {
+        when (curState) {
+            PlayerState.PLAYING, PlayerState.RESUMED -> pause()
+            PlayerState.PAUSED -> resume()
+            else -> {}
         }
     }
 
@@ -272,6 +287,7 @@ object AudioPlayer {
         stop()
         mHttpProxyCache.shutdown()
         resetCurPlayInfo()
+        releaseMediaSession()
 
         errorMsg = ""
         latestPlayTime = 0

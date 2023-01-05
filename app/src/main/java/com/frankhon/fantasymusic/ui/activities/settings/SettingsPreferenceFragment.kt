@@ -9,9 +9,9 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.media.AudioPlayerManager
+import com.frankhon.fantasymusic.media.notification.sendMediaNotification
 import com.frankhon.fantasymusic.utils.KEY_NOTIFICATION_STYLE
 import com.frankhon.fantasymusic.utils.dataStore
-import com.frankhon.fantasymusic.utils.sendMediaNotification
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 

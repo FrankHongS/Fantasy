@@ -1,19 +1,23 @@
 package com.frankhon.fantasymusic.media
 
 import android.app.Service
+import android.bluetooth.BluetoothHeadset
+import android.bluetooth.BluetoothProfile
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.ACTION_HEADSET_PLUG
 import android.content.IntentFilter
 import android.os.IBinder
+import android.support.v4.media.session.MediaSessionCompat
+import androidx.media.session.MediaButtonReceiver
 import com.frankhon.fantasymusic.IMusicPlayer
-import com.frankhon.fantasymusic.media.AudioPlayer.next
 import com.frankhon.fantasymusic.media.AudioPlayer.pause
-import com.frankhon.fantasymusic.media.AudioPlayer.previous
 import com.frankhon.fantasymusic.media.AudioPlayer.release
-import com.frankhon.fantasymusic.media.AudioPlayer.resume
 import com.frankhon.fantasymusic.media.AudioPlayer.setPlaylist
 import com.frankhon.fantasymusic.media.AudioPlayer.stop
+import com.frankhon.fantasymusic.media.notification.MediaButtonCallback
+import com.frankhon.fantasymusic.media.notification.sendMediaNotification
 import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
@@ -31,34 +35,71 @@ class AudioPlayerService : Service() {
 
     private val musicPlayer = ServiceStub()
     private val mainScope by lazy { MainScope() }
+    //用来控制通知栏点击事件
+    private val mediaSessionCompat by lazy {
+        MediaSessionCompat(this, "AudioPlayerService")
+            .apply {
+                setCallback(MediaButtonCallback())
+            }
+    }
 
+    // 定时播放完成的回调
     private val pauseMusicReceiver by lazy {
         object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent?) {
-                MyLogger.d("schedulePause receiver: ${formatTime(System.currentTimeMillis())}")
+                MyLogger.d("pauseMusicReceiver onReceive: ${formatTime(System.currentTimeMillis())}")
                 pause()
+            }
+        }
+    }
+    // 有线耳机插入和拔出的回调
+    private val headsetPlugReceiver by lazy {
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent?) {
+                val state = intent?.getIntExtra("state", -1) ?: -1
+                MyLogger.d("headsetPlugReceiver onReceive: $state")
+                if (state == 0) {
+                    pause()
+                }
+            }
+        }
+    }
+    // 蓝牙耳机连接和断开的回调
+    private val bluetoothHeadsetReceiver by lazy {
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent?) {
+                val state = intent?.getIntExtra(
+                    BluetoothProfile.EXTRA_STATE,
+                    BluetoothProfile.STATE_DISCONNECTED
+                ) ?: BluetoothProfile.STATE_DISCONNECTED
+                MyLogger.d("bluetoothHeadsetPlugReceiver onReceive: $state")
+                if (state == BluetoothProfile.STATE_DISCONNECTED) {
+                    pause()
+                }
             }
         }
     }
 
     override fun onCreate() {
+        MyLogger.d("onCreate")
         super.onCreate()
         registerReceiver(pauseMusicReceiver, IntentFilter(ACTION_SCHEDULE_PAUSE_MUSIC))
-        MyLogger.d("onCreate")
+        registerReceiver(headsetPlugReceiver, IntentFilter(ACTION_HEADSET_PLUG))
+        registerReceiver(
+            bluetoothHeadsetReceiver,
+            IntentFilter().apply {
+                addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED)
+                addAction(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED)
+            }
+        )
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        MediaButtonReceiver.handleIntent(mediaSessionCompat, intent)
         val action = intent.action
         MyLogger.d("onStartCommand: $action")
-        if (action != null) {
-            when (action) {
-                ACTION_PREVIOUS -> previous()
-                ACTION_NEXT -> next()
-                ACTION_RESUME -> resume()
-                ACTION_PAUSE -> pause()
-                ACTION_STOP -> stopMusic()
-                else -> {}
-            }
+        if (action == ACTION_STOP) {
+            stopMusic()
         }
         return START_REDELIVER_INTENT
     }
@@ -78,13 +119,14 @@ class AudioPlayerService : Service() {
         MyLogger.d("onDestroy")
         super.onDestroy()
         unregisterReceiver(pauseMusicReceiver)
+        unregisterReceiver(headsetPlugReceiver)
+        unregisterReceiver(bluetoothHeadsetReceiver)
         release()
         mainScope.cancel()
     }
 
     private fun stopMusic() {
         stopForeground(false)
-        releaseMediaSession()
         stop()
         release()
     }
@@ -92,7 +134,7 @@ class AudioPlayerService : Service() {
     private fun sendMediaNotification() {
         mainScope.launch {
             readDataStore().collect {
-                val style = it[KEY_NOTIFICATION_STYLE]
+                val style = it[KEY_NOTIFICATION_STYLE] ?: 0
                 sendMediaNotification(
                     style == 0,
                     this@AudioPlayerService,

@@ -92,7 +92,7 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
 
     implementation deps.eventbus
-
+    implementation deps.permissionx
     implementation 'com.danikula:videocache:2.7.1'
 
     implementation deps.mylogger

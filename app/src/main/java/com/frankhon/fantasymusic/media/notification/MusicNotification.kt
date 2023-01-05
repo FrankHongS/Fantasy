@@ -1,6 +1,6 @@
 @file:JvmName("Notification")
 
-package com.frankhon.fantasymusic.utils
+package com.frankhon.fantasymusic.media.notification
 
 import android.annotation.SuppressLint
 import android.app.*
@@ -9,12 +9,14 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.media.MediaMetadata
+import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.media.session.MediaButtonReceiver
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -23,8 +25,8 @@ import com.frankhon.fantasymusic.application.Fantasy
 import com.frankhon.fantasymusic.media.AudioPlayerService
 import com.frankhon.fantasymusic.media.PlayMode
 import com.frankhon.fantasymusic.media.isPlayingInNotification
-import com.frankhon.fantasymusic.ui.activities.MainActivity
 import com.frankhon.fantasymusic.ui.activities.SongDetailActivity
+import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 
@@ -152,6 +154,7 @@ private fun buildNotification(
                 )
                 .build()
         )
+        setCallback(MediaButtonCallback())
         lastMediaSession = this
     }
     val contentIntent = PendingIntent.getActivity(
@@ -168,31 +171,40 @@ private fun buildNotification(
         .setCategory(NotificationCompat.CATEGORY_PROGRESS)
         .addAction(
             R.drawable.ic_previous_song_notification_large, "Previous",
-            if (isPreviousEnable) context.getButtonPendingIntent(ACTION_PREVIOUS) else null
+            if (isPreviousEnable) MediaButtonReceiver.buildMediaButtonPendingIntent(
+                context,
+                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+            ) else null
         )
         .addAction {
             if (isPlaying) {
                 addAction(
                     R.drawable.ic_pause_song_notification_large, "Pause",
-                    context.getButtonPendingIntent(ACTION_PAUSE)
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(
+                        context,
+                        PlaybackStateCompat.ACTION_PAUSE
+                    )
                 )
             } else {
                 addAction(
                     R.drawable.ic_play_song_notification_large, "Play",
-                    context.getButtonPendingIntent(ACTION_RESUME)
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(
+                        context,
+                        PlaybackStateCompat.ACTION_PLAY
+                    )
                 )
             }
         }
         .addAction(
             R.drawable.ic_next_song_notification_large, "Next",
-            if (isNextEnable) context.getButtonPendingIntent(ACTION_NEXT) else null
+            if (isNextEnable) MediaButtonReceiver.buildMediaButtonPendingIntent(
+                context,
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+            )
+            else null
         )
         .addAction(
             R.drawable.ic_stop_song_notification_large, "Stop",
-//            MediaButtonReceiver.buildMediaButtonPendingIntent(
-//                context,
-//                PlaybackStateCompat.ACTION_STOP
-//            )
             context.getButtonPendingIntent(ACTION_STOP)
         )
         .addAction(R.drawable.ic_favorite_song_notification_large, "Favorite", null)
@@ -218,7 +230,7 @@ fun releaseMediaSession() {
 }
 
 fun createNotificationChannel() {
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val channel = NotificationChannel(
             PLAYER_CHANNEL_ID,
             PLAYER_CHANNEL_ID,
@@ -258,17 +270,18 @@ fun buildNormalMediaNotification(
         )
         setOnClickPendingIntent(
             R.id.iv_notification_toggle_song,
-            context.getButtonPendingIntent(
-                if (isPlaying) {
-                    ACTION_PAUSE
-                } else {
-                    ACTION_RESUME
-                }
+            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                context,
+                if (isPlaying) PlaybackStateCompat.ACTION_PAUSE
+                else PlaybackStateCompat.ACTION_PLAY
             )
         )
         setOnClickPendingIntent(
             R.id.iv_notification_next_song,
-            context.getButtonPendingIntent(ACTION_NEXT)
+            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                context,
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+            )
         )
         setOnClickPendingIntent(
             R.id.iv_notification_stop_song,
@@ -287,21 +300,25 @@ fun buildNormalMediaNotification(
         )
         setOnClickPendingIntent(
             R.id.iv_notification_toggle_song,
-            context.getButtonPendingIntent(
-                if (isPlaying) {
-                    ACTION_PAUSE
-                } else {
-                    ACTION_RESUME
-                }
+            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                context,
+                if (isPlaying) PlaybackStateCompat.ACTION_PAUSE
+                else PlaybackStateCompat.ACTION_PLAY
             )
         )
         setOnClickPendingIntent(
             R.id.iv_notification_prev_song,
-            context.getButtonPendingIntent(ACTION_PREVIOUS)
+            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                context,
+                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+            )
         )
         setOnClickPendingIntent(
             R.id.iv_notification_next_song,
-            context.getButtonPendingIntent(ACTION_NEXT)
+            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                context,
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+            )
         )
         setOnClickPendingIntent(
             R.id.iv_notification_stop_song,

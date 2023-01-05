@@ -29,6 +29,7 @@ ext.versions = [
         'rxJava'            : '2.2.8',
         'rxAndroid'         : '2.1.1',
         'rxPermissions'     : '0.10.2',
+        'permissionx'       : '1.6.3',
         'glide'             : '4.11.0',
         'butterknife'       : '10.1.0',
         'eventbus'          : '3.1.1',
@@ -95,6 +96,7 @@ ext.deps = [
         'rxJava'         : "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
         'rxAndroid'      : "io.reactivex.rxjava2:rxandroid:${versions.rxAndroid}",
         'rxPermissions'  : "com.github.tbruyelle:rxpermissions:${versions.rxPermissions}",
+        'permissionx'    : "com.guolindev.permissionx:permissionx:${versions.permissionx}",
         'butterknife'    : [
                 'runtime' : "com.jakewharton:butterknife:${versions.butterknife}",
                 'compiler': "com.jakewharton:butterknife-compiler:${versions.butterknife}"

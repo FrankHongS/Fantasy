@@ -71,6 +71,10 @@ class SongDownloader(private val context: Context) : DefaultLifecycleObserver {
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
+        song?.let {
+            SongDownloadManager.removeSong(it)
+        }
+        downloadManager.remove(downloadId)
         context.unregisterReceiver(downloadCompleteReceiver)
         mainScope.cancel()
     }

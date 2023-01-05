@@ -6,7 +6,7 @@
     <color name="colorAccent">#9E9E9E</color>
     <color name="colorBackground">#F2F2F2</color>
     <color name="colorContentBackground">#FFFFFF</color>
-    <color name="colorDetailBackground">#AA333333</color>
+    <color name="colorDetailBackground">#CC333333</color>
     <color name="ic_launcher_background">#795548</color>
 
     <color name="colorActionBar">#FFFFFF</color>

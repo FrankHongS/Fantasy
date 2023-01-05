@@ -200,7 +200,6 @@ object AudioPlayer {
                 updatePlayerState(PlayerState.RESUMED)
             } else {
                 MyLogger.e("Error to resume playing: $result")
-                showToast("恢复播放失败")
             }
         }
     }
@@ -369,10 +368,11 @@ object AudioPlayer {
             } catch (e: Exception) {
                 e.printStackTrace()
                 MyLogger.e("Error to play: $e")
+                this.errorMsg = "Error to play: ${e.message}"
+                updatePlayerState(PlayerState.ERROR)
             }
         } else {
             MyLogger.e("Error to request playing: $result")
-            showToast("请求播放失败")
         }
     }
 

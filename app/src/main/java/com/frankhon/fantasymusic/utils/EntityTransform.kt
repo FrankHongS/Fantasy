@@ -3,7 +3,11 @@ package com.frankhon.fantasymusic.utils
 import com.frankhon.fantasymusic.ui.fragments.search.SongDownloadManager
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.bean.DataSong
+import com.frankhon.fantasymusic.vo.db.DBAlbum
+import com.frankhon.fantasymusic.vo.db.DBArtist
 import com.frankhon.fantasymusic.vo.db.DBSong
+import com.frankhon.fantasymusic.vo.view.AlbumItem
+import com.frankhon.fantasymusic.vo.view.ArtistItem
 import com.frankhon.fantasymusic.vo.view.SearchSongItem
 import com.frankhon.fantasymusic.vo.view.SongItem
 
@@ -17,10 +21,10 @@ fun List<DBSong>.transformToSimpleSongs(): List<SimpleSong> {
         SimpleSong(
             cid = it.cid,
             name = it.name,
-            artist = it.artist,
+            artist = it.artistName,
             songUri = it.songUri,
             lyricsUri = it.lyricsUri,
-            picUrl = it.picUrl,
+            picUrl = it.albumCover,
             canDelete = it.canDelete
         )
     }
@@ -31,9 +35,9 @@ fun List<SimpleSong>.transformToDBSongs(): List<DBSong> {
         DBSong(
             cid = it.cid.orEmpty(),
             name = it.name.orEmpty(),
-            artist = it.artist.orEmpty(),
+            artistName = it.artist.orEmpty(),
             songUri = it.songUri.orEmpty(),
-            picUrl = it.picUrl.orEmpty(),
+            albumCover = it.picUrl.orEmpty(),
             canDelete = it.canDelete
         )
     }
@@ -57,6 +61,7 @@ fun List<DataSong>.transferToSearchSongItems(): List<SearchSongItem> {
             name = it.name,
             artist = it.artist,
             albumPicUrl = it.albumPicUrl,
+            albumName = it.albumName,
             songUri = it.url,
             downloadState = if (it.url?.startsWith("file://") == true) {
                 2
@@ -69,25 +74,37 @@ fun List<DataSong>.transferToSearchSongItems(): List<SearchSongItem> {
     }
 }
 
+fun List<DBArtist>.transferToArtistItems(): List<ArtistItem> {
+    return map {
+        ArtistItem(
+            name = it.name,
+            albumCover = it.albumCover,
+            songsCount = it.songsCount
+        )
+    }
+}
+
+fun List<DBAlbum>.transferToAlbumItems(): List<AlbumItem> {
+    return map {
+        AlbumItem(
+            name = it.name,
+            artistName = it.artistName,
+            albumCover = it.albumCover,
+            songsCount = it.songsCount
+        )
+    }
+}
+
 fun SimpleSong.transformToDBSong(): DBSong {
     return DBSong(
         cid = cid.orEmpty(),
         name = name.orEmpty(),
-        artist = artist.orEmpty(),
+        artistName = artist.orEmpty(),
         songUri = songUri.orEmpty(),
         lyricsUri = lyricsUri.orEmpty(),
-        picUrl = picUrl.orEmpty(),
+        albumCover = picUrl.orEmpty(),
+        albumName = albumName,
         canDelete = canDelete
-    )
-}
-
-fun DataSong.transformToSimpleSong(): SimpleSong {
-    return SimpleSong(
-        cid = cid,
-        name = name.orEmpty(),
-        artist = artists?.first()?.name.orEmpty(),
-        songUri = url.orEmpty(),
-        picUrl = album?.picUrl.orEmpty()
     )
 }
 
@@ -97,7 +114,8 @@ fun SearchSongItem.transformToSimpleSong() = SimpleSong(
     artist = artist.orEmpty(),
     songUri = songUri.orEmpty(),
     lyricsUri = lyricsUri.orEmpty(),
-    picUrl = albumPicUrl.orEmpty()
+    picUrl = albumPicUrl.orEmpty(),
+    albumName = albumName
 )
 
 fun SongItem.compareTo(song: SimpleSong?): Boolean {

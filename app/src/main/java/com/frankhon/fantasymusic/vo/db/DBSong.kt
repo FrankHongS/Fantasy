@@ -13,13 +13,15 @@ data class DBSong(
     @ColumnInfo(name = "song_name")
     val name: String,
     @ColumnInfo(name = "song_artist")
-    val artist: String,
+    val artistName: String,
     @ColumnInfo(name = "song_uri")
     val songUri: String,
     @ColumnInfo(name = "lyrics_uri")
     var lyricsUri: String? = "",
     @ColumnInfo(name = "pic_url")
-    val picUrl: String,
+    val albumCover: String,
+    @ColumnInfo(name = "album_name")
+    val albumName: String? = "",
     //是否可以删除，内置歌曲不支持删除
     @ColumnInfo(name = "able_to_delete")
     var canDelete: Boolean = true,

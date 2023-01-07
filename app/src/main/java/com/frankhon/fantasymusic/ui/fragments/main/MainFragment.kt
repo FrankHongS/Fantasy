@@ -10,8 +10,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.viewpager2.widget.MarginPageTransformer
-import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager.widget.ViewPager
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.media.PlayMode
@@ -24,7 +23,6 @@ import com.frankhon.fantasymusic.ui.activities.settings.SettingsActivity
 import com.frankhon.fantasymusic.ui.fragments.BaseFragment
 import com.frankhon.fantasymusic.ui.fragments.search.SearchFragment
 import com.frankhon.fantasymusic.ui.view.SlidingUpPanelLayout
-import com.frankhon.fantasymusic.ui.view.TabLayoutMediator
 import com.frankhon.fantasymusic.ui.view.panel.HomeBottomControlPanel
 import com.frankhon.fantasymusic.utils.FRAGMENT_MAIN_TO_SEARCH_TRANSITION_NAME
 import com.frankhon.fantasymusic.utils.dp
@@ -105,7 +103,7 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver {
 
     private fun initView(view: View) {
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar_main)
-        val viewPager = view.findViewById<ViewPager2>(R.id.vp_main)
+        val viewPager = view.findViewById<ViewPager>(R.id.vp_main)
         val tabLayout = view.findViewById<TabLayout>(R.id.tl_main)
         val navigationView = view.findViewById<NavigationView>(R.id.nv_drawer)
 
@@ -131,17 +129,10 @@ class MainFragment : BaseFragment(), PlayerLifecycleObserver {
         }
         viewPager.run {
             //note: 使用childFragmentManager，不能使用parentFragmentManager，或者横竖屏切换时viewPager不能恢复
-            adapter = MainAdapter(childFragmentManager, lifecycle)
-            isSaveEnabled = true
-            setPageTransformer(MarginPageTransformer(16.dp))
+            adapter = MainAdapter(childFragmentManager)
+            pageMargin = 16.dp
         }
-        TabLayoutMediator(tabLayout, viewPager, true, false) { tab, pos ->
-            tab.text = when (pos) {
-                0 -> "Songs"
-                1 -> "Artists"
-                else -> "Albums"
-            }
-        }.attach()
+        tabLayout.setupWithViewPager(viewPager)
         navigationView.run {
             setNavigationItemSelectedListener {
                 when (it.itemId) {

@@ -40,6 +40,9 @@
     <string name="add_into_playlist">添加%s成功</string>
     <string name="add_into_playlist_failure">%s已存在于播放列表</string>
 
+    <string name="artists_content_empty_hint">不好意思，歌手列表为空，请下载更多歌曲</string>
+    <string name="unknown_album">未知专辑</string>
+
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 

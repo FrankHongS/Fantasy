@@ -89,9 +89,6 @@ fun Activity.toImmersiveMode() {
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
     decorView.systemUiVisibility = option
     window.run {
-
-    }
-    window.run {
         statusBarColor = Color.TRANSPARENT
         navigationBarColor = Color.TRANSPARENT
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

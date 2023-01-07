@@ -18,9 +18,9 @@ import com.frankhon.fantasymusic.ui.fragments.BaseFragment
 import com.frankhon.fantasymusic.utils.DEFAULT_SONGS_PAGE_LIMIT
 import com.frankhon.fantasymusic.utils.popup.showMorePopup
 import com.frankhon.fantasymusic.utils.transferToSongItems
-import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.event.SongDeleteEvent
+import com.frankhon.fantasymusic.vo.view.SongItem
 import com.hon.mylogger.MyLogger
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
@@ -69,8 +69,18 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         if (model.count == -1) {
             loadSongs()
         } else {
-            setData(model.songs, model.count)
+            setData(model.songs.transferToSongItems(), model.count)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        MyLogger.d("onPause: ")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MyLogger.d("onResume: ")
     }
 
     override fun onDestroyView() {
@@ -94,10 +104,6 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         }
     }
 
-    override fun onPlayerConnected(playerInfo: CurrentPlayerInfo?) {
-        songAdapter.select(playerInfo?.curSong)
-    }
-
     // region Audio Lifecycle
     override fun onPrepare(song: SimpleSong, playMode: PlayMode, curIndex: Int, totalSize: Int) {
         songAdapter.select(song)
@@ -114,7 +120,6 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
         val songsList = view.findViewById<RecyclerView>(R.id.rv_songs)
 
         refreshLayout.run {
-            isRefreshing = true
             setOnRefreshListener {
                 loadSongs()
             }
@@ -139,10 +144,7 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
                 setOnLoadListener {
                     lifecycleScope.launchWhenResumed {
                         val moreSongs = model.loadMoreSongs(offset = getDataSize())
-                        addSongs(
-                            moreSongs.transferToSongItems(),
-                            getCurrentSong()
-                        )
+                        addSongs(moreSongs, getCurrentSong())
                     }
                 }
             }
@@ -152,17 +154,18 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
 
     private fun loadSongs() {
         lifecycleScope.launch {
+            startRefreshing()
             val songs = model.loadSongs()
             val count = model.getCount()
             setData(songs, count)
         }
     }
 
-    private fun setData(songs: List<SimpleSong>, count: Int) {
+    private fun setData(songs: List<SongItem>, count: Int) {
         MyLogger.d("setData: $count")
-        refreshLayout.isRefreshing = false
+        finishRefreshing()
         songAdapter.run {
-            setSongs(count, songs.transferToSongItems(), getCurrentSong())
+            setSongs(count, songs, getCurrentSong())
             if (songs.size == count) {
                 markNoMoreState()
             }
@@ -170,4 +173,12 @@ class SongFragment : BaseFragment(), PlayerLifecycleObserver {
     }
 
     private fun getCurrentSong() = AudioPlayerManager.getCurrentPlayerInfo()?.curSong
+
+    private fun startRefreshing() {
+        refreshLayout.isRefreshing = true
+    }
+
+    private fun finishRefreshing() {
+        refreshLayout.isRefreshing = false
+    }
 }

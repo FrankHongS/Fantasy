@@ -48,10 +48,10 @@ fun getSongsFromAssets(): List<DBSong> {
         }
         val dbSong = DBSong(
             name = name,
-            artist = artist,
+            artistName = artist,
             songUri = Uri.fromFile(musicFile).toString(),
             lyricsUri = lyricsFile?.let { Uri.fromFile(it).toString() }.orEmpty(),
-            picUrl = song.get("songPic").asString
+            albumCover = song.get("songPic").asString
         )
         songs.add(dbSong)
     }

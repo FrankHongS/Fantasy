@@ -1,21 +1,25 @@
 package com.frankhon.fantasymusic.ui.activities.adapter
 
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Lifecycle
-import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.fragment.app.FragmentPagerAdapter
 import com.frankhon.fantasymusic.ui.fragments.AlbumFragment
 import com.frankhon.fantasymusic.ui.fragments.ArtistFragment
-import com.frankhon.fantasymusic.ui.fragments.BaseFragment
 import com.frankhon.fantasymusic.ui.fragments.song.SongFragment
 
 /**
  * Created by Frank Hon on 2020-04-19 20:01.
  * E-mail: frank_hon@foxmail.com
  */
-class MainAdapter(fm: FragmentManager, lifecycle: Lifecycle) :
-    FragmentStateAdapter(fm, lifecycle) {
+@Suppress("DEPRECATION")
+class MainAdapter(fm: FragmentManager) :
+    FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-    override fun createFragment(position: Int): BaseFragment {
+    override fun getCount(): Int {
+        return 3
+    }
+
+    override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> SongFragment()
             1 -> ArtistFragment()
@@ -23,7 +27,11 @@ class MainAdapter(fm: FragmentManager, lifecycle: Lifecycle) :
         }
     }
 
-    override fun getItemCount(): Int {
-        return 3
+    override fun getPageTitle(position: Int): CharSequence {
+        return when (position) {
+            0 -> "Songs"
+            1 -> "Artists"
+            else -> "Albums"
+        }
     }
 }

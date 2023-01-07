@@ -1,6 +1,7 @@
-package com.frankhon.fantasymusic.data.source.local
+package com.frankhon.fantasymusic.data.db
 
 import androidx.room.*
+import com.frankhon.fantasymusic.vo.db.DBArtist
 import com.frankhon.fantasymusic.vo.db.DBSong
 
 /**

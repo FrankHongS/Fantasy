@@ -36,7 +36,7 @@ class SearchRepository(
                     val newData = it.songs.map { song ->
                         localSongs.forEach { localSong ->
                             if (song.name == localSong.name &&
-                                song.artist == localSong.artist
+                                song.artist == localSong.artistName
                             ) {
                                 song.url = localSong.songUri
                             }

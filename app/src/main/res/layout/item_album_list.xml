@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.frankhon.customview.round.RoundConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="5dp"
+    android:layout_marginVertical="6dp"
+    android:background="@android:color/white"
+    android:clickable="true"
+    android:elevation="4dp"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:radius_c="8dp"
+    tools:background="@android:color/holo_orange_light"
+    tools:ignore="UnusedAttribute">
+
+    <ImageView
+        android:id="@+id/iv_cover_album"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/song_pic"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/tv_artist_name_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_album_tag"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:textColor="@color/colorWhiteA"
+        android:textSize="16sp"
+        android:textStyle="italic|bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="周杰伦 " />
+
+    <TextView
+        android:id="@+id/tv_name_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:maxWidth="200dp"
+        android:textColor="@color/primaryText"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/tv_songs_count_album"
+        app:layout_constraintStart_toStartOf="@id/tv_songs_count_album"
+        app:layout_constraintTop_toBottomOf="@id/iv_cover_album"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="十一月的肖邦" />
+
+    <TextView
+        android:id="@+id/tv_songs_count_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="10dp"
+        android:maxWidth="200dp"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_name_album"
+        tools:text="共 2 首" />
+
+</com.frankhon.customview.round.RoundConstraintLayout>

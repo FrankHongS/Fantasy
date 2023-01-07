@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    tools:cardBackgroundColor="@android:color/holo_orange_light">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.frankhon.fantasymusic.ui.view.RoundRectImageView
+            android:id="@+id/iv_album_cover_artist"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:radius="8dp"
+            tools:src="@drawable/song_pic" />
+
+        <TextView
+            android:id="@+id/tv_songs_count_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintBottom_toBottomOf="@id/iv_album_cover_artist"
+            app:layout_constraintStart_toEndOf="@id/iv_album_cover_artist"
+            tools:text="4 首" />
+
+        <TextView
+            android:id="@+id/tv_name_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:textColor="@color/primaryText"
+            app:layout_constraintBottom_toTopOf="@id/tv_songs_count_artist"
+            app:layout_constraintStart_toStartOf="@id/tv_songs_count_artist"
+            tools:text="周杰伦" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:background="@null"
+            android:padding="8dp"
+            android:scaleX="-1"
+            android:src="@drawable/ic_back_simple"
+            app:layout_constraintBottom_toTopOf="@id/tv_name_artist"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@android:color/black"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_desc_artist"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:text="周杰伦是一位非凡的艺人。他的才华不仅体现在现场即兴创作能力和对乐理、各种乐器的精通，还体现在其不入俗套的创作思路。他在乐曲中融入各式东西方音乐，比如爵士乐、蓝调、摇滚、那卡西、民谣、嘻哈、美国乡村音乐、电子音乐等等。"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_album_cover_artist" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

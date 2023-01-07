@@ -1,8 +1,7 @@
 package com.frankhon.fantasymusic.data.source.local
 
+import com.frankhon.fantasymusic.data.db.MusicDao
 import com.frankhon.fantasymusic.utils.*
-import com.frankhon.fantasymusic.vo.SimpleSong
-import com.frankhon.fantasymusic.vo.bean.DataSong
 import com.frankhon.fantasymusic.vo.db.DBSong
 import com.hon.mylogger.MyLogger
 import kotlinx.coroutines.Dispatchers

@@ -16,6 +16,7 @@ data class SearchSongItem(
     val name: String?,
     val artist: String?,
     val albumPicUrl: String? = "",
+    val albumName: String? = "",
     var songUri: String? = "",
     var lyricsUri: String? = "",
     // 0 未下载，1 下载中，2 已下载
@@ -28,11 +29,21 @@ data class SearchSongItem(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
+        parcel.readString(),
         parcel.readInt()
     )
 
     fun clone(): SearchSongItem {
-        return SearchSongItem(cid, name, artist, albumPicUrl, songUri, lyricsUri, downloadState)
+        return SearchSongItem(
+            cid,
+            name,
+            artist,
+            albumPicUrl,
+            albumName,
+            songUri,
+            lyricsUri,
+            downloadState
+        )
     }
 
     override fun equals(other: Any?): Boolean {
@@ -58,6 +69,7 @@ data class SearchSongItem(
         parcel.writeString(name)
         parcel.writeString(artist)
         parcel.writeString(albumPicUrl)
+        parcel.writeString(albumName)
         parcel.writeString(songUri)
         parcel.writeString(lyricsUri)
         parcel.writeInt(downloadState)

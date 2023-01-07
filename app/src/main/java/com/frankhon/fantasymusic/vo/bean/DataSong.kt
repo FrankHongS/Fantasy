@@ -32,6 +32,11 @@ class DataSong() : Parcelable {
             return album?.picUrl.orEmpty()
         }
 
+    val albumName: String?
+        get() {
+            return album?.name
+        }
+
     constructor(parcel: Parcel) : this() {
         cid = parcel.readString()
         name = parcel.readString()

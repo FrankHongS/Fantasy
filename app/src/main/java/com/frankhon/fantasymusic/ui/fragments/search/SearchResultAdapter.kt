@@ -81,9 +81,7 @@ class SearchResultAdapter(
                 songName.text = name
                 artistName.text = artist
                 songItem.setOnClickListener {
-                    onItemClickListener(
-                        transformToSimpleSong()
-                    )
+                    onItemClickListener(transformToSimpleSong())
                 }
                 when (downloadState) {
                     0 -> {

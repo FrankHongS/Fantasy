@@ -4,6 +4,8 @@ import android.os.Parcel
 import android.os.Parcelable
 
 /**
+ * 通用song entity，包含song所有信息
+ *
  * Created by Frank_Hon on 11/12/2020.
  * E-mail: v-shhong@microsoft.com
  */
@@ -14,11 +16,13 @@ class SimpleSong(
     var songUri: String? = "",
     var lyricsUri: String? = "",
     var picUrl: String? = "",
+    var albumName: String? = "",
     // unit, ms
     var duration: Long = 0L,
     var canDelete: Boolean = true
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -46,6 +50,7 @@ class SimpleSong(
         parcel.writeString(songUri)
         parcel.writeString(lyricsUri)
         parcel.writeString(picUrl)
+        parcel.writeString(albumName)
         parcel.writeLong(duration)
         parcel.writeInt(if (canDelete) 1 else 0)
     }

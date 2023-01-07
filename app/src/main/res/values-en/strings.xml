@@ -20,9 +20,10 @@
     <string name="song_url_error">Song\'s url is wrong</string>
     <string name="search_input_empty">Search input is empty</string>
     <string name="search_result_empty">Sorry, result is empty, and try other songs or artists please</string>
+    <string name="unknown_album">unknown album</string>
 
     <string name="title_local_songs">Local Songs</string>
-    <string name="songs_count">%s songs</string>
+    <string name="songs_count">%s song(s)</string>
     <string name="play_all">Play all</string>
 
     <!-- Play mode-->
@@ -39,6 +40,8 @@
     <string name="unable_to_delete">Songs from App not support to delete</string>
     <string name="add_into_playlist">%s added into playlist</string>
     <string name="add_into_playlist_failure">%s exists in the playlist</string>
+
+    <string name="artists_content_empty_hint">Sorry, no artists. You can try download more songs.</string>
 
     <string name="settings_enable">enable</string>
     <string name="settings_unable">unable</string>

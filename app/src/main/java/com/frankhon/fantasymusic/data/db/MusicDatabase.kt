@@ -1,8 +1,6 @@
-package com.frankhon.fantasymusic.data.source.local
+package com.frankhon.fantasymusic.data.db
 
-import androidx.room.AutoMigration
 import androidx.room.Database
-import androidx.room.DeleteColumn
 import androidx.room.RoomDatabase
 import com.frankhon.fantasymusic.vo.db.DBSong
 
@@ -12,7 +10,7 @@ import com.frankhon.fantasymusic.vo.db.DBSong
  */
 @Database(
     entities = [DBSong::class],
-    version = 4,
+    version = 5,
     exportSchema = true,
 //    autoMigrations = [
 //        AutoMigration(from = 1, to = 2)
@@ -21,5 +19,9 @@ import com.frankhon.fantasymusic.vo.db.DBSong
 abstract class MusicDatabase : RoomDatabase() {
 
     abstract val musicDao: MusicDao
+
+    abstract val artistsDao: ArtistDao
+
+    abstract val albumDao: AlbumDao
 
 }

@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import com.frankhon.fantasymusic.data.repository.MusicRepository
 import com.frankhon.fantasymusic.utils.setData
 import com.frankhon.fantasymusic.utils.singleArgSavedStateViewModelFactory
+import com.frankhon.fantasymusic.utils.transferToSongItems
 import com.frankhon.fantasymusic.vo.SimpleSong
+import com.frankhon.fantasymusic.vo.view.SongItem
 import kotlinx.coroutines.delay
 
 /**
@@ -16,7 +18,6 @@ class SongViewModel(private val repository: MusicRepository, private val state: 
     ViewModel() {
 
     companion object {
-        private const val KEY_NOW_PLAYING = "KEY_NOW_PLAYING"
         val FACTORY = singleArgSavedStateViewModelFactory(::SongViewModel)
     }
 
@@ -33,16 +34,16 @@ class SongViewModel(private val repository: MusicRepository, private val state: 
     /**
      * 获取首页数据，并重置页数
      */
-    suspend fun loadSongs(): List<SimpleSong> {
-        return repository.getSongs().apply { _songs.setData(this) }
+    suspend fun loadSongs(): List<SongItem> {
+        return repository.getSongs().apply { _songs.setData(this) }.transferToSongItems()
     }
 
     /**
      * 获取更多数据
      */
-    suspend fun loadMoreSongs(offset: Int): List<SimpleSong> {
+    suspend fun loadMoreSongs(offset: Int): List<SongItem> {
         delay(500)
-        return repository.getSongs(offset).apply { _songs.addAll(this) }
+        return repository.getSongs(offset).apply { _songs.addAll(this) }.transferToSongItems()
     }
 
     suspend fun getAllSongs(): List<SimpleSong> {

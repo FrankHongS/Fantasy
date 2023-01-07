@@ -76,6 +76,7 @@ class SongDetailActivity : AppCompatActivity(), PlayerLifecycleObserver,
             loadLyrics(it)
         }
         btn_toggle_detail.updatePlayControlIcon(PlayerState.PREPARING)
+        updatePreviousNextButton(playMode, curIndex, totalSize)
         ib_playlist_detail.updatePlaylistPopup(index = curIndex)
     }
 

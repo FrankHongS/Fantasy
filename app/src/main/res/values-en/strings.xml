@@ -20,6 +20,8 @@
     <string name="song_url_error">Song\'s url is wrong</string>
     <string name="search_input_empty">Search input is empty</string>
     <string name="search_result_empty">Sorry, result is empty, and try other songs or artists please</string>
+    <string name="search_error">Error while searching…</string>
+
     <string name="unknown_album">unknown album</string>
 
     <string name="title_local_songs">Local Songs</string>

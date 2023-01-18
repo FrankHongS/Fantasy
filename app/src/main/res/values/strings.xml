@@ -19,6 +19,7 @@
     <string name="song_url_error">歌曲地址异常</string>
     <string name="search_input_empty">搜索内容不能为空</string>
     <string name="search_result_empty">搜索结果为空，尝试输入其他歌曲或歌手</string>
+    <string name="search_error">搜索出现异常…</string>
 
     <string name="playlist_artist_name" translatable="false">- %s</string>
 

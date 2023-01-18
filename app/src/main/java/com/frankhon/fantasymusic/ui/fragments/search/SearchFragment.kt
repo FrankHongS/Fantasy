@@ -14,9 +14,10 @@ import com.frankhon.fantasymusic.application.AppExecutors
 import com.frankhon.fantasymusic.application.ServiceLocator
 import com.frankhon.fantasymusic.media.AudioPlayerManager
 import com.frankhon.fantasymusic.ui.fragments.BaseFragment
+import com.frankhon.fantasymusic.ui.view.GridTextView
 import com.frankhon.fantasymusic.utils.FRAGMENT_MAIN_TO_SEARCH_TRANSITION_NAME
 import com.frankhon.fantasymusic.utils.showToast
-import com.frankhon.fantasymusic.ui.view.GridTextView
+import com.frankhon.fantasymusic.utils.string
 import com.frankhon.fantasymusic.vo.event.DownloadCompleteEvent
 import com.frankhon.fantasymusic.vo.view.DOWNLOAD_STATE_DOWNLOADED
 import com.frankhon.fantasymusic.vo.view.SearchSongItem
@@ -94,7 +95,7 @@ class SearchFragment : BaseFragment() {
             val (isSuccess, errorMessage) = result
             if (!isSuccess && shouldShowErrorToast) {
                 shouldShowErrorToast = false
-                showToast(errorMessage ?: "搜歌出现异常")
+                showToast(errorMessage ?: string(R.string.search_error))
                 MyLogger.e("Search songs: $errorMessage")
             }
         }

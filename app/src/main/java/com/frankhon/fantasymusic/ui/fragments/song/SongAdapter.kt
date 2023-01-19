@@ -14,8 +14,8 @@ import com.frankhon.customview.paging.PagingAdapter
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.ui.base.BaseViewHolder
 import com.frankhon.fantasymusic.utils.compareTo
+import com.frankhon.fantasymusic.utils.getQuantityString
 import com.frankhon.fantasymusic.utils.safeSetText
-import com.frankhon.fantasymusic.utils.string
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.frankhon.fantasymusic.vo.view.SongItem
 import kotlin.math.max
@@ -170,7 +170,7 @@ class SongAdapter(
         private val playAllBtn = view.findViewById<TextView>(R.id.tv_play_all)
 
         fun bindView(count: Int) {
-            songsCountText.text = String.format(string(R.string.songs_count), count)
+            songsCountText.text = getQuantityString(R.plurals.songs_count, count)
             playAllBtn.setOnClickListener {
                 onPlayAllClickListener(it)
             }

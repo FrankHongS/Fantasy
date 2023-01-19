@@ -15,8 +15,8 @@ import com.bumptech.glide.Glide
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.application.ServiceLocator
 import com.frankhon.fantasymusic.ui.base.BaseViewHolder
+import com.frankhon.fantasymusic.utils.getQuantityString
 import com.frankhon.fantasymusic.utils.setData
-import com.frankhon.fantasymusic.utils.string
 import com.frankhon.fantasymusic.vo.view.ArtistItem
 
 /**
@@ -119,7 +119,7 @@ class ArtistFragment : BaseFragment() {
                 .placeholder(R.drawable.default_placeholder)
                 .into(coverImage)
             artistName.text = item.name
-            songsCount.text = String.format(string(R.string.songs_count), item.songsCount)
+            songsCount.text = getQuantityString(R.plurals.songs_count, item.songsCount)
         }
 
     }

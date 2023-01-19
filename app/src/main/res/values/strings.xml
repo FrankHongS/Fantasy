@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">Fantasy</string>
     <string name="welcome_text">Listen to cool music !</string>
     <!--tool bar-->
@@ -24,7 +24,9 @@
     <string name="playlist_artist_name" translatable="false">- %s</string>
 
     <string name="title_local_songs">本地歌曲</string>
-    <string name="songs_count">共 %s 首</string>
+    <plurals name="songs_count">
+        <item quantity="other">共 %s 首</item>
+    </plurals>
     <string name="play_all">播放全部</string>
 
     <string name="play_mode_shuffle">随机播放</string>

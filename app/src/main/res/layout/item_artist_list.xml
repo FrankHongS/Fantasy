@@ -69,12 +69,12 @@
             android:layout_marginVertical="8dp"
             android:ellipsize="end"
             android:maxLines="3"
-            android:text="周杰伦是一位非凡的艺人。他的才华不仅体现在现场即兴创作能力和对乐理、各种乐器的精通，还体现在其不入俗套的创作思路。他在乐曲中融入各式东西方音乐，比如爵士乐、蓝调、摇滚、那卡西、民谣、嘻哈、美国乡村音乐、电子音乐等等。"
-            android:textAlignment="center"
+            android:text="歌手简介：..."
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_album_cover_artist" />
+            app:layout_constraintTop_toBottomOf="@id/iv_album_cover_artist"
+            tools:text="周杰伦是一位非凡的艺人。他的才华不仅体现在现场即兴创作能力和对乐理、各种乐器的精通，还体现在其不入俗套的创作思路。他在乐曲中融入各式东西方音乐，比如爵士乐、蓝调、摇滚、那卡西、民谣、嘻哈、美国乡村音乐、电子音乐等等。" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

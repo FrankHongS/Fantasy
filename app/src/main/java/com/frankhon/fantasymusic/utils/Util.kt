@@ -3,10 +3,7 @@ package com.frankhon.fantasymusic.utils
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import androidx.annotation.ArrayRes
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import androidx.annotation.*
 import com.frankhon.fantasymusic.application.Fantasy
 import com.frankhon.fantasymusic.media.AudioPlayerService
 import com.hon.mylogger.MyLogger
@@ -109,3 +106,6 @@ fun getStringArray(@ArrayRes resId: Int): Array<String> =
 
 fun getIntegerArray(@ArrayRes resId: Int): IntArray =
     appContext.resources.getIntArray(resId)
+
+fun getQuantityString(@PluralsRes resId: Int, quantity: Int) =
+    appContext.resources.getQuantityString(resId, quantity, quantity)

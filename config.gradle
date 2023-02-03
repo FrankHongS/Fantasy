@@ -35,7 +35,7 @@ ext.versions = [
         'eventbus'          : '3.1.1',
         'simplechartview'   : '0.0.3',
         'mylogger'          : '1.0.4',
-        'customview'        : 'v1.0.11',
+        'customview'        : 'v1.0.12',
 
         'junit'             : '4.12',
         'test'              : '1.2.0',

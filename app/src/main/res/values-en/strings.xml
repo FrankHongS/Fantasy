@@ -25,7 +25,10 @@
     <string name="unknown_album">unknown album</string>
 
     <string name="title_local_songs">Local Songs</string>
-    <string name="songs_count">%s song(s)</string>
+    <plurals name="songs_count">
+        <item quantity="one">%s song</item>
+        <item quantity="other">%s songs</item>
+    </plurals>
     <string name="play_all">Play all</string>
 
     <!-- Play mode-->

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.ui.base.BaseViewHolder
+import com.frankhon.fantasymusic.utils.getQuantityString
 import com.frankhon.fantasymusic.utils.setData
 import com.frankhon.fantasymusic.utils.string
 import com.frankhon.fantasymusic.vo.view.AlbumItem
@@ -81,7 +82,7 @@ class AlbumAdapter : RecyclerView.Adapter<AlbumAdapter.ArtistsViewHolder>() {
                     if (name.isNullOrEmpty()) string(R.string.unknown_album) else name
                 //加空格，防止斜体最后一个字被截断
                 artistNameText.text = "$artistName "
-                songsCountText.text = String.format(string(R.string.songs_count), songsCount)
+                songsCountText.text = getQuantityString(R.plurals.songs_count, songsCount)
             }
         }
 

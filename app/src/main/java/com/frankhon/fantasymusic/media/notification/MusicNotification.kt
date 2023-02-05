@@ -42,7 +42,7 @@ fun sendMediaNotification(
     currentPlayerInfo: CurrentPlayerInfo,
 ) {
     val song = currentPlayerInfo.curSong ?: return
-    val context = Fantasy.getAppContext()
+    val context = Fantasy.appContext
     Glide.with(context)
         .asBitmap()
         .load(song.picUrl)
@@ -82,7 +82,7 @@ fun sendMediaNotification(
     currentPlayerInfo: CurrentPlayerInfo
 ) {
     val song = currentPlayerInfo.curSong ?: return
-    val context = Fantasy.getAppContext()
+    val context = Fantasy.appContext
     Glide.with(context)
         .asBitmap()
         .load(song.picUrl)
@@ -219,7 +219,7 @@ private fun buildNotification(
 }
 
 fun cancelNotification() {
-    val notificationManager = NotificationManagerCompat.from(Fantasy.getAppContext())
+    val notificationManager = NotificationManagerCompat.from(Fantasy.appContext)
     notificationManager.cancel(MUSIC_NOTIFICATION_ID)
     releaseMediaSession()
 }

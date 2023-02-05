@@ -57,7 +57,7 @@
             android:theme="@style/CustomActionBar" />
         <activity
             android:name=".ui.activities.settings.SettingsActivity"
-            android:theme="@style/CustomActionBar" />
+            android:theme="@style/Settings" />
 
         <service
             android:name=".media.AudioPlayerService"

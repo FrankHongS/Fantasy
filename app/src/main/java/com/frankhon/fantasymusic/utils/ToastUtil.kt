@@ -13,9 +13,9 @@ fun showToast(content: String) {
     if (content.isEmpty()) {
         return
     }
-    Toast.makeText(Fantasy.getAppContext(), content, Toast.LENGTH_SHORT).show()
+    Toast.makeText(Fantasy.appContext, content, Toast.LENGTH_SHORT).show()
 }
 
 fun showToast(@StringRes resId: Int) {
-    Toast.makeText(Fantasy.getAppContext(), resId, Toast.LENGTH_SHORT).show()
+    Toast.makeText(Fantasy.appContext, resId, Toast.LENGTH_SHORT).show()
 }

@@ -1,10 +1,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <SwitchPreference
-            android:key="notification_style"
-            android:title="@string/system_notification_style"
-            app:allowDividerBelow="true"
-            app:iconSpaceReserved="false" />
+        android:key="notification_style"
+        android:title="@string/system_notification_style"
+        app:allowDividerBelow="true"
+        app:iconSpaceReserved="false" />
+
+    <EditTextPreference
+        android:key="remote_url"
+        android:summary="http://192.168.124.6:3402/"
+        android:title="@string/remote_url"
+        app:iconSpaceReserved="false" />
 
 </PreferenceScreen>

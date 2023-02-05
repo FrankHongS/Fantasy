@@ -50,7 +50,7 @@ object ServiceLocator {
     //endregion
 
     private val musicDatabase = Room.databaseBuilder(
-        Fantasy.getAppContext(),
+        Fantasy.appContext,
         MusicDatabase::class.java,
         "$APP_NAME.db"
     )

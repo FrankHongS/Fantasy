@@ -1,6 +1,7 @@
 package com.frankhon.fantasymusic.data.source.remote
 
 import com.frankhon.fantasymusic.BuildConfig
+import com.frankhon.fantasymusic.utils.BASE_URL
 import com.frankhon.fantasymusic.vo.bean.DataSongWrapper
 import com.frankhon.fantasymusic.vo.bean.SingleSongWrapper
 import com.frankhon.fantasymusic.vo.bean.SongLyricsWrapper
@@ -28,8 +29,6 @@ interface MusicService {
     suspend fun getLyrics(@Query("cid") cid: String?): Response<SongLyricsWrapper>
 
     companion object {
-        private const val BASE_URL = "http://192.168.124.6:3402/"
-
         fun create(): MusicService {
             val logger = HttpLoggingInterceptor().apply {
                 level = if (BuildConfig.DEBUG) {

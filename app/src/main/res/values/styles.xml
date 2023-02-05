@@ -12,4 +12,10 @@
         <item name="android:windowEnterTransition">@transition/transition_slide</item>
     </style>
 
+    <style name="CustomActionBar" parent="AppTheme"/>
+
+    <style name="Settings" parent="CustomActionBar">
+        <item name="colorAccent">@color/colorSettingsAccent</item>
+    </style>
+
 </resources>

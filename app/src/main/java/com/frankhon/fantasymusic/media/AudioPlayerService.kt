@@ -12,20 +12,20 @@ import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.media.session.MediaButtonReceiver
 import com.frankhon.fantasymusic.IMusicPlayer
+import com.frankhon.fantasymusic.data.settings.KEY_NOTIFICATION_STYLE
+import com.frankhon.fantasymusic.data.settings.read
 import com.frankhon.fantasymusic.media.AudioPlayer.pause
 import com.frankhon.fantasymusic.media.AudioPlayer.release
 import com.frankhon.fantasymusic.media.AudioPlayer.setPlaylist
 import com.frankhon.fantasymusic.media.AudioPlayer.stop
 import com.frankhon.fantasymusic.media.notification.MediaButtonCallback
 import com.frankhon.fantasymusic.media.notification.sendMediaNotification
-import com.frankhon.fantasymusic.utils.*
+import com.frankhon.fantasymusic.utils.ACTION_SCHEDULE_PAUSE_MUSIC
+import com.frankhon.fantasymusic.utils.ACTION_STOP
+import com.frankhon.fantasymusic.utils.formatTime
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.hon.mylogger.MyLogger
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 /**
  * Created by Frank Hon on 2020/11/1 7:52 PM.
@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 class AudioPlayerService : Service() {
 
     private val musicPlayer = ServiceStub()
-    private val mainScope by lazy { MainScope() }
+
     //用来控制通知栏点击事件
     private val mediaSessionCompat by lazy {
         MediaSessionCompat(this, "AudioPlayerService")
@@ -52,6 +52,7 @@ class AudioPlayerService : Service() {
             }
         }
     }
+
     // 有线耳机插入和拔出的回调
     private val headsetPlugReceiver by lazy {
         object : BroadcastReceiver() {
@@ -64,6 +65,7 @@ class AudioPlayerService : Service() {
             }
         }
     }
+
     // 蓝牙耳机连接和断开的回调
     private val bluetoothHeadsetReceiver by lazy {
         object : BroadcastReceiver() {
@@ -122,7 +124,6 @@ class AudioPlayerService : Service() {
         unregisterReceiver(headsetPlugReceiver)
         unregisterReceiver(bluetoothHeadsetReceiver)
         release()
-        mainScope.cancel()
     }
 
     private fun stopMusic() {
@@ -132,15 +133,12 @@ class AudioPlayerService : Service() {
     }
 
     private fun sendMediaNotification() {
-        mainScope.launch {
-            readDataStore().collect {
-                val style = it[KEY_NOTIFICATION_STYLE] ?: 0
-                sendMediaNotification(
-                    style == 0,
-                    this@AudioPlayerService,
-                    AudioPlayer.getCurrentPlayerInfo(),
-                )
-            }
+        read {
+            sendMediaNotification(
+                it[KEY_NOTIFICATION_STYLE] ?: true,
+                this@AudioPlayerService,
+                AudioPlayer.getCurrentPlayerInfo(),
+            )
         }
     }
 

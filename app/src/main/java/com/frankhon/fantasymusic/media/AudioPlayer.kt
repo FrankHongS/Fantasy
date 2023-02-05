@@ -9,6 +9,8 @@ import android.media.MediaPlayer
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
+import com.frankhon.fantasymusic.data.settings.KEY_NOTIFICATION_STYLE
+import com.frankhon.fantasymusic.data.settings.read
 import com.frankhon.fantasymusic.media.notification.cancelNotification
 import com.frankhon.fantasymusic.media.notification.releaseMediaSession
 import com.frankhon.fantasymusic.media.notification.sendMediaNotification
@@ -17,7 +19,6 @@ import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
 import com.hon.mylogger.MyLogger
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 
 /**
  * Note:
@@ -94,7 +95,6 @@ object AudioPlayer {
 
     private val mainScope by lazy { MainScope() }
     private var monitorProgressJob: Job? = null
-    private var notificationJob: Job? = null
 
     //region 播放器对外暴露的方法
     @JvmStatic
@@ -281,7 +281,6 @@ object AudioPlayer {
     fun release() {
         MyLogger.d("release()")
         stopUpdateProgress()
-        notificationJob?.cancel()
         abandonAudioFocus()
         stop()
         mHttpProxyCache.shutdown()
@@ -476,15 +475,11 @@ object AudioPlayer {
 
     private fun sendState() {
         if (curState != PlayerState.STOPPED) {
-            notificationJob?.cancel()
-            notificationJob = mainScope.launch {
-                readDataStore().collect {
-                    val style = it[KEY_NOTIFICATION_STYLE] ?: 0
-                    sendMediaNotification(
-                        style == 0,
-                        getCurrentPlayerInfo()
-                    )
-                }
+            read {
+                sendMediaNotification(
+                    it[KEY_NOTIFICATION_STYLE] ?: true,
+                    getCurrentPlayerInfo()
+                )
             }
         } else {
             cancelNotification()

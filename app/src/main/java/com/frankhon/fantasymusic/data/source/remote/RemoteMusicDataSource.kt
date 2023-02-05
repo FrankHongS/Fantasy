@@ -12,9 +12,11 @@ import retrofit2.Response
  */
 class RemoteMusicDataSource {
 
+    private val musicService by lazy { MusicService.create() }
+
     suspend fun findSong(keyword: String): Result<DataSongWrapper> {
         return generateResult {
-            MusicService.create().findSong(keyword)
+            musicService.findSong(keyword)
         }
     }
 
@@ -23,13 +25,13 @@ class RemoteMusicDataSource {
      */
     suspend fun getSingleSongUrl(cid: String?): Result<SingleSongWrapper> {
         return generateResult {
-            MusicService.create().getSingleSongUrl(cid)
+            musicService.getSingleSongUrl(cid)
         }
     }
 
     suspend fun getLyrics(cid: String?): Result<SongLyricsWrapper> {
         return generateResult {
-            MusicService.create().getLyrics(cid)
+            musicService.getLyrics(cid)
         }
     }
 

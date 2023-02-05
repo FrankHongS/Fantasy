@@ -116,7 +116,7 @@ object AudioPlayerManager {
     @JvmStatic
     fun release() {
         if (hasBoundService) {
-            Fantasy.getAppContext().unbindService(connection)
+            Fantasy.appContext.unbindService(connection)
             hasBoundService = false
         }
         lifecycleObservers.clear()

@@ -16,21 +16,21 @@ import java.util.*
  */
 
 val packageId: String
-    get() = Fantasy.getAppContext().packageName
+    get() = Fantasy.appContext.packageName
 
-val appContext = Fantasy.getAppContext() as Context
+val appContext = Fantasy.appContext
 
 fun dp2px(dp: Int): Int {
-    val density = Fantasy.getAppContext().resources.displayMetrics.density
+    val density = Fantasy.appContext.resources.displayMetrics.density
     return (dp * density + 0.5f).toInt()
 }
 
 inline fun <reified T> getSystemService(name: String): T {
-    return Fantasy.getAppContext().getSystemService(name) as T
+    return Fantasy.appContext.getSystemService(name) as T
 }
 
 fun sendBroadcast(intent: Intent) {
-    Fantasy.getAppContext().sendBroadcast(intent)
+    Fantasy.appContext.sendBroadcast(intent)
 }
 
 fun msToMMSS(millis: Long): String {
@@ -95,11 +95,11 @@ fun startService(intent: Intent) {
     appContext.startService(intent)
 }
 
-fun string(@StringRes resId: Int) = Fantasy.getAppContext().getString(resId)
+fun string(@StringRes resId: Int) = Fantasy.appContext.getString(resId)
 
-fun color(@ColorRes resId: Int) = Fantasy.getAppContext().color(resId)
+fun color(@ColorRes resId: Int) = Fantasy.appContext.color(resId)
 
-fun drawable(@DrawableRes resId: Int) = Fantasy.getAppContext().drawable(resId)
+fun drawable(@DrawableRes resId: Int) = Fantasy.appContext.drawable(resId)
 
 fun getStringArray(@ArrayRes resId: Int): Array<String> =
     appContext.resources.getStringArray(resId)

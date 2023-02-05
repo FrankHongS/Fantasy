@@ -20,7 +20,7 @@ import java.util.regex.Pattern
  */
 
 fun getSongsFromAssets(): List<DBSong> {
-    val context = Fantasy.getAppContext()
+    val context = Fantasy.appContext
     val songs = arrayListOf<DBSong>()
     val config = context.assets.open("config.json")
     val reader = InputStreamReader(config, "utf-8")

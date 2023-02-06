@@ -12,14 +12,12 @@ import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.media.session.MediaButtonReceiver
 import com.frankhon.fantasymusic.IMusicPlayer
-import com.frankhon.fantasymusic.data.settings.KEY_NOTIFICATION_STYLE
-import com.frankhon.fantasymusic.data.settings.read
 import com.frankhon.fantasymusic.media.AudioPlayer.pause
 import com.frankhon.fantasymusic.media.AudioPlayer.release
 import com.frankhon.fantasymusic.media.AudioPlayer.setPlaylist
 import com.frankhon.fantasymusic.media.AudioPlayer.stop
 import com.frankhon.fantasymusic.media.notification.MediaButtonCallback
-import com.frankhon.fantasymusic.media.notification.sendMediaNotification
+import com.frankhon.fantasymusic.media.notification.MusicNotificationManger
 import com.frankhon.fantasymusic.utils.ACTION_SCHEDULE_PAUSE_MUSIC
 import com.frankhon.fantasymusic.utils.ACTION_STOP
 import com.frankhon.fantasymusic.utils.formatTime
@@ -132,31 +130,35 @@ class AudioPlayerService : Service() {
         release()
     }
 
-    private fun sendMediaNotification() {
-        read {
-            sendMediaNotification(
-                it[KEY_NOTIFICATION_STYLE] ?: true,
-                this@AudioPlayerService,
-                AudioPlayer.getCurrentPlayerInfo(),
-            )
-        }
+    private fun sendMediaNotification(isSystemStyle: Boolean) {
+        MusicNotificationManger.sendMediaNotification(
+            isSystemStyle,
+            this@AudioPlayerService,
+            AudioPlayer.getCurrentPlayerInfo(),
+        )
     }
 
     private inner class ServiceStub : IMusicPlayer.Stub() {
+
+        override fun setNotificationStyle(isSystemStyle: Boolean) {
+            AudioPlayer.isNotificationSystemStyle = isSystemStyle
+            AudioPlayer.sendMediaNotification()
+        }
+
         override fun play(song: SimpleSong) {
             AudioPlayer.play(song)
-            sendMediaNotification()
+            sendMediaNotification(AudioPlayer.isNotificationSystemStyle)
         }
 
         override fun playAndAddIntoPlaylist(song: SimpleSong) {
             AudioPlayer.playAndAddIntoPlaylist(song)
-            sendMediaNotification()
+            sendMediaNotification(AudioPlayer.isNotificationSystemStyle)
         }
 
         override fun addIntoPlaylist(song: SimpleSong) {
             val isPlaying = AudioPlayer.addIntoPlaylist(song)
             if (isPlaying) {
-                sendMediaNotification()
+                sendMediaNotification(AudioPlayer.isNotificationSystemStyle)
             }
         }
 
@@ -169,7 +171,7 @@ class AudioPlayerService : Service() {
 
         override fun setPlayList(playList: List<SimpleSong>, index: Int) {
             setPlaylist(playList, index)
-            sendMediaNotification()
+            sendMediaNotification(AudioPlayer.isNotificationSystemStyle)
         }
 
         override fun pause() {

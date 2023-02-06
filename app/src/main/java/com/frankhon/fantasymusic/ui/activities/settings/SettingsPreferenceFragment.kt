@@ -1,7 +1,6 @@
 package com.frankhon.fantasymusic.ui.activities.settings
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.edit
@@ -18,7 +17,6 @@ import com.frankhon.fantasymusic.data.settings.KEY_REMOTE_URL
 import com.frankhon.fantasymusic.data.settings.dataStore
 import com.frankhon.fantasymusic.data.settings.readDataStore
 import com.frankhon.fantasymusic.media.AudioPlayerManager
-import com.frankhon.fantasymusic.media.notification.sendMediaNotification
 import com.frankhon.fantasymusic.utils.BASE_URL
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -83,14 +81,11 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(), OnPreferenceChang
                     edit { preferences ->
                         preferences[KEY_NOTIFICATION_STYLE] = isChecked
                     }
-                    AudioPlayerManager.getCurrentPlayerInfo()?.let { playInfo ->
-                        sendMediaNotification(isChecked, playInfo)
-                    }
+                    AudioPlayerManager.setNotificationStyle(isChecked)
                 }
                 else -> {}
             }
         }
-        Log.d("frankhon", "onPreferenceChange: preference = $preference newValue = $newValue")
         return true
     }
 

@@ -48,8 +48,8 @@
 
     <string name="artists_content_empty_hint">Sorry, no artists. You can try download more songs.</string>
 
-    <string name="settings_enable">enable</string>
-    <string name="settings_unable">unable</string>
+    <string name="settings_enable">On</string>
+    <string name="settings_unable">Off</string>
     <string name="system_notification_style">System notification style</string>
     <string name="remote_url">Remote url</string>
 </resources>

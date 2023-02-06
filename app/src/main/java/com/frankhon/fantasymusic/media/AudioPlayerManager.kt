@@ -8,6 +8,8 @@ import android.os.IBinder
 import com.frankhon.fantasymusic.IMusicPlayer
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.application.Fantasy
+import com.frankhon.fantasymusic.data.settings.KEY_NOTIFICATION_STYLE
+import com.frankhon.fantasymusic.data.settings.read
 import com.frankhon.fantasymusic.media.observer.PlayerConfigurationObserver
 import com.frankhon.fantasymusic.media.observer.PlayerLifecycleObserver
 import com.frankhon.fantasymusic.utils.appContext
@@ -86,6 +88,10 @@ object AudioPlayerManager {
         )
         // avoid memory leak from anonymous inner class
         onServiceConnectedListeners.clear()
+
+        read {
+            setNotificationStyle(it[KEY_NOTIFICATION_STYLE] ?: true)
+        }
     }
 
     @JvmStatic
@@ -122,6 +128,10 @@ object AudioPlayerManager {
         lifecycleObservers.clear()
         configurationObservers.clear()
         LyricsManager.release()
+    }
+
+    fun setNotificationStyle(isSystemStyle: Boolean) {
+        musicPlayer?.setNotificationStyle(isSystemStyle)
     }
 
     @JvmStatic

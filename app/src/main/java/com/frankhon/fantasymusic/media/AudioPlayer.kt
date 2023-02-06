@@ -9,11 +9,7 @@ import android.media.MediaPlayer
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
-import com.frankhon.fantasymusic.data.settings.KEY_NOTIFICATION_STYLE
-import com.frankhon.fantasymusic.data.settings.read
-import com.frankhon.fantasymusic.media.notification.cancelNotification
-import com.frankhon.fantasymusic.media.notification.releaseMediaSession
-import com.frankhon.fantasymusic.media.notification.sendMediaNotification
+import com.frankhon.fantasymusic.media.notification.MusicNotificationManger
 import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
@@ -95,8 +91,14 @@ object AudioPlayer {
 
     private val mainScope by lazy { MainScope() }
     private var monitorProgressJob: Job? = null
+    // 通知栏样式
+    var isNotificationSystemStyle = true
 
     //region 播放器对外暴露的方法
+    fun sendMediaNotification() {
+        MusicNotificationManger.sendMediaNotification(isNotificationSystemStyle, getCurrentPlayerInfo())
+    }
+
     @JvmStatic
     fun play(song: SimpleSong?) {
         song?.let {
@@ -285,7 +287,7 @@ object AudioPlayer {
         stop()
         mHttpProxyCache.shutdown()
         resetCurPlayInfo()
-        releaseMediaSession()
+        MusicNotificationManger.release()
 
         errorMsg = ""
         latestPlayTime = 0
@@ -475,14 +477,9 @@ object AudioPlayer {
 
     private fun sendState() {
         if (curState != PlayerState.STOPPED) {
-            read {
-                sendMediaNotification(
-                    it[KEY_NOTIFICATION_STYLE] ?: true,
-                    getCurrentPlayerInfo()
-                )
-            }
+            sendMediaNotification()
         } else {
-            cancelNotification()
+            MusicNotificationManger.cancelNotification()
         }
         curSong?.let {
             sendBroadcast(

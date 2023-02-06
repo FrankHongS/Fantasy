@@ -8,6 +8,8 @@ import java.util.List;
 
 interface IMusicPlayer {
 
+    void setNotificationStyle(boolean isSystemStyle);
+
     void play(in SimpleSong song);
     void playAndAddIntoPlaylist(in SimpleSong song);
     void addIntoPlaylist(in SimpleSong song);

@@ -5,10 +5,8 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.AnimatedVectorDrawable
-import android.graphics.drawable.VectorDrawable
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator

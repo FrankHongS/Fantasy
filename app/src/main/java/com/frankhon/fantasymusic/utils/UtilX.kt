@@ -4,21 +4,16 @@ import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Build
 import android.view.View
-import androidx.annotation.ArrayRes
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
-import com.frankhon.fantasymusic.application.Fantasy
-import com.frankhon.fantasymusic.media.AudioPlayerService
-import com.hon.mylogger.MyLogger
-import java.text.SimpleDateFormat
+import com.frankhon.fantasymusic.application.ActivityStackManager
+import com.frankhon.fantasymusic.ui.activities.MainActivity
 import java.util.*
 
 /**
@@ -68,6 +63,15 @@ inline fun <reified T : Activity> Context.navigateWithTransitions() {
             Intent(it, T::class.java),
             ActivityOptions.makeSceneTransitionAnimation(it).toBundle()
         )
+    }
+}
+
+/**
+ * 当非MainActivity回退时，返回栈没有其他Activity时，返回到MainActivity
+ */
+fun Context.backToMain() {
+    if (ActivityStackManager.size == 1) {
+        navigate<MainActivity>()
     }
 }
 

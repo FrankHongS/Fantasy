@@ -66,10 +66,12 @@ fun AnimatedAudioToggleButton.updatePlayControlIcon(
 
 /**
  *  将拖拽的状态存储在tag中
+ *  @param onProgressChangeListener 监听进度更新，fromUser为true表示为用户手动拖动进度条
  */
-fun SeekBar.bindChangeListener() {
+fun SeekBar.bindChangeListener(onProgressChangeListener: ((progressMillis: Int, fromUser: Boolean) -> Unit)? = null) {
     setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+            onProgressChangeListener?.invoke(seekBar.progress, fromUser)
         }
 
         override fun onStartTrackingTouch(seekBar: SeekBar) {

@@ -2,16 +2,7 @@ package com.frankhon.fantasymusic.application
 
 import android.app.Activity
 import android.app.Application
-import android.content.IntentFilter
 import android.os.Bundle
-import com.frankhon.fantasymusic.media.AudioPlayerManager
-import com.frankhon.fantasymusic.receivers.MusicInfoReceiver
-import com.frankhon.fantasymusic.receivers.MusicPlayerConfigurationReceiver
-import com.frankhon.fantasymusic.receivers.MusicProgressReceiver
-import com.frankhon.fantasymusic.utils.MUSIC_INFO_ACTION
-import com.frankhon.fantasymusic.utils.MUSIC_PLAYER_CONFIGURATION_ACTION
-import com.frankhon.fantasymusic.utils.MUSIC_PROGRESS_ACTION
-import com.frankhon.fantasymusic.utils.appContext
 import com.hon.mylogger.MyLogger
 
 /**
@@ -20,18 +11,11 @@ import com.hon.mylogger.MyLogger
  */
 class FantasyActivityLifecycleCallback : Application.ActivityLifecycleCallbacks {
 
-    private var activityCount = 0
-
-    private val musicInfoReceiver by lazy { MusicInfoReceiver() }
-    private val musicPlayerConfigurationReceiver by lazy { MusicPlayerConfigurationReceiver() }
-    private val musicProgressReceiver by lazy { MusicProgressReceiver() }
+    private val manager by lazy { ActivityStackManager }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         MyLogger.d("onActivityCreated: ")
-        activityCount++
-        if (activityCount == 1) {
-            registerMusicReceivers()
-        }
+        manager.push(activity)
     }
 
     override fun onActivityStarted(activity: Activity) {
@@ -56,33 +40,6 @@ class FantasyActivityLifecycleCallback : Application.ActivityLifecycleCallbacks 
 
     override fun onActivityDestroyed(activity: Activity) {
         MyLogger.d("onActivityDestroyed: ")
-        activityCount--
-        if (activityCount == 0) {
-            AudioPlayerManager.release()
-            unregisterMusicReceivers()
-        }
-    }
-
-    /**
-     * 动态注册监听播放器状态的广播接收器（动态广播比静态广播优先级高，避免出现广播接收不到的情况）
-     */
-    private fun registerMusicReceivers() {
-        appContext.run {
-            registerReceiver(musicInfoReceiver, IntentFilter(MUSIC_INFO_ACTION))
-            registerReceiver(
-                musicPlayerConfigurationReceiver, IntentFilter(
-                    MUSIC_PLAYER_CONFIGURATION_ACTION
-                )
-            )
-            registerReceiver(musicProgressReceiver, IntentFilter(MUSIC_PROGRESS_ACTION))
-        }
-    }
-
-    private fun unregisterMusicReceivers() {
-        appContext.run {
-            unregisterReceiver(musicInfoReceiver)
-            unregisterReceiver(musicPlayerConfigurationReceiver)
-            unregisterReceiver(musicProgressReceiver)
-        }
+        manager.pop()
     }
 }

@@ -59,7 +59,9 @@ class HomeBottomControlPanel @JvmOverloads constructor(
         }
 
         ib_play_mode.bindClickListener()
-        sb_play_progress.bindChangeListener()
+        sb_play_progress.bindChangeListener { progressMillis, _ ->
+            tv_current_time.text = msToMMSS(progressMillis.toLong())
+        }
 
         ib_playlist.setOnClickListener {
             val currentPlayerInfo = AudioPlayerManager.getCurrentPlayerInfo()
@@ -124,7 +126,6 @@ class HomeBottomControlPanel @JvmOverloads constructor(
                 ib_play_mode.playMode = PlayModeImageButton.State.valueOf(curPlayMode.name)
                 // update progress
                 updateSongDuration(it)
-                tv_current_time.text = msToMMSS(curPlaybackPosition)
                 sb_play_progress.progress = curPlaybackPosition.toInt()
                 iv_song_bottom_pic.updateProgress(
                     curPlaybackPosition.toInt(),
@@ -195,7 +196,6 @@ class HomeBottomControlPanel @JvmOverloads constructor(
     //region Audio player configuration
     override fun onProgressUpdated(curPosition: Long, duration: Long) {
         iv_song_bottom_pic.updateProgress(curPosition.toInt(), duration.toInt())
-        tv_current_time.text = msToMMSS(curPosition)
         sb_play_progress.run {
             //未拖拽时更新进度条
             if (!isTracking) {

@@ -51,13 +51,18 @@ class SongDetailActivity : AppCompatActivity(), PlayerLifecycleObserver,
         disconnectAudioPlayer()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        // 回退拦截
+        backToMain()
+    }
+
     override fun onPlayerConnected(playerInfo: CurrentPlayerInfo?) {
         playerInfo?.run {
             curSong?.let {
                 syncSongInfo(it)
                 // update progress
                 updateSongDuration(it)
-                tv_current_time_detail.text = msToMMSS(curPlaybackPosition)
                 sb_play_progress_detail.progress = curPlaybackPosition.toInt()
                 loadLyrics(it) {
                     lv_lyrics_detail.updateCurLyricTime(curPlaybackPosition, false)
@@ -106,7 +111,6 @@ class SongDetailActivity : AppCompatActivity(), PlayerLifecycleObserver,
     }
 
     override fun onProgressUpdated(curPosition: Long, duration: Long) {
-        tv_current_time_detail.text = msToMMSS(curPosition)
         sb_play_progress_detail.run {
             //未拖拽时更新进度条
             if (!isTracking) {
@@ -204,7 +208,9 @@ class SongDetailActivity : AppCompatActivity(), PlayerLifecycleObserver,
             .into(iv_background)
         tv_current_time_detail.text = msToMMSS(0)
         tv_song_duration_detail.text = msToMMSS(0)
-        sb_play_progress_detail.bindChangeListener()
+        sb_play_progress_detail.bindChangeListener { progressMillis, _ ->
+            tv_current_time_detail.text = msToMMSS(progressMillis.toLong())
+        }
         lv_lyrics_detail.setOnLyricsClickListener {
             updateLyricsVisibility(it.isInvisible)
         }

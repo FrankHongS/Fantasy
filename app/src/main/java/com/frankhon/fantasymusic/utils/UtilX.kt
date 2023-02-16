@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.*
 import android.graphics.Color
 import android.os.Build
 import android.view.View
@@ -53,7 +54,7 @@ inline fun <reified T : Activity> Context.navigate() {
 inline fun <reified T : Activity> Context.navigateInSingleTop() {
     startActivity(Intent(this, T::class.java)
         .apply {
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            flags = FLAG_ACTIVITY_SINGLE_TOP
         })
 }
 
@@ -71,7 +72,11 @@ inline fun <reified T : Activity> Context.navigateWithTransitions() {
  */
 fun Context.backToMain() {
     if (ActivityStackManager.size == 1) {
-        navigate<MainActivity>()
+        startActivity(Intent(this, MainActivity::class.java)
+            .apply {
+                // 清空栈中该Activity及其以上Activity，并重新创建该Activity
+                flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TOP
+            })
     }
 }
 

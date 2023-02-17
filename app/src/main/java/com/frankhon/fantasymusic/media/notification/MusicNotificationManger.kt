@@ -18,6 +18,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.session.MediaButtonReceiver
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.frankhon.fantasymusic.R
@@ -29,6 +30,7 @@ import com.frankhon.fantasymusic.ui.activities.SongDetailActivity
 import com.frankhon.fantasymusic.utils.*
 import com.frankhon.fantasymusic.vo.CurrentPlayerInfo
 import com.frankhon.fantasymusic.vo.SimpleSong
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 /**
  * Created by Frank Hon on 2022/8/16 6:36 下午.
@@ -53,43 +55,11 @@ object MusicNotificationManger {
         currentPlayerInfo: CurrentPlayerInfo,
     ) {
         val song = currentPlayerInfo.curSong ?: return
-        val context = Fantasy.appContext
-        Glide.with(context)
-            .asBitmap()
-            .load(song.picUrl)
-            .placeholder(R.drawable.song_pic)
-            .into(object : CustomTarget<Bitmap?>() {
-                override fun onResourceReady(
-                    resource: Bitmap,
-                    transition: Transition<in Bitmap?>?
-                ) {
-                    runOnMainThread {
-                        currentPlayerInfo.run {
-                            val isPlaying = curPlayerState.isPlayingInNotification()
-                            val notification = if (isSystemStyle) {
-                                buildNotification(
-                                    context,
-                                    song,
-                                    resource,
-                                    isPlaying,
-                                    if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex != 0 else true,
-                                    if (curPlayMode == PlayMode.LOOP_SINGLE)
-                                        curSongIndex < curPlaylist.size - 1 else true,
-                                    curPlaybackPosition
-                                )
-                            } else {
-                                buildNormalMediaNotification(context, song, resource, isPlaying)
-                            }
-                            val notificationManager = NotificationManagerCompat.from(context)
-                            notificationManager.notify(MUSIC_NOTIFICATION_ID, notification)
-                        }
-                    }
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-
-                }
-            })
+        doOnCoverReady(song.picUrl, isSystemStyle) {
+            val notificationManager = NotificationManagerCompat.from(Fantasy.appContext)
+            val notification = buildCompatNotification(currentPlayerInfo, it, isSystemStyle)
+            notificationManager.notify(MUSIC_NOTIFICATION_ID, notification)
+        }
     }
 
     fun sendMediaNotification(
@@ -98,42 +68,10 @@ object MusicNotificationManger {
         currentPlayerInfo: CurrentPlayerInfo
     ) {
         val song = currentPlayerInfo.curSong ?: return
-        val context = Fantasy.appContext
-        Glide.with(context)
-            .asBitmap()
-            .load(song.picUrl)
-            .placeholder(R.drawable.song_pic)
-            .into(object : CustomTarget<Bitmap?>() {
-                override fun onResourceReady(
-                    resource: Bitmap,
-                    transition: Transition<in Bitmap?>?
-                ) {
-                    runOnMainThread {
-                        currentPlayerInfo.run {
-                            val isPlaying = curPlayerState.isPlayingInNotification()
-                            val notification = if (isSystemStyle) {
-                                buildNotification(
-                                    context,
-                                    song,
-                                    resource,
-                                    isPlaying,
-                                    if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex != 0 else true,
-                                    if (curPlayMode == PlayMode.LOOP_SINGLE)
-                                        curSongIndex < curPlaylist.size - 1 else true,
-                                    curPlaybackPosition
-                                )
-                            } else {
-                                buildNormalMediaNotification(context, song, resource, isPlaying)
-                            }
-                            service.startForeground(MUSIC_NOTIFICATION_ID, notification)
-                        }
-                    }
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-
-                }
-            })
+        doOnCoverReady(song.picUrl, isSystemStyle) {
+            val notification = buildCompatNotification(currentPlayerInfo, it, isSystemStyle)
+            service.startForeground(MUSIC_NOTIFICATION_ID, notification)
+        }
     }
 
     @SuppressLint("InlinedApi")
@@ -356,6 +294,64 @@ object MusicNotificationManger {
     private fun runOnMainThread(action: () -> Unit) {
         mainHandler.post(action)
     }
+
+    private fun doOnCoverReady(
+        coverUrl: String?,
+        isSystemStyle: Boolean,
+        onResourceReady: (Bitmap) -> Unit
+    ) {
+        Glide.with(Fantasy.appContext)
+            .asBitmap()
+            .load(coverUrl)
+            .placeholder(R.drawable.default_placeholder)
+            .also {
+                if (!isSystemStyle) {
+                    it.apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(4.dp, 0)))
+                }
+            }
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap>?
+                ) {
+                    runOnMainThread {
+                        onResourceReady.invoke(resource)
+                    }
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+
+                }
+            })
+    }
+
+    private fun buildCompatNotification(
+        playerInfo: CurrentPlayerInfo,
+        cover: Bitmap,
+        isSystemStyle: Boolean
+    ): Notification {
+        if (!isSystemStyle) {
+            lastMediaSession?.release()
+        }
+        playerInfo.run {
+            val song = curSong!!
+            val isPlaying = curPlayerState.isPlayingInNotification()
+            return if (isSystemStyle) {
+                buildNotification(
+                    Fantasy.appContext,
+                    song,
+                    cover,
+                    isPlaying,
+                    if (curPlayMode == PlayMode.LOOP_SINGLE) curSongIndex != 0 else true,
+                    if (curPlayMode == PlayMode.LOOP_SINGLE)
+                        curSongIndex < curPlaylist.size - 1 else true,
+                    curPlaybackPosition
+                )
+            } else {
+                buildNormalMediaNotification(Fantasy.appContext, song, cover, isPlaying)
+            }
+        }
+    }
 }
 
 fun createNotificationChannel() {
@@ -370,4 +366,3 @@ fun createNotificationChannel() {
         notificationManager.createNotificationChannel(channel)
     }
 }
-

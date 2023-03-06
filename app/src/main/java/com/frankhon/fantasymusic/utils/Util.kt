@@ -25,6 +25,11 @@ fun dp2px(dp: Int): Int {
     return (dp * density + 0.5f).toInt()
 }
 
+fun sp2px(dp: Int): Int {
+    val density = Fantasy.appContext.resources.displayMetrics.scaledDensity
+    return (dp * density + 0.5f).toInt()
+}
+
 inline fun <reified T> getSystemService(name: String): T {
     return Fantasy.appContext.getSystemService(name) as T
 }

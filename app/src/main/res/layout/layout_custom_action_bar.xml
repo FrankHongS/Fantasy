@@ -2,18 +2,19 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/dp_48"
         android:background="@color/colorActionBar"
         tools:parentTag="android.widget.RelativeLayout">
 
     <ImageView
             android:id="@+id/iv_back"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/dp_10"
             android:foreground="?android:attr/selectableItemBackground"
-            android:padding="8dp"
+            android:paddingVertical="@dimen/dp_10"
+            android:paddingHorizontal="@dimen/dp_8"
             android:src="@drawable/ic_back"
             tools:ignore="ContentDescription,UnusedAttribute" />
 
@@ -22,11 +23,11 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/dp_8"
             android:layout_toEndOf="@id/iv_back"
             android:gravity="center_vertical"
             android:textColor="@color/primaryText"
-            android:textSize="22sp"
+            android:textSize="@dimen/sp_20"
             tools:text="Fantasy" />
 
 </merge>

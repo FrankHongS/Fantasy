@@ -48,7 +48,8 @@ class SimpleBottomControlPanel @JvmOverloads constructor(
         toggleButton = findViewById(R.id.ib_player_toggle)
 
         setBackgroundColor(context.color(R.color.navigationBarColor))
-        ViewCompat.setElevation(this, 8.dp.toFloat())
+        //阴影只在下方生效，此处设置无意义，如果需要实现阴影可借助CardView
+        ViewCompat.setElevation(this, dimen(R.dimen.dp_8))
         setDefaultPanel()
 
         toggleButton.bindClickListener()

@@ -2,8 +2,8 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="wrap_content"
-        android:layout_height="28dp"
+        android:layout_height="@dimen/dp_28"
         android:background="@drawable/bg_search_suggestion"
         android:textColor="@color/primaryText"
-        android:textSize="14sp"
+        android:textSize="@dimen/sp_14"
         tools:text="园游会" />

@@ -46,7 +46,7 @@ class HomeBottomControlPanel @JvmOverloads constructor(
         View.inflate(context, R.layout.layout_panel, this)
 
         setBackgroundColor(context.color(R.color.navigationBarColor))
-        ViewCompat.setElevation(this, 8.dp.toFloat())
+        ViewCompat.setElevation(this, dimen(R.dimen.dp_8))
         setDefaultPanel()
 
         ib_player_toggle.bindClickListener()

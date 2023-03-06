@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="wrap_content"
-        android:layout_height="68dp"
+        android:layout_height="@dimen/default_panel_height"
         android:gravity="center"
         android:orientation="horizontal">
 
     <ImageButton
             android:id="@+id/ib_previous_song"
-            android:layout_width="48dp"
+            android:layout_width="@dimen/dp_48"
             android:layout_height="match_parent"
             android:background="@null"
             android:src="@drawable/selector_previous_song_btn"
@@ -18,11 +18,11 @@
             android:id="@+id/ib_player_toggle"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            tools:layout_width="48dp" />
+            tools:layout_width="@dimen/dp_48" />
 
     <ImageButton
             android:id="@+id/ib_next_song"
-            android:layout_width="48dp"
+            android:layout_width="@dimen/dp_48"
             android:layout_height="match_parent"
             android:background="@null"
             android:src="@drawable/selector_next_song_btn"

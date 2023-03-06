@@ -18,4 +18,9 @@
         <item name="colorAccent">@color/colorSettingsAccent</item>
     </style>
 
+
+<!--    <style name="ToolbarTextAppearance" parent="TextAppearance.AppCompat.Title">-->
+<!--        <item name="textSize">@dimen/sp_20</item>-->
+<!--    </style>-->
+
 </resources>

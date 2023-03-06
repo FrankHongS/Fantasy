@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.os.Build
 import android.view.View
 import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -30,6 +31,11 @@ val Int.dp: Int
         return dp2px(this)
     }
 
+val Int.sp: Int
+    get() {
+        return sp2px(this)
+    }
+
 fun String?.matchesUri(): Boolean {
     return this?.matches(Regex("^(https?://|file://).*")) ?: false
 }
@@ -43,9 +49,17 @@ fun Context.drawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(this, 
 
 fun Context.color(@ColorRes resId: Int) = ContextCompat.getColor(this, resId)
 
+fun Context.dimen(@DimenRes resId: Int) = resources.getDimension(resId)
+
+fun Context.dimenPixelSize(@DimenRes resId: Int) = resources.getDimensionPixelSize(resId)
+
 fun View.drawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(context, resId)
 
 fun View.color(@ColorRes resId: Int) = ContextCompat.getColor(context, resId)
+
+fun View.dimen(@DimenRes resId: Int) = resources.getDimension(resId)
+
+fun View.dimenPixelSize(@DimenRes resId: Int) = resources.getDimensionPixelSize(resId)
 
 inline fun <reified T : Activity> Context.navigate() {
     startActivity(Intent(this, T::class.java))

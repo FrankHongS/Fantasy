@@ -18,7 +18,7 @@ ext.versions = [
         'room'              : '2.4.2',
         'datastore'         : '1.0.0',
 
-        'supportLibrary'    : '1.4.1',
+        'supportLibrary'    : '1.4.2',
         'material'          : '1.1.0',
         'constraintlayout'  : '2.1.4',
         'preference'        : '1.2.0',

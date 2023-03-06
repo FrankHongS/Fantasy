@@ -40,7 +40,7 @@
     <string name="play_error">播放异常</string>
 
     <string name="unable_to_delete">内置歌曲，不支持删除</string>
-    <string name="add_into_playlist">添加%s成功</string>
+    <string name="add_into_playlist">添加 %s 成功</string>
     <string name="add_into_playlist_failure">%s已存在于播放列表</string>
 
     <string name="artists_content_empty_hint">不好意思，歌手列表为空，请下载更多歌曲</string>

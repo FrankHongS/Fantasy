@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.get
 import com.frankhon.fantasymusic.R
-import com.frankhon.fantasymusic.utils.dp
-import com.hon.mylogger.MyLogger
+import com.frankhon.fantasymusic.utils.dimenPixelSize
 
 /**
  * 密集排列的标签View
@@ -27,8 +26,8 @@ class GridTextView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ViewGroup(context, attrs, defStyleAttr) {
 
-    private var marginHorizontal = 10.dp
-    private var marginVertical = 10.dp
+    private var marginHorizontal = dimenPixelSize(R.dimen.dp_10)
+    private var marginVertical = dimenPixelSize(R.dimen.dp_10)
     private var layoutId = 0
 
     /**
@@ -48,28 +47,11 @@ class GridTextView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val width = MeasureSpec.getSize(widthMeasureSpec)
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        MyLogger.d(
-            "onMeasure: width = $width widthMode = ${
-                when (widthMode) {
-                    MeasureSpec.EXACTLY -> "EXACTLY"
-                    MeasureSpec.AT_MOST -> "AT_MOST"
-                    MeasureSpec.UNSPECIFIED -> "UNSPECIFIED"
-                    else -> ""
-                }
-            }"
-        )
         measureChildren(widthMeasureSpec, heightMeasureSpec)
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        MyLogger.d("onSizeChanged: ")
-    }
-
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        MyLogger.d("onLayout: $changed")
         val itemCountList = getItemCountList()
         var tempPaddingLeft = paddingLeft
         var tempPaddingTop = paddingTop

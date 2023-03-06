@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/iv_notification_song_cover"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="@dimen/dp_80"
+        android:layout_height="@dimen/dp_80"
         android:layout_alignParentStart="true"
         android:src="@drawable/song_pic"
         tools:ignore="ContentDescription" />
@@ -16,6 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_marginStart="10dp"
         android:layout_toStartOf="@id/iv_notification_toggle_song"
         android:layout_toEndOf="@id/iv_notification_song_cover"
         android:orientation="vertical">
@@ -53,6 +54,7 @@
         android:layout_height="32dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:layout_marginEnd="10dp"
         android:src="@drawable/ic_next_song_notification"
         tools:ignore="ContentDescription" />
 

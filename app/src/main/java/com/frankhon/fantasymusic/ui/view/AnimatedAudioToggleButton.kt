@@ -17,6 +17,7 @@ import androidx.core.animation.doOnCancel
 import androidx.core.view.postDelayed
 import com.frankhon.fantasymusic.R
 import com.frankhon.fantasymusic.utils.color
+import com.frankhon.fantasymusic.utils.dimenPixelSize
 import com.frankhon.fantasymusic.utils.dp
 
 /**
@@ -86,7 +87,10 @@ class AnimatedAudioToggleButton @JvmOverloads constructor(
         tintColor =
             a.getColor(R.styleable.AnimatedAudioToggleButton_tintColor, color(R.color.colorPrimary))
         loadingBarPadding =
-            a.getDimensionPixelSize(R.styleable.AnimatedAudioToggleButton_loadingBarPadding, 4.dp)
+            a.getDimensionPixelSize(
+                R.styleable.AnimatedAudioToggleButton_loadingBarPadding,
+                dimenPixelSize(R.dimen.dp_4)
+            )
         a.recycle()
 
         View.inflate(context, R.layout.layout_song_control_button, this)
@@ -141,7 +145,8 @@ class AnimatedAudioToggleButton @JvmOverloads constructor(
         }
     }
 
-    private fun getSize() = imageButton.measuredWidth + 2 * loadingBarPadding + 8.dp
+    private fun getSize() =
+        imageButton.measuredWidth + 2 * loadingBarPadding + dimenPixelSize(R.dimen.dp_8)
 
     private fun drawLoading(canvas: Canvas) {
         val centerX = width / 2f

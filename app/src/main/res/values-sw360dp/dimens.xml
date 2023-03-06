@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_panel_total_height">294dp</dimen>
+    <dimen name="default_panel_height">62dp</dimen>
+
+    <dimen name="dp_3">2dp</dimen>
+    <dimen name="dp_4">3dp</dimen>
+    <dimen name="dp_5">4dp</dimen>
+    <dimen name="dp_6">5dp</dimen>
+    <dimen name="dp_8">6dp</dimen>
+    <dimen name="dp_10">8dp</dimen>
+    <dimen name="dp_12">10dp</dimen>
+    <dimen name="dp_14">12dp</dimen>
+    <dimen name="dp_16">14dp</dimen>
+    <dimen name="dp_28">22dp</dimen>
+    <dimen name="dp_30">24dp</dimen>
+    <dimen name="dp_32">26dp</dimen>
+    <dimen name="dp_36">30dp</dimen>
+    <dimen name="dp_40">34dp</dimen>
+    <dimen name="dp_48">42dp</dimen>
+    <dimen name="dp_50">44dp</dimen>
+    <dimen name="dp_52">46dp</dimen>
+    <dimen name="dp_60">54dp</dimen>
+    <dimen name="dp_68">62dp</dimen>
+    <dimen name="dp_80">70dp</dimen>
+    <dimen name="dp_96">86dp</dimen>
+    <dimen name="dp_100">90dp</dimen>
+    <dimen name="dp_160">150dp</dimen>
+    <dimen name="dp_320">310dp</dimen>
+
+    <dimen name="sp_12">10sp</dimen>
+    <dimen name="sp_13">11sp</dimen>
+    <dimen name="sp_14">13sp</dimen>
+    <dimen name="sp_15">13sp</dimen>
+    <dimen name="sp_16">14sp</dimen>
+    <dimen name="sp_18">16sp</dimen>
+    <dimen name="sp_20">18sp</dimen>
+
+</resources>

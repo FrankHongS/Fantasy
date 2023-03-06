@@ -118,6 +118,10 @@ object MusicNotificationManger {
             .setLargeIcon(resource)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+            .setShowWhen(false)
+            .setOngoing(true)
+            .setSilent(true)
+            .setAutoCancel(false)
             .addAction(
                 R.drawable.ic_previous_song_notification_large, "Previous",
                 if (isPreviousEnable) MediaButtonReceiver.buildMediaButtonPendingIntent(
@@ -162,8 +166,6 @@ object MusicNotificationManger {
                     .setShowActionsInCompactView(0, 1, 2)
                     .setMediaSession(mediaSession.sessionToken)
             )
-            .setOngoing(true)
-            .setAutoCancel(false)
             .build()
     }
 
@@ -271,7 +273,10 @@ object MusicNotificationManger {
         return NotificationCompat.Builder(context, PLAYER_CHANNEL_ID)
             .setContentIntent(contentIntent)
             .setSmallIcon(R.drawable.ic_notification_icon)
+            .setShowWhen(false)
             .setOngoing(true)
+            .setSilent(true)
+            .setAutoCancel(false)
             .setCustomContentView(collapsedView)
             .setCustomBigContentView(expandedView)
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -359,7 +364,8 @@ fun createNotificationChannel() {
         val channel = NotificationChannel(
             PLAYER_CHANNEL_ID,
             PLAYER_CHANNEL_ID,
-            NotificationManager.IMPORTANCE_LOW
+            // IMPORTANCE_LOW 在一加上状态栏不展示图标
+            NotificationManager.IMPORTANCE_DEFAULT
         )
         val notificationManager =
             getSystemService<NotificationManager>(Context.NOTIFICATION_SERVICE)

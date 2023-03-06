@@ -12,7 +12,8 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
 import androidx.customview.widget.ViewDragHelper
-import com.frankhon.fantasymusic.utils.dp
+import com.frankhon.fantasymusic.R
+import com.frankhon.fantasymusic.utils.dimenPixelSize
 import kotlin.math.abs
 
 /**
@@ -25,11 +26,6 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
     defStyle: Int = 0
 ) : ViewGroup(context, attrs, defStyle) {
 
-    companion object {
-        // unit, dp
-        private const val PANEL_HEIGHT = 68
-    }
-
     /**
      * 控制板（panel）状态
      */
@@ -38,6 +34,8 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
         EXPANDED,
         DRAGGING
     }
+
+    private val panelHeight = dimenPixelSize(R.dimen.default_panel_height)
 
     private lateinit var bottomView: View
     private val touchPoint = Array(2) { 0f }
@@ -59,7 +57,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
                 dy: Int
             ) {
                 panelState = when (top) {
-                    height - PANEL_HEIGHT.dp -> State.COLLAPSED
+                    height - panelHeight -> State.COLLAPSED
                     height - changedView.height -> State.EXPANDED
                     else -> State.DRAGGING
                 }
@@ -72,27 +70,27 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
             override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
                 return if (top <= height - child.height) {
                     height - child.height
-                } else if (top >= height - PANEL_HEIGHT.dp) {
-                    height - PANEL_HEIGHT.dp
+                } else if (top >= height - panelHeight) {
+                    height - panelHeight
                 } else {
                     top
                 }
             }
 
             override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
-                val offsetPercent = (height - releasedChild.top - PANEL_HEIGHT.dp) * 1f /
-                        (releasedChild.height - PANEL_HEIGHT.dp)
+                val offsetPercent = (height - releasedChild.top - panelHeight) * 1f /
+                        (releasedChild.height - panelHeight)
                 val finalTop = if (offsetPercent > 0.25f && yvel <= 0) {
                     height - releasedChild.height
                 } else {
-                    height - PANEL_HEIGHT.dp
+                    height - panelHeight
                 }
                 viewDragHelper.settleCapturedViewAt(left, finalTop)
                 invalidate()
             }
 
             override fun getViewVerticalDragRange(child: View): Int {
-                return child.height - PANEL_HEIGHT.dp
+                return child.height - panelHeight
             }
 
         }
@@ -111,7 +109,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
             measureChild(
                 topView,
                 widthMeasureSpec,
-                MeasureSpec.makeMeasureSpec(height - PANEL_HEIGHT.dp, heightMode)
+                MeasureSpec.makeMeasureSpec(height - panelHeight, heightMode)
             )
             if (childCount > 1) {
                 val bottomView = getChildAt(1)
@@ -122,7 +120,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
                         MeasureSpec.UNSPECIFIED
                     )
                     LayoutParams.MATCH_PARENT -> MeasureSpec.makeMeasureSpec(
-                        PANEL_HEIGHT.dp,
+                        panelHeight,
                         MeasureSpec.EXACTLY
                     )
                     else -> MeasureSpec.makeMeasureSpec(layoutParams.height, MeasureSpec.EXACTLY)
@@ -255,7 +253,7 @@ class SlidingUpPanelLayout @JvmOverloads constructor(
                 if (viewDragHelper.smoothSlideViewTo(
                         bottomView,
                         0,
-                        height - PANEL_HEIGHT.dp
+                        height - panelHeight
                     )
                 ) {
                     ViewCompat.postInvalidateOnAnimation(this)
